@@ -89,8 +89,8 @@ function validatesChatWorkspace(publicDir, css, script, checks) {
   push(checks, publicDir, "chat_header_out_of_layout_flow", /position\s*:\s*(absolute|fixed)/i.test(headerBlock), "header must float above stream");
   push(checks, publicDir, "chat_composer_out_of_layout_flow", /position\s*:\s*(absolute|fixed)/i.test(composerBlock), "composer must float above stream");
   push(checks, publicDir, "chat_stream_owns_viewport", /height\s*:\s*var\(--viewport-safe-height\)/i.test(streamBlock), "stream owns viewport height");
-  push(checks, publicDir, "chat_recede_shrinks_top_reserved_space", /padding-top\s*:\s*calc\((?:14|12|16|18|20)px\s*\+\s*env\(safe-area-inset-top\)\)/i.test(recededStreamBlock), "top reserved space must shrink");
-  push(checks, publicDir, "chat_recede_shrinks_bottom_reserved_space", /padding-bottom\s*:\s*calc\((?:14|16|18|20|22)px\s*\+\s*env\(safe-area-inset-bottom\)\)/i.test(recededStreamBlock), "bottom reserved space must shrink");
+  push(checks, publicDir, "chat_stream_geometry_stable_during_recede", !/transition\s*:[^}]*padding/i.test(streamBlock) && !/padding-(?:top|bottom)\s*:/i.test(recededStreamBlock), "chrome recede must not animate or mutate message stream padding");
+  push(checks, publicDir, "chat_stream_has_stable_scroll_padding", /scroll-padding-top\s*:/i.test(streamBlock) && /scroll-padding-bottom\s*:/i.test(streamBlock), "stream keeps stable scroll padding around overlay chrome");
   push(checks, publicDir, "chat_chrome_motion_transform_opacity", /transform\s*:/i.test(recededHeaderBlock) && /opacity\s*:\s*0/i.test(recededHeaderBlock) && /transform\s*:/i.test(recededComposerBlock) && /opacity\s*:\s*0/i.test(recededComposerBlock), "chrome uses transform/opacity");
   push(checks, publicDir, "chat_script_controls_recede_state", /chrome-receded/.test(script), "script toggles chrome-receded");
   push(checks, publicDir, "chat_gesture_direction_controls_recede_state", /addEventListener\(["']wheel["']/i.test(script) && /addEventListener\(["']touchmove["']/i.test(script) && /gestureOwnsChrome/i.test(script), "wheel/touch direction must not depend only on scrollTop movement");

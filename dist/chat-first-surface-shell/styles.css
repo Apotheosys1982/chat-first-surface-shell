@@ -212,11 +212,10 @@ h1 {
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
   padding: calc(132px + env(safe-area-inset-top)) 0 calc(190px + env(safe-area-inset-bottom));
+  scroll-padding-top: calc(132px + env(safe-area-inset-top));
+  scroll-padding-bottom: calc(190px + env(safe-area-inset-bottom));
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.24) transparent;
-  transition:
-    padding-top var(--wm-motion-duration-standard) var(--wm-motion-ease-standard),
-    padding-bottom var(--wm-motion-duration-standard) var(--wm-motion-ease-standard);
 }
 
 .message {
@@ -1247,11 +1246,6 @@ h1 {
   transform: translateY(calc(-100% - 32px));
   opacity: 0;
   pointer-events: none;
-}
-
-.chrome-receded .message-stream {
-  padding-top: calc(14px + env(safe-area-inset-top));
-  padding-bottom: calc(18px + env(safe-area-inset-bottom));
 }
 
 .chrome-receded .assistant-composer {

@@ -1,0 +1,12 @@
+2026-06-22T02:49:05Z chat-first scroll stability
+
+Scope:
+- Fixed the mobile scroll fight between chat stream scrolling and header/composer collapse.
+- Message stream geometry is now stable during chrome recede.
+- Chrome still collapses by transform/opacity only.
+
+Validation:
+- npm run validate:chat-first-shell: pass
+- npm run validate:chrome-collapse: pass
+- In-app Browser QA 393x852 before scroll: rootScrollWidth=393, bodyScrollWidth=393, streamClientWidth=365, streamScrollWidth=365, streamClientHeight=852, streamScrollHeight=1005, paddingTop=132px, paddingBottom=190px, scrollX=0, visibleOffenderCount=0
+- In-app Browser QA 393x852 after scroll/chrome recede: chromeReceded=true, rootScrollWidth=393, bodyScrollWidth=393, streamClientWidth=365, streamScrollWidth=365, streamClientHeight=852, streamScrollHeight=1005, paddingTop=132px, paddingBottom=190px, scrollX=0, visibleOffenderCount=0, console issues=0

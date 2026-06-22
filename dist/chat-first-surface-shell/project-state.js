@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T02:40:21.320Z",
+  "generatedAt": "2026-06-22T02:52:00.886Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T023851Z",
+  "latestEventId": "event-20260622T024905Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T024905Z-chat-first-scroll-stability.md",
+      "filename": "20260622T024905Z-chat-first-scroll-stability.md",
+      "timestamp": "20260622T024905Z",
+      "label": "Scroll stability + chrome collapse",
+      "slug": "chat-first-scroll-stability"
+    },
     {
       "path": "receipts/20260622T023851Z-chat-first-viewport-lock.md",
       "filename": "20260622T023851Z-chat-first-viewport-lock.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260621T143103Z",
       "label": "Streaming auto-follow",
       "slug": "chat-first-stream-autofollow"
-    },
-    {
-      "path": "receipts/20260621T142800Z-chat-first-precision-polish-state-loop.md",
-      "filename": "20260621T142800Z-chat-first-precision-polish-state-loop.md",
-      "timestamp": "20260621T142800Z",
-      "label": "Chat First Precision Polish State Loop",
-      "slug": "chat-first-precision-polish-state-loop"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T024905Z-chat-first-scroll-stability.log",
+      "filename": "20260622T024905Z-chat-first-scroll-stability.log",
+      "timestamp": "20260622T024905Z",
+      "label": "Scroll stability + chrome collapse",
+      "slug": "chat-first-scroll-stability"
+    },
     {
       "path": "logs/20260622T023851Z-chat-first-viewport-lock.log",
       "filename": "20260622T023851Z-chat-first-viewport-lock.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260621T151818Z",
       "label": "Chat First Visible Source Inbox Storage",
       "slug": "chat-first-visible-source-inbox-storage"
-    },
-    {
-      "path": "logs/20260621T150711Z-chat-first-controlled-ingestion-route-compiler.log",
-      "filename": "20260621T150711Z-chat-first-controlled-ingestion-route-compiler.log",
-      "timestamp": "20260621T150711Z",
-      "label": "Controlled ingestion + route compiler",
-      "slug": "chat-first-controlled-ingestion-route-compiler"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T024905Z-chat-first-scroll-stability.sha256",
+      "filename": "20260622T024905Z-chat-first-scroll-stability.sha256",
+      "timestamp": "20260622T024905Z",
+      "label": "Scroll stability + chrome collapse",
+      "slug": "chat-first-scroll-stability"
+    },
     {
       "path": "checksums/20260622T023851Z-chat-first-viewport-lock.sha256",
       "filename": "20260622T023851Z-chat-first-viewport-lock.sha256",
@@ -139,13 +146,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260621T151818Z",
       "label": "Chat First Visible Source Inbox Storage",
       "slug": "chat-first-visible-source-inbox-storage"
-    },
-    {
-      "path": "checksums/20260621T150711Z-chat-first-controlled-ingestion-route-compiler.sha256",
-      "filename": "20260621T150711Z-chat-first-controlled-ingestion-route-compiler.sha256",
-      "timestamp": "20260621T150711Z",
-      "label": "Controlled ingestion + route compiler",
-      "slug": "chat-first-controlled-ingestion-route-compiler"
     }
   ],
   "validations": [

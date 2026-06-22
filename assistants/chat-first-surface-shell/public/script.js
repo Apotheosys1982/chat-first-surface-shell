@@ -19,6 +19,7 @@
   let lastChromeGestureAt = 0;
   let lastProgrammaticScrollAt = 0;
   let chromeRecedeFrame = 0;
+  let pendingChromeReceded = null;
   let horizontalLockFrame = 0;
   let autoFollowStreaming = false;
   const GESTURE_EPSILON = 2;
@@ -1183,16 +1184,24 @@
   }
 
   function setChromeReceded(receded) {
-    shell?.classList.toggle("chrome-receded", Boolean(receded));
+    if (!shell) return;
+    const next = Boolean(receded);
+    if (shell.classList.contains("chrome-receded") === next) return;
+    shell.classList.toggle("chrome-receded", next);
   }
 
   function requestChromeRecede(receded) {
     if (!shell) return;
     const shouldRecede = Boolean(receded);
+    if (shell.classList.contains("chrome-receded") === shouldRecede && pendingChromeReceded === null) return;
+    if (pendingChromeReceded === shouldRecede) return;
+    pendingChromeReceded = shouldRecede;
     if (chromeRecedeFrame) window.cancelAnimationFrame(chromeRecedeFrame);
     chromeRecedeFrame = window.requestAnimationFrame(() => {
       chromeRecedeFrame = 0;
-      setChromeReceded(shouldRecede);
+      const next = pendingChromeReceded;
+      pendingChromeReceded = null;
+      setChromeReceded(next);
     });
   }
 

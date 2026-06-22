@@ -187,9 +187,8 @@ function validateTarget(target, checks) {
   push(checks, target.id, "header_removed_from_layout_flow", /position\s*:\s*absolute/i.test(headerBlock) || /position\s*:\s*fixed/i.test(headerBlock), "header absolute/fixed");
   push(checks, target.id, "composer_removed_from_layout_flow", /position\s*:\s*absolute/i.test(composerBlock) || /position\s*:\s*fixed/i.test(composerBlock), "composer absolute/fixed");
   push(checks, target.id, "message_stream_owns_viewport", /height\s*:\s*var\(--viewport-safe-height\)/i.test(streamBlock), "message stream viewport height");
-  push(checks, target.id, "message_stream_padding_is_animated", /padding-top[\s\S]*var\(--wm-motion-duration-standard\)/i.test(streamBlock) && /padding-bottom[\s\S]*var\(--wm-motion-duration-standard\)/i.test(streamBlock), "animated padding");
-  push(checks, target.id, "chrome_recede_reclaims_top_space", /padding-top\s*:\s*calc\(14px\s*\+\s*env\(safe-area-inset-top\)\)/i.test(recededStreamBlock), "top padding shrinks");
-  push(checks, target.id, "chrome_recede_reclaims_bottom_space", /padding-bottom\s*:\s*calc\(18px\s*\+\s*env\(safe-area-inset-bottom\)\)/i.test(recededStreamBlock), "bottom padding shrinks");
+  push(checks, target.id, "message_stream_scroll_geometry_is_stable", !/transition\s*:[^}]*padding/i.test(streamBlock) && !/padding-(?:top|bottom)\s*:/i.test(recededStreamBlock), "chrome collapse must not animate or mutate message stream padding while scrolling");
+  push(checks, target.id, "message_stream_has_stable_scroll_padding", /scroll-padding-top\s*:/i.test(streamBlock) && /scroll-padding-bottom\s*:/i.test(streamBlock), "stream keeps stable scroll padding for fixed chrome overlays");
   push(checks, target.id, "header_motion_uses_transform_opacity", /transform\s*:/i.test(recededHeaderBlock) && /opacity\s*:\s*0/i.test(recededHeaderBlock), "header transform + opacity");
   push(checks, target.id, "composer_motion_uses_transform_opacity", /transform\s*:/i.test(recededComposerBlock) && /opacity\s*:\s*0/i.test(recededComposerBlock), "composer transform + opacity");
   push(checks, target.id, "scroll_direction_controls_chrome", /chrome-receded/.test(script) && /delta\s*>\s*CHROME_SCROLL_THRESHOLD/.test(script) && /requestChromeRecede\(true\)/i.test(script), "scroll delta toggles chrome");
