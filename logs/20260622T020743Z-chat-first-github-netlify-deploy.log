@@ -1,0 +1,32 @@
+2026-06-22T02:07:43Z chat-first GitHub and Netlify deployment preparation
+
+GitHub checks:
+- gh --version -> 2.92.0
+- gh auth status -> active account Apotheosys1982
+- gh repo view Apotheosys1982/surface-assistant-feature-surface -> private repo exists, default branch main
+- gh api users/Apotheosis1982 -> 404
+- gh api users/Apotheosys1982 -> active user record returned
+
+Netlify checks:
+- netlify status -> authenticated as john.p.s.barros@gmail.com on team ApotheosysAi
+- existing linked project before this pass: surface-assistant
+- netlify sites:create --account-slug john-p-s-barros --name chat-first-surface-shell --json -> project created
+
+Netlify project:
+- name: chat-first-surface-shell
+- project id: e69fb33f-e59a-4e37-9c4c-67d9963b8a5a
+- production url: https://chat-first-surface-shell.netlify.app
+- admin url: https://app.netlify.com/projects/chat-first-surface-shell
+
+Validation completed before receipt:
+- npm run sync:chat-first-state -> ok
+- node tools/compile-chat-first-answer-pack.js -> ok
+- node tools/validate-chat-first-artifact-router.js -> ok
+- node tools/validate-chat-first-html-canvas-stage.js -> ok
+- npm run validate:chat-first-shell -> ok
+- npm run validate:chrome-collapse -> ok
+- npm run validate:json -> ok
+- npm run validate:js -> ok
+
+Tooling note:
+- tools/sync-chat-first-state.js and tools/compile-chat-first-answer-pack.js now mirror generated files into dist/chat-first-surface-shell so source and deployable dist remain synchronized after regeneration.

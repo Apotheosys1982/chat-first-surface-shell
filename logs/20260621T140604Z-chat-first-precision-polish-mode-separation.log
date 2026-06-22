@@ -1,0 +1,31 @@
+20260621T140604Z chat-first precision polish and mode separation
+
+Commands run:
+- npm run sync:chat-first-state
+- rm -rf dist/chat-first-surface-shell && mkdir -p dist/chat-first-surface-shell && cp -R assistants/chat-first-surface-shell/public/. dist/chat-first-surface-shell/
+- npm run validate:chat-first-shell
+- npm run validate:chrome-collapse
+- npm run validate:json
+- npm run validate:js
+
+Initial validation issue:
+- The new tray/source-map validator checks were too broad and failed against legitimate non-tray detail/source rows.
+- Validator was narrowed to the actual tray renderer and source document registry.
+
+Final targeted results:
+- validate:chat-first-shell: pass
+- validate:chrome-collapse: pass
+- validate:json: pass
+- validate:js: pass
+
+Browser QA:
+- Attempted Browser plugin verification against file:///Users/johnbarros/Documents/Codex/surface-assistant-feature-surface/dist/chat-first-surface-shell/index.html.
+- Browser Use blocked local file URL navigation/reload due URL policy.
+- No alternate browser workaround was used.
+
+Outcome:
+- Source and dist shell are mirrored.
+- Recent activity tray now uses compact metadata and scrolls internally.
+- Source map now uses human-readable labels with filenames as metadata.
+- Artifact views reset scroll to top on open.
+- Validator now enforces these invariants.

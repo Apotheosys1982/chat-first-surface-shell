@@ -1,0 +1,41 @@
+20260621T122528Z premium chat shell UI pass
+
+Scope:
+- Implement a static prototype for the premium chat-first Surface Assistant shell.
+- Keep the assistant as the initial app surface.
+- Add left tray, compact header, message stream, native composer, artifact actions, and artifact modal.
+- Use shared motion assets.
+- Do not deploy.
+- Do not disturb unrelated dirty SV2 work.
+
+Created:
+- assistants/chat-first-surface-shell/README.md
+- assistants/chat-first-surface-shell/source-manifest.json
+- assistants/chat-first-surface-shell/public/index.html
+- assistants/chat-first-surface-shell/public/styles.css
+- assistants/chat-first-surface-shell/public/script.js
+- assistants/chat-first-surface-shell/public/assets/social-preview.svg
+- assistants/chat-first-surface-shell/public/assets/asset-credits.json
+- assistants/chat-first-surface-shell/public/motion/*
+- dist/chat-first-surface-shell/*
+- receipts/20260621T122528Z-premium-chat-shell-ui-pass.md
+- logs/20260621T122528Z-premium-chat-shell-ui-pass.log
+
+Validation:
+- npm run validate:json
+  Result: pass
+  Detail: checked 572 JSON files, 0 failures.
+- npm run validate:js
+  Result: pass
+  Detail: checked 174 JS files, 0 failures.
+- npm run validate:modes
+  Result: pass
+  Detail: mode capsule validation 1223 passed, 0 failed; coverage audit 11 passed, 0 failed.
+- npm run validate:code
+  Result: pass
+  Detail: completed with exit code 0.
+- npm run validate:checksum
+  Result: pass after checksum generation.
+
+Deployment:
+- Not deployed.

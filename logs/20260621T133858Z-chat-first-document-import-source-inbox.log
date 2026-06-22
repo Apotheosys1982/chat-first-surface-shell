@@ -1,0 +1,13 @@
+20260621T133858Z started chat-first document import source inbox pass
+- Replaced decorative composer plus artifact shortcut with document import intent.
+- Added local Source Inbox runtime plan: File API + localStorage + metadata/preview boundary.
+- Added validator checks for document-import invariants.
+- Synced project-state so latest receipt renders in the shell.
+- Synced public shell into dist/chat-first-surface-shell.
+- node --check source/build runtime and validator: pass.
+- npm run validate:js: pass, 179 files checked, 0 failures.
+- npm run validate:chat-first-shell: pass, 78 checks, 0 failures.
+- npm run validate:chrome-collapse: pass, 62 checks, 0 failures.
+- Prior checksum manifest failed as expected after edits; new checksum manifest generated after this log update.
+- npm run validate:checksum: pass with checksums/20260621T133858Z-chat-first-document-import-source-inbox.sha256.
+- Final sync loop re-ran so project-state renders this receipt and checksum.

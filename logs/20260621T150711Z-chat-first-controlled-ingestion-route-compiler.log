@@ -1,0 +1,45 @@
+20260621T150711Z chat-first controlled ingestion + route compiler
+
+- Implemented controlled ingestion spine for chat-first shell.
+- Extended tools/sync-chat-first-state.js:
+  - Generates project-state.js.
+  - Generates state-events.js.
+  - Generates source-registry.js.
+  - Registers Codex receipts/logs/checksums as codex_update events.
+  - Adds source and ingestion lifecycle metadata to source records.
+- Added tools/compile-chat-first-answer-pack.js:
+  - Reads project-state.js, state-events.js, and source-registry.js.
+  - Writes compiled-answer-pack.js.
+  - Compiles deterministic answer rooms for source intake, uploads, event ledger, receipts, source registry, compiler lifecycle, artifacts, chatbot/runtime distinction, pricing diagnosis, and boundary refusal.
+- Updated chat-first runtime:
+  - Loads project-state.js, state-events.js, source-registry.js, compiled-answer-pack.js, then script.js.
+  - Consumes window.CHAT_FIRST_ANSWER_PACK for route rooms.
+  - Keeps uploaded files in a runtime source overlay.
+  - Uses IndexedDB for local blob storage when available.
+  - Falls back to localStorage metadata when blob persistence is unavailable.
+  - Extracts text only for text-like files within the configured size limit.
+  - Keeps PDF/DOCX/image/spreadsheet/oversized/binary files metadata-only until parser/OCR/source mapping exists.
+  - Defaults user uploads to Uncertain and unapproved.
+  - Keeps canAnswerFrom false for uploaded runtime overlay records.
+- Added first-class artifacts:
+  - Event Ledger.
+  - Source Registry.
+  - Source Inbox.
+  - Extracted Text.
+  - Source Map Draft.
+  - Compiler Report.
+- Added tools/validate-chat-first-ingestion.js.
+- Updated tools/validate-chat-first-shell.js:
+  - Requires state-events.js, source-registry.js, and compiled-answer-pack.js.
+  - Validates correct load order.
+  - Validates routes from compiled-answer-pack.js.
+  - Validates friendly source labels from source-registry.js.
+- Wired validate:chat-first-shell to run ingestion validation.
+- Synced state, compiled answer pack, and mirrored source into dist/chat-first-surface-shell.
+- Validation passed:
+  - npm run validate:chat-first-shell.
+  - node tools/validate-chat-first-ingestion.js.
+  - npm run validate:chrome-collapse.
+  - npm run validate:json.
+  - npm run validate:js.
+- Final checksum validation is run after the checksum manifest is generated for this receipt.

@@ -1,0 +1,23 @@
+2026-06-22T01:21:34Z html-canvas-document-stage-spike
+
+Implemented a visible documentSurface artifact stage for the chat-first Surface Shell.
+
+Changed:
+- Added `surface-diagnosis-draft` artifact.
+- Added `htmlCanvasDocumentStage` renderer registry entry.
+- Added `renderHtmlCanvasDocumentStage()`.
+- Added command routes for draft/document/report/canvas/html canvas/diagnosis draft.
+- Added premium document-stage CSS.
+- Added `tools/validate-chat-first-html-canvas-stage.js`.
+- Wired the new validator into `validate:chat-first-shell`.
+- Added friendly sync labels for artifact router and HTML-in-Canvas receipts.
+- Mirrored script/styles into `dist/chat-first-surface-shell`.
+
+Manual QA:
+- Served local public shell at http://127.0.0.1:8899/index.html.
+- `draft`, `document`, `report`, and `canvas` opened the Surface Diagnosis Draft.
+- Existing commands dashboard/source map/inbox/events/compiler/receipt still opened.
+- Natural-language prompts continued routing through answer rooms.
+- Renderer status in QA browser: native HTML-in-Canvas unavailable; fallback active.
+
+No deployment performed.

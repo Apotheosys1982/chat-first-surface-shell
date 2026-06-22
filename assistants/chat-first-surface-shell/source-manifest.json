@@ -1,0 +1,32 @@
+{
+  "assistant_slug": "chat-first-surface-shell",
+  "domain": "chat-first browser-native Surface Assistant shell",
+  "selected_source_name": "Surface Runtime planning documents",
+  "selected_source_type": "client_material",
+  "source_url": "",
+  "license_or_usage_notes": "Local project-authored planning material and repo standards.",
+  "attribution_requirements": "No external attribution required for the current prototype shell.",
+  "access_method": "build_time_snapshot",
+  "build_time_snapshot": true,
+  "live_runtime_dependency": false,
+  "freshness_date": "2026-06-21",
+  "normalized_record_count": 4,
+  "indexed_field_count": 7,
+  "source_fields_used": [
+    "chat-first shell planning",
+    "premium UI system planning",
+    "offer context alignment",
+    "bounded routing system planning"
+  ],
+  "source_fields_excluded": [
+    "private user credentials",
+    "live account data",
+    "external model calls"
+  ],
+  "limitations": [
+    "Prototype uses deterministic scaffolded answers and registered artifact placeholders.",
+    "No backend, live model runtime, accounts, or persistence is implemented in this pass."
+  ],
+  "fallback_source_strategy": "Explain source boundaries and route to registered demo artifacts.",
+  "validation_status": "prototype"
+}

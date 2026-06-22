@@ -1,0 +1,22 @@
+2026-06-22T02:15:21Z standalone chat-first repository creation
+
+Created GitHub repository:
+- https://github.com/Apotheosys1982/chat-first-surface-shell
+
+Local project root:
+- /Users/johnbarros/Documents/Codex/chat-first-surface-shell
+
+Netlify target:
+- project: chat-first-surface-shell
+- project id: e69fb33f-e59a-4e37-9c4c-67d9963b8a5a
+- production url: https://chat-first-surface-shell.netlify.app
+- publish directory: assistants/chat-first-surface-shell/public
+
+Documentation added:
+- README.md
+- docs/ARCHITECTURE.md
+- docs/DEPLOYMENT.md
+
+Correction:
+- Chat-first shell is a standalone project, not the SV2 Biosphere Kids project.
+- The previous chat-first branch in the inherited surface-assistant-feature-surface repo is cleanup-only and should not be treated as the canonical project home.

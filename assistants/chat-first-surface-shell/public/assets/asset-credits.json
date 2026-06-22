@@ -1,0 +1,12 @@
+{
+  "surface": "chat-first-surface-shell",
+  "assets": [
+    {
+      "file": "social-preview.svg",
+      "type": "generated-vector-preview",
+      "source": "local implementation artifact",
+      "license": "project-owned",
+      "notes": "Simple static preview generated for metadata and preload coverage."
+    }
+  ]
+}

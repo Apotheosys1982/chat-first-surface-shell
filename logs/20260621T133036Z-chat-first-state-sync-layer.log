@@ -1,0 +1,19 @@
+2026-06-21T13:30:36Z chat-first-state-sync-layer
+
+Intent:
+- Prevent stale project-state rendering inside the chat-first shell after receipts/logs/checksums are created.
+
+Changes:
+- Added tools/sync-chat-first-state.js.
+- Added npm run sync:chat-first-state.
+- Added project-state.js to the chat-first shell runtime.
+- Updated dashboard and receipt stream artifacts to read generated state.
+- Extended chat-first validator to enforce latest receipt visibility.
+
+Validation:
+- npm run sync:chat-first-state: pass
+- npm run validate:chat-first-shell: pass
+- npm run validate:chrome-collapse: pass
+- node --check tools/sync-chat-first-state.js: pass
+- node --check tools/validate-chat-first-shell.js: pass
+- node --check assistants/chat-first-surface-shell/public/script.js: pass

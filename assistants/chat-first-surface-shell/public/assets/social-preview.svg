@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Chat-First Surface Shell</title>
+  <desc id="desc">Dark premium chat workspace preview.</desc>
+  <rect width="1200" height="630" fill="#0b0d10"/>
+  <radialGradient id="g" cx="70%" cy="10%" r="80%">
+    <stop offset="0" stop-color="#476171" stop-opacity=".42"/>
+    <stop offset=".45" stop-color="#17232a" stop-opacity=".45"/>
+    <stop offset="1" stop-color="#0b0d10" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <rect x="88" y="78" width="1024" height="474" rx="34" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.16)"/>
+  <text x="138" y="174" fill="#f5f7fb" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="700">The assistant is the app.</text>
+  <text x="140" y="250" fill="#b7c1cc" font-family="Inter, Arial, sans-serif" font-size="30">Ask the surface. Render the view. Close it. Keep working.</text>
+  <rect x="140" y="344" width="560" height="112" rx="26" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.14)"/>
+  <text x="178" y="394" fill="#f5f7fb" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">Open source map</text>
+  <text x="178" y="432" fill="#9fb0bf" font-family="Inter, Arial, sans-serif" font-size="20">Registered artifact · Active</text>
+</svg>

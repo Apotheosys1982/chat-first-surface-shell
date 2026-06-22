@@ -1,0 +1,27 @@
+20260621T115330Z chat-first premium UI planning docs
+
+Scope:
+- Create planning docs only.
+- Do not implement runtime shell.
+- Do not deploy.
+- Do not generate screenshots or image assets.
+
+Created:
+- PLANNING_CHAT_FIRST_SURFACE_ASSISTANT_SHELL.md
+- PLANNING_PREMIUM_CHAT_UI_SYSTEM.md
+- PLANNING_OFFER_CONTEXT_ALIGNMENT.md
+- receipts/20260621T115330Z-chat-first-premium-ui-planning-docs.md
+- logs/20260621T115330Z-chat-first-premium-ui-planning-docs.log
+
+Validation results appended after command execution.
+
+Validation:
+- npm run validate:json -> pass. Checked 570 JSON files, 0 failures.
+- npm run validate:js -> pass. Checked 172 JS files, 0 failures.
+- npm run validate:modes -> pass. Mode capsule validation 1223 passed / 0 failed; coverage audit 11 passed / 0 failed.
+- npm run validate:code -> pass. Full code validation completed with exit code 0.
+- npm run validate:checksum -> pass. Manifest `checksums/20260621T115330Z-chat-first-premium-ui-planning-docs.sha256` verified all five tracked planning-pass artifacts.
+
+Working tree note:
+- Existing dirty SV2 BioSphere Kids asset/registry/build-metadata changes were present before this planning-doc pass and were intentionally preserved.
+- This pass created planning documentation only and did not modify runtime public UI files or deploy.

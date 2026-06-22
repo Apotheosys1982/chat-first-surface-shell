@@ -1,0 +1,29 @@
+20260621T121319Z bounded assistant routing system planning
+
+Scope:
+- Create PLANNING_BOUNDED_ASSISTANT_ROUTING_SYSTEM.md.
+- Preserve existing dirty SV2 work.
+- Do not implement runtime UI or assistant logic.
+- Do not deploy.
+
+Created:
+- PLANNING_BOUNDED_ASSISTANT_ROUTING_SYSTEM.md
+- receipts/20260621T121319Z-bounded-assistant-routing-system-planning.md
+- logs/20260621T121319Z-bounded-assistant-routing-system-planning.log
+
+Validation:
+- npm run validate:json
+  Result: pass
+  Detail: checked 570 JSON files, 0 failures.
+- npm run validate:js
+  Result: pass
+  Detail: checked 172 JS files, 0 failures.
+- npm run validate:modes
+  Result: pass
+  Detail: mode capsule validation 1223 passed, 0 failed; coverage audit 11 passed, 0 failed.
+- npm run validate:code
+  Result: pass
+  Detail: completed with exit code 0. Existing assistant route checks remained green.
+- npm run validate:checksum
+  Result: pass
+  Detail: latest checksum manifest verified PLANNING_BOUNDED_ASSISTANT_ROUTING_SYSTEM.md, receipt, and log.

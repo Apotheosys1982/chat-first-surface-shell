@@ -1,0 +1,12 @@
+20260621T134949Z started chat-first scrollable dynamic tray activity pass
+- Converted hardcoded tray activity section into data-tray-activity-list render target.
+- Added renderTrayActivity() hydration from projectActivity/project state.
+- Made side tray a viewport-owned flex column with internal recent activity scrolling.
+- Added validator checks for scrollable tray activity and project-state hydration.
+- Synced project-state and copied public shell into dist/chat-first-surface-shell.
+- npm run validate:js: pass, 179 files checked, 0 failures.
+- npm run validate:chat-first-shell: pass, 86 checks, 0 failures.
+- npm run validate:chrome-collapse: pass, 62 checks, 0 failures.
+- Previous checksum failed as expected after this pass modified tracked shell files.
+- npm run validate:checksum: pass with checksums/20260621T134949Z-chat-first-scrollable-dynamic-tray-activity.sha256.
+- Final sync loop re-ran so project-state renders this receipt/checksum in the tray and dashboard.

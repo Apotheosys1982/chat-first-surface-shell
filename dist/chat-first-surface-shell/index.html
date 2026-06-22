@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en" data-surface-mode="builder">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="A premium chat-first Surface Assistant shell where bounded answers render source-backed artifacts on demand.">
+    <meta property="og:title" content="Chat-First Surface Shell">
+    <meta property="og:description" content="Ask the surface. Render the view. Close it. Keep working.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="./assets/social-preview.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Chat-First Surface Shell</title>
+    <link rel="preload" href="./assets/social-preview.svg" as="image" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./motion/motion-tokens.css">
+    <link rel="stylesheet" href="./motion/view-transition-library.css">
+    <link rel="stylesheet" href="./motion/shared-element-library.css">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="app-shell wm-motion-ready" data-shell>
+      <aside class="side-tray wm-motion-surface" data-tray aria-label="Surface workspace navigation" aria-hidden="true">
+        <div class="tray-top">
+          <button class="icon-button tray-close wm-motion-focusable" type="button" data-tray-close aria-label="Close navigation">
+            <span aria-hidden="true">×</span>
+          </button>
+          <div>
+            <p class="eyebrow">Workspace</p>
+            <h2>Surface Shell</h2>
+          </div>
+        </div>
+        <nav class="tray-nav" aria-label="Workspace">
+          <button type="button" class="tray-item is-active" data-prompt="Start a new surface diagnosis">
+            <span aria-hidden="true">＋</span>
+            <span>New surface</span>
+          </button>
+          <button type="button" class="tray-item" data-artifact-open="source-map">
+            <span aria-hidden="true">⌕</span>
+            <span>Sources</span>
+          </button>
+          <button type="button" class="tray-item" data-artifact-open="document-inbox">
+            <span aria-hidden="true">⇣</span>
+            <span>Source inbox</span>
+          </button>
+          <button type="button" class="tray-item" data-artifact-open="artifact-dashboard">
+            <span aria-hidden="true">▦</span>
+            <span>Artifacts</span>
+          </button>
+          <button type="button" class="tray-item" data-artifact-open="validation-receipt">
+            <span aria-hidden="true">✓</span>
+            <span>Receipts</span>
+          </button>
+          <button type="button" class="tray-item" data-prompt="What should this shell refuse to answer?">
+            <span aria-hidden="true">⌁</span>
+            <span>Boundaries</span>
+          </button>
+        </nav>
+        <div class="tray-section tray-activity" data-tray-activity>
+          <p class="tray-label">Recent activity</p>
+          <div class="tray-activity-list" data-tray-activity-list>
+            <button type="button" class="recent-item" data-artifact-open="artifact-dashboard">
+              <strong>Project state dashboard</strong>
+              <span>Shell status, gates, current fixes</span>
+            </button>
+            <button type="button" class="recent-item" data-artifact-open="activity-log">
+              <strong>Recent hardening log</strong>
+              <span>Collapse motion, composer, routes</span>
+            </button>
+            <button type="button" class="recent-item" data-prompt="What did we fix in the chat shell?">
+              <strong>Chat shell polish</strong>
+              <span>Typography, glass, smalltalk route</span>
+            </button>
+            <button type="button" class="recent-item" data-prompt="Show me the messy operations knowledge demo">
+              <strong>Messy ops wiki</strong>
+              <span>Source map + SOP + checklist</span>
+            </button>
+            <button type="button" class="recent-item" data-prompt="How would a client onboarding surface work?">
+              <strong>Client onboarding</strong>
+              <span>FAQ rooms + handoff path</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="tray-scrim wm-motion-surface" data-tray-scrim hidden></div>
+
+      <main class="chat-workspace" aria-label="Chat-first Surface Assistant">
+        <header class="workspace-header wm-assistant-chrome" data-header>
+          <button class="icon-button wm-motion-focusable" type="button" data-tray-open aria-label="Open navigation">
+            <span aria-hidden="true">☰</span>
+          </button>
+          <div class="header-title">
+            <p class="eyebrow">Bounded surface</p>
+            <h1>Chat-First Shell</h1>
+          </div>
+          <div class="status-strip" aria-label="Runtime status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Approved source pack</span>
+          </div>
+          <button class="icon-button wm-motion-focusable" type="button" data-artifact-open="source-map" aria-label="Open source map">
+            <span aria-hidden="true">▧</span>
+          </button>
+        </header>
+
+        <section class="message-stream" data-message-stream aria-live="polite">
+          <article class="message assistant-message intro-message is-visible">
+            <p class="message-kicker">Static runtime · bounded answers</p>
+            <h2>The assistant is the app.</h2>
+            <p>Ask from approved sources. Render the right view. Keep working. This shell can inspect the source map, open the dashboard, show receipts, or explain what it should refuse.</p>
+            <div class="render-actions" aria-label="Suggested render actions">
+              <button type="button" class="artifact-action wm-motion-focusable" data-artifact-open="artifact-dashboard">
+                <span class="artifact-icon" aria-hidden="true">▦</span>
+                <span>
+                  <strong>Open dashboard</strong>
+                  <small>Demo artifact · Active</small>
+                </span>
+              </button>
+              <button type="button" class="artifact-action wm-motion-focusable" data-artifact-open="source-map">
+                <span class="artifact-icon" aria-hidden="true">⌁</span>
+                <span>
+                  <strong>View source map</strong>
+                  <small>Source posture · Active</small>
+                </span>
+              </button>
+            </div>
+          </article>
+
+          <article class="message system-message is-visible">
+            <span>Ask. Render. Inspect. Return.</span>
+          </article>
+
+          <article class="message assistant-message is-visible">
+            <p>Ask about the docs. Open the source map. Render the checklist. If the answer is not in the approved material, the shell should say that instead of improvising.</p>
+            <div class="prompt-row" aria-label="Try asking">
+              <button type="button" data-prompt="What can this shell render?">What can it render?</button>
+              <button type="button" data-prompt="How is this different from a chatbot?">Not a chatbot?</button>
+              <button type="button" data-prompt="Show me the checklist">Show checklist</button>
+            </div>
+          </article>
+        </section>
+
+        <form class="assistant-composer wm-assistant-chrome" data-composer>
+          <div class="composer-row wm-motion-focusable">
+            <button class="composer-tool" type="button" data-document-import aria-label="Import document into source inbox">
+              <span aria-hidden="true">＋</span>
+            </button>
+            <textarea name="question" rows="1" placeholder="Ask about the docs, SOPs, source map, or dashboard..." aria-label="Ask the surface"></textarea>
+            <button class="composer-send" type="submit" aria-label="Send message">
+              <span aria-hidden="true">↑</span>
+            </button>
+          </div>
+          <button class="source-inbox-status" type="button" data-artifact-open="document-inbox" data-source-inbox-status>
+            <span>Source Inbox</span>
+            <strong>Local only · 0 candidates</strong>
+          </button>
+          <input
+            data-document-input
+            type="file"
+            hidden
+            multiple
+            accept=".txt,.md,.markdown,.json,.csv,.tsv,.html,.xml,.yaml,.yml,.log,.pdf,.doc,.docx,application/pdf,text/*,application/json,text/markdown,text/csv"
+          >
+        </form>
+      </main>
+
+      <section class="artifact-layer wm-motion-surface" data-artifact-layer aria-hidden="true">
+        <div class="artifact-panel" role="dialog" aria-modal="true" aria-labelledby="artifact-title">
+          <header class="artifact-header">
+            <div>
+              <p class="eyebrow" data-artifact-meta>Artifact · Active</p>
+              <h2 id="artifact-title" data-artifact-title>Artifact</h2>
+            </div>
+            <button class="icon-button wm-motion-focusable" type="button" data-artifact-close aria-label="Close artifact">
+              <span aria-hidden="true">×</span>
+            </button>
+          </header>
+          <div class="artifact-body" data-artifact-body></div>
+        </div>
+      </section>
+    </div>
+    <script src="./project-state.js"></script>
+    <script src="./state-events.js"></script>
+    <script src="./source-registry.js"></script>
+    <script src="./compiled-answer-pack.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

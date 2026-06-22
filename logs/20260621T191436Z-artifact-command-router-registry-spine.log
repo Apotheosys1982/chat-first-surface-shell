@@ -1,0 +1,28 @@
+20260621T191436Z artifact-command-router-registry-spine
+
+Implemented:
+- Artifact registry-shaped metadata inside chat-first shell runtime.
+- Artifact command lexicon for direct composer commands.
+- resolveArtifactCommand(input, context) before bounded route(input).
+- Direct artifact open path with short status copy.
+- Ambiguous picker path.
+- Missing-artifact fallback path.
+- validate-chat-first-artifact-router.js.
+- validate:chat-first-shell now includes artifact router validation.
+- Source runtime mirrored to dist.
+
+Validation passed before receipt/state sync:
+- node tools/validate-chat-first-artifact-router.js
+- npm run validate:js
+- npm run validate:json
+- npm run validate:chat-first-shell
+- npm run validate:chrome-collapse
+- node tools/validate-chat-first-ingestion.js
+
+Constraints preserved:
+- Existing data-artifact-open behavior remains.
+- Existing bounded answer route remains.
+- Upload quarantine remains Uncertain and canAnswerFrom=false.
+- No live LLM call added.
+- No server upload added.
+- No deployment performed.

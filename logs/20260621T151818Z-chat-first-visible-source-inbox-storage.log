@@ -1,0 +1,17 @@
+20260621T151818Z chat-first visible source inbox storage
+
+- Added a visible Source Inbox tray item.
+- Added a persistent composer-area Source Inbox storage status strip.
+- Added runtime status hydration for local upload count, extracted previews, source-map-needed candidates, and IndexedDB cached blobs.
+- Updated upload answer copy to say files are stored locally in IndexedDB when available and metadata is stored under localStorage key chatFirstSurfaceDocuments.v1.
+- Expanded the Source Inbox artifact with explicit storage map:
+  - IndexedDB database chatFirstSurfaceSources / object store blobs.
+  - localStorage metadata key chatFirstSurfaceDocuments.v1.
+  - Uncertain / unapproved / canAnswerFrom=false approval boundary.
+- Mirrored source files into dist/chat-first-surface-shell.
+- Added validate-chat-first-ingestion check: visible_source_inbox_storage_status.
+- Validation passed:
+  - node tools/compile-chat-first-answer-pack.js
+  - npm run validate:chat-first-shell
+  - node tools/validate-chat-first-ingestion.js
+- Browser reload of file:// page was blocked by in-app Browser URL policy. No bypass attempted.

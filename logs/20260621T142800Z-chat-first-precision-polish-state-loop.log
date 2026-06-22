@@ -1,0 +1,29 @@
+20260621T142800Z chat-first precision polish state loop
+
+- Read HOLOMAX technical review attachment.
+- Patched chat-first shell script:
+  - Added sourcePostureCopy() for builder/demo copy separation.
+  - Tightened project dashboard and source-map wording.
+  - Removed long detail text from tray recent activity metadata.
+- Patched chat-first shell CSS:
+  - Quieter side tray.
+  - Compact scrollable recent activity rows.
+  - Single-line clamped recent activity titles and metadata.
+  - Artifact panel transform motion with shared motion tokens.
+- Patched sync tool:
+  - Added friendly labels for known receipt/log/checksum slugs.
+- Patched chat-first validator:
+  - Enforces friendly generated labels.
+  - Enforces tray title clamping.
+  - Enforces artifact panel motion tokens.
+  - Enforces mode-aware source posture copy.
+- Synced project state.
+- Mirrored assistant source into dist/chat-first-surface-shell.
+- Validation passed:
+  - npm run validate:chat-first-shell
+  - npm run validate:chrome-collapse
+  - npm run validate:json
+  - npm run validate:js
+- Browser validation:
+  - In-app Browser rejected file URL navigation/reload due URL policy.
+  - No workaround attempted.

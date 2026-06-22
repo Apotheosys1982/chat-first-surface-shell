@@ -1,0 +1,20 @@
+2026-06-21T13:14:48Z chat-first-project-state-dashboard
+
+Changed:
+- assistants/chat-first-surface-shell/public/index.html
+- assistants/chat-first-surface-shell/public/script.js
+- assistants/chat-first-surface-shell/public/styles.css
+- dist/chat-first-surface-shell/index.html
+- dist/chat-first-surface-shell/script.js
+- dist/chat-first-surface-shell/styles.css
+- dist/chat-first-surface-shell/assistant-build-metadata.json
+- tools/validate-chat-first-shell.js
+
+Validation:
+- npm run validate:chat-first-shell: pass
+- npm run validate:chrome-collapse: pass
+- node --check assistants/chat-first-surface-shell/public/script.js: pass
+
+Browser QA:
+- In-app browser automation blocked file:// navigation by policy.
+- No workaround attempted.

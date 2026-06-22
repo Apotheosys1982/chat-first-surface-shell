@@ -1,0 +1,27 @@
+20260621T143103Z chat-first stream auto-follow
+
+- Confirmed stream-follow behavior existed in source script:
+  - autoFollowStreaming state.
+  - scrollStreamToBottom() helper.
+  - streamAssistantMessage(response.answer, response.actions, { follow: true }).
+  - tick-time scrollStreamToBottom while shouldFollow && autoFollowStreaming.
+  - final action render scroll + autoFollowStreaming release.
+  - wheel/touch upward pressure cancels auto-follow.
+- Patched tools/validate-chat-first-shell.js:
+  - streaming_auto_follow_exists.
+  - streaming_tick_scrolls_while_following.
+  - streaming_follow_releases_after_actions.
+  - user_scroll_can_cancel_stream_follow.
+- Patched tools/sync-chat-first-state.js:
+  - Added friendly label for chat-first-stream-autofollow.
+- Synced project state.
+- Mirrored assistant source into dist/chat-first-surface-shell.
+- Validation passed:
+  - npm run validate:chat-first-shell
+  - npm run validate:chrome-collapse
+  - npm run validate:json
+  - npm run validate:js
+  - npm run validate:checksum
+- Browser validation:
+  - In-app Browser rejected local file URL navigation/reload due URL policy.
+  - No workaround attempted.
