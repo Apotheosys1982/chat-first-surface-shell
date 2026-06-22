@@ -15,6 +15,7 @@ const friendlyLabelBySlug = {
   "chat-first-stream-autofollow": "Streaming auto-follow",
   "chat-first-scrollable-dynamic-tray-activity": "Scrollable activity tray",
   "chat-first-document-import-source-inbox": "Document import + source inbox",
+  "chat-first-viewport-lock": "Viewport lock + mobile scroll",
   "chat-first-state-sync-layer": "State sync layer",
   "chat-first-artifact-modal-fullscreen": "Full-viewport artifacts",
   "chat-first-project-state-dashboard": "Project state dashboard",

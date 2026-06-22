@@ -13,12 +13,16 @@
   const artifactMeta = document.querySelector("[data-artifact-meta]");
   const artifactBody = document.querySelector("[data-artifact-body]");
   let lastScrollTop = 0;
+  let lastTouchX = null;
   let lastTouchY = null;
   let lastFocusTarget = null;
   let lastChromeGestureAt = 0;
   let lastProgrammaticScrollAt = 0;
+  let chromeRecedeFrame = 0;
+  let horizontalLockFrame = 0;
   let autoFollowStreaming = false;
   const GESTURE_EPSILON = 2;
+  const CHROME_SCROLL_THRESHOLD = 10;
   const STREAM_INTERVAL_MS = 18;
   const DOCUMENT_STORE_KEY = "chatFirstSurfaceDocuments.v1";
   const MAX_DOCUMENTS = 12;
@@ -1182,19 +1186,42 @@
     shell?.classList.toggle("chrome-receded", Boolean(receded));
   }
 
+  function requestChromeRecede(receded) {
+    if (!shell) return;
+    const shouldRecede = Boolean(receded);
+    if (chromeRecedeFrame) window.cancelAnimationFrame(chromeRecedeFrame);
+    chromeRecedeFrame = window.requestAnimationFrame(() => {
+      chromeRecedeFrame = 0;
+      setChromeReceded(shouldRecede);
+    });
+  }
+
   function now() {
     return window.performance ? window.performance.now() : Date.now();
   }
 
   function canHandleChromeGesture(target) {
-    return !target?.closest?.(".assistant-composer, textarea, .artifact-layer, .side-tray");
+    return !target?.closest?.(".assistant-composer, textarea, .artifact-layer, .side-tray, [data-message-stream]");
   }
 
   function gestureOwnsChrome(deltaY, target) {
     if (!canHandleChromeGesture(target)) return;
     if (!Number.isFinite(deltaY) || Math.abs(deltaY) < GESTURE_EPSILON) return;
     lastChromeGestureAt = now();
-    setChromeReceded(deltaY > 0);
+    requestChromeRecede(deltaY > 0);
+  }
+
+  function lockHorizontalViewport() {
+    if (horizontalLockFrame) return;
+    horizontalLockFrame = window.requestAnimationFrame(() => {
+      horizontalLockFrame = 0;
+      if (window.scrollX) {
+        window.scrollTo(0, window.scrollY);
+      }
+      for (const node of [stream, artifactBody, trayActivityList]) {
+        if (node?.scrollLeft) node.scrollLeft = 0;
+      }
+    });
   }
 
   function escapeHtml(value) {
@@ -1210,6 +1237,7 @@
   function scrollStreamToBottom() {
     if (!stream) return;
     lastProgrammaticScrollAt = now();
+    stream.scrollLeft = 0;
     stream.scrollTop = stream.scrollHeight;
     lastScrollTop = stream.scrollTop;
   }
@@ -1459,43 +1487,62 @@
   });
 
   shell?.addEventListener("wheel", (event) => {
+    if (Math.abs(event.deltaX) > GESTURE_EPSILON) lockHorizontalViewport();
+    if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
     if (event.deltaY < -GESTURE_EPSILON) autoFollowStreaming = false;
     gestureOwnsChrome(event.deltaY, event.target);
   }, { passive: true });
 
   shell?.addEventListener("touchstart", (event) => {
     const touch = event.touches && event.touches[0];
+    lastTouchX = touch ? touch.clientX : null;
     lastTouchY = touch ? touch.clientY : null;
   }, { passive: true });
 
   shell?.addEventListener("touchmove", (event) => {
     const touch = event.touches && event.touches[0];
-    if (!touch || lastTouchY === null) return;
+    if (!touch || lastTouchY === null || lastTouchX === null) return;
+    const lateralDelta = touch.clientX - lastTouchX;
     const fingerDelta = touch.clientY - lastTouchY;
+    if (Math.abs(lateralDelta) > GESTURE_EPSILON) lockHorizontalViewport();
+    if (Math.abs(lateralDelta) > Math.abs(fingerDelta)) {
+      lastTouchX = touch.clientX;
+      lastTouchY = touch.clientY;
+      return;
+    }
     if (Math.abs(fingerDelta) >= GESTURE_EPSILON) {
       if (fingerDelta > GESTURE_EPSILON) autoFollowStreaming = false;
       gestureOwnsChrome(-fingerDelta, event.target);
     }
+    lastTouchX = touch.clientX;
     lastTouchY = touch.clientY;
   }, { passive: true });
 
   shell?.addEventListener("touchend", () => {
+    lastTouchX = null;
     lastTouchY = null;
   }, { passive: true });
 
   stream?.addEventListener("scroll", () => {
+    lockHorizontalViewport();
     const top = stream.scrollTop;
     const delta = top - lastScrollTop;
     const current = now();
-    if (current - lastProgrammaticScrollAt < 120 || current - lastChromeGestureAt < 180) {
+    if (current - lastProgrammaticScrollAt < 120 || current - lastChromeGestureAt < 120) {
       lastScrollTop = top;
       return;
     }
-    if (Math.abs(delta) > 10) {
-      setChromeReceded(delta > 0);
+    if (top <= 2) {
+      requestChromeRecede(false);
+    } else if (delta < -CHROME_SCROLL_THRESHOLD) {
+      requestChromeRecede(false);
+    } else if (delta > CHROME_SCROLL_THRESHOLD || (!shell?.classList.contains("chrome-receded") && top > CHROME_SCROLL_THRESHOLD)) {
+      requestChromeRecede(true);
     }
     lastScrollTop = top;
   }, { passive: true });
+
+  window.addEventListener("scroll", lockHorizontalViewport, { passive: true });
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {

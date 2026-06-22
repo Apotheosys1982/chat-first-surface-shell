@@ -133,6 +133,11 @@ function validateTarget(target, checks) {
     "hidden multi-file document input"
   );
   push(checks, target.id, "composer_not_pill", !/border-radius\s*:\s*999px/i.test(composerBlock + firstCssBlock(css, ".composer-row")), "no 999px composer radius");
+  push(checks, target.id, "viewport_horizontal_lock_declared", /overflow-x\s*:\s*clip/i.test(css) && /overscroll-behavior-x\s*:\s*none/i.test(css) && /touch-action\s*:\s*pan-y/i.test(css), "viewport must only pan vertically");
+  push(checks, target.id, "stream_horizontal_lock_declared", /overflow-x\s*:\s*clip/i.test(streamBlock) && /overscroll-behavior-x\s*:\s*none/i.test(streamBlock) && /touch-action\s*:\s*pan-y/i.test(streamBlock) && /-webkit-overflow-scrolling\s*:\s*touch/i.test(streamBlock), "message stream must be mobile-native vertical scroller");
+  push(checks, target.id, "closed_tray_stays_inside_viewport", /clip-path\s*:\s*inset\(0\s+100%\s+0\s+0\)/i.test(sideTrayBlock) && /visibility\s*:\s*hidden/i.test(sideTrayBlock) && !/translateX\s*\(\s*calc\(\s*-100%/i.test(sideTrayBlock), "closed tray must clip in place instead of creating offscreen horizontal overflow");
+  push(checks, target.id, "horizontal_scroll_lock_runtime", /function\s+lockHorizontalViewport\s*\(/i.test(script) && /window\.scrollX/i.test(script) && /scrollLeft\s*=\s*0/i.test(script), "runtime clamps accidental horizontal scroll");
+  push(checks, target.id, "stream_scroll_owns_chrome_motion", /canHandleChromeGesture[\s\S]*\[data-message-stream\]/i.test(script) && /stream\?\.addEventListener\(["']scroll["']/i.test(script) && /requestChromeRecede\(true\)/i.test(script), "raw touchmove should not fight the message stream scroll state");
   push(checks, target.id, "header_controls_not_nested_pills", /border\s*:\s*0/i.test(iconButtonBlock) && /background\s*:\s*transparent/i.test(iconButtonBlock), "header icon controls should be borderless by default");
   push(checks, target.id, "artifact_icons_not_nested_pills", /border\s*:\s*0/i.test(artifactIconBlock), "artifact icons should not be framed mini-pills");
   push(checks, target.id, "motion_tokens_linked", html.includes("./motion/motion-tokens.css"), "motion token stylesheet");
@@ -148,7 +153,17 @@ function validateTarget(target, checks) {
   push(checks, target.id, "tray_tracks_recent_activity", /Recent activity/i.test(html) && /Project state dashboard/i.test(html) && /Recent hardening log/i.test(html), "tray must expose recent project activity");
   push(checks, target.id, "tray_activity_has_dynamic_target", /data-tray-activity-list/i.test(html), "recent activity render target");
   push(checks, target.id, "tray_owns_scroll_container", /display\s*:\s*flex/i.test(sideTrayBlock) && /overflow\s*:\s*hidden/i.test(sideTrayBlock) && /max-height\s*:\s*var\(--viewport-safe-height\)/i.test(sideTrayBlock), "tray shell owns viewport");
-  push(checks, target.id, "tray_activity_region_can_scroll", /min-height\s*:\s*0/i.test(trayActivityBlock) && /overflow\s*:\s*hidden/i.test(trayActivityBlock) && /overflow-y\s*:\s*auto/i.test(trayActivityListBlock) && /overscroll-behavior\s*:\s*contain/i.test(trayActivityListBlock), "recent activity list must scroll internally");
+  push(
+    checks,
+    target.id,
+    "tray_activity_region_can_scroll",
+    /min-height\s*:\s*0/i.test(trayActivityBlock) &&
+      /overflow\s*:\s*hidden/i.test(trayActivityBlock) &&
+      /overflow-y\s*:\s*auto/i.test(trayActivityListBlock) &&
+      (/overscroll-behavior\s*:\s*contain/i.test(trayActivityListBlock) || /overscroll-behavior-y\s*:\s*contain/i.test(trayActivityListBlock)) &&
+      /overscroll-behavior-x\s*:\s*none/i.test(trayActivityListBlock),
+    "recent activity list must scroll internally without horizontal pan"
+  );
   push(checks, target.id, "tray_activity_hydrates_from_project_state", /renderTrayActivity/i.test(script) && /trayActivityList\.innerHTML/i.test(script) && /recentReceipts\.slice/i.test(script), "tray recent activity hydrated from project state");
   push(checks, target.id, "tray_activity_uses_compact_metadata", /function trayActivityMeta/i.test(script) && /trayActivityMeta\(item\)/i.test(trayRendererBlock) && !/item\.detail/i.test(trayRendererBlock), "tray must not expose long receipt paths as primary visible card copy");
   push(checks, target.id, "tray_activity_text_clamps", /text-overflow\s*:\s*ellipsis/i.test(css) && /white-space\s*:\s*nowrap/i.test(css), "recent activity metadata must clamp instead of overlapping");
@@ -177,7 +192,7 @@ function validateTarget(target, checks) {
   push(checks, target.id, "chrome_recede_reclaims_bottom_space", /padding-bottom\s*:\s*calc\(18px\s*\+\s*env\(safe-area-inset-bottom\)\)/i.test(recededStreamBlock), "bottom padding shrinks");
   push(checks, target.id, "header_motion_uses_transform_opacity", /transform\s*:/i.test(recededHeaderBlock) && /opacity\s*:\s*0/i.test(recededHeaderBlock), "header transform + opacity");
   push(checks, target.id, "composer_motion_uses_transform_opacity", /transform\s*:/i.test(recededComposerBlock) && /opacity\s*:\s*0/i.test(recededComposerBlock), "composer transform + opacity");
-  push(checks, target.id, "scroll_direction_controls_chrome", /chrome-receded/.test(script) && /delta\s*>\s*0/.test(script), "scroll delta toggles chrome");
+  push(checks, target.id, "scroll_direction_controls_chrome", /chrome-receded/.test(script) && /delta\s*>\s*CHROME_SCROLL_THRESHOLD/.test(script) && /requestChromeRecede\(true\)/i.test(script), "scroll delta toggles chrome");
   push(checks, target.id, "gesture_direction_controls_chrome", /addEventListener\(["']wheel["']/i.test(script) && /addEventListener\(["']touchmove["']/i.test(script) && /gestureOwnsChrome/i.test(script), "wheel/touch direction toggles chrome without requiring scrollTop movement");
   push(checks, target.id, "smalltalk_route_exists", /how\\s\+are\\s\+you|hello|hey/i.test(answerPack) && /I’m here and ready|I'm here and ready/i.test(answerPack), "simple greetings must not hit generic fallback");
   push(

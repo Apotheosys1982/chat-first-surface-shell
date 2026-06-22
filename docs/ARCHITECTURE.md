@@ -39,6 +39,10 @@ Upload does not equal approved source. User files start as:
 
 Text-like files can get a local extracted preview. PDF, DOCX, image, spreadsheet, and oversized files remain metadata-only until parser/OCR/source-map support exists.
 
+## Viewport And Motion
+
+The shell uses one vertical message scroller and clamps accidental horizontal movement at the CSS and runtime layers. The closed side tray is clipped in place instead of being transformed offscreen, which prevents mobile browsers from exposing a sideways pan area. Raw touch movement over the message stream does not directly drive chrome collapse; the stream scroll position owns header/composer recede state.
+
 ## Generated State
 
 Run:
@@ -49,4 +53,3 @@ npm run compile:chat-first-answer-pack
 ```
 
 Both scripts write to the source app and mirror their generated files into `dist/chat-first-surface-shell`.
-

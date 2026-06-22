@@ -94,6 +94,8 @@ function validatesChatWorkspace(publicDir, css, script, checks) {
   push(checks, publicDir, "chat_chrome_motion_transform_opacity", /transform\s*:/i.test(recededHeaderBlock) && /opacity\s*:\s*0/i.test(recededHeaderBlock) && /transform\s*:/i.test(recededComposerBlock) && /opacity\s*:\s*0/i.test(recededComposerBlock), "chrome uses transform/opacity");
   push(checks, publicDir, "chat_script_controls_recede_state", /chrome-receded/.test(script), "script toggles chrome-receded");
   push(checks, publicDir, "chat_gesture_direction_controls_recede_state", /addEventListener\(["']wheel["']/i.test(script) && /addEventListener\(["']touchmove["']/i.test(script) && /gestureOwnsChrome/i.test(script), "wheel/touch direction must not depend only on scrollTop movement");
+  push(checks, publicDir, "chat_viewport_horizontal_lock", /overflow-x\s*:\s*clip/i.test(css) && /overscroll-behavior-x\s*:\s*none/i.test(css) && /touch-action\s*:\s*pan-y/i.test(css), "viewport must only pan vertically");
+  push(checks, publicDir, "chat_stream_scroll_owns_chrome", /canHandleChromeGesture[\s\S]*\[data-message-stream\]/i.test(script) && /stream\?\.addEventListener\(["']scroll["']/i.test(script) && /requestChromeRecede\(true\)/i.test(script), "message stream scroll state owns chrome recede on mobile");
 }
 
 function validatesAssistantPanel(publicDir, css, checks) {

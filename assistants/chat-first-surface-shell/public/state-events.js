@@ -1,5 +1,34 @@
 window.CHAT_FIRST_STATE_EVENTS = [
   {
+    "eventId": "event-20260622T023851Z",
+    "timestamp": "20260622T023851Z",
+    "eventType": "codex_update",
+    "title": "Viewport lock + mobile scroll",
+    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
+    "filesChanged": [],
+    "artifactsAffected": [
+      "Project state dashboard",
+      "Recent activity",
+      "Receipt stream"
+    ],
+    "routesAffected": [
+      "project_state",
+      "receipts",
+      "source_status"
+    ],
+    "validationCommands": [
+      "npm run validate:chat-first-shell",
+      "node tools/validate-chat-first-ingestion.js",
+      "npm run validate:chrome-collapse",
+      "npm run validate:checksum"
+    ],
+    "receiptPath": "receipts/20260622T023851Z-chat-first-viewport-lock.md",
+    "logPath": "logs/20260622T023851Z-chat-first-viewport-lock.log",
+    "checksumPath": "checksums/20260622T023851Z-chat-first-viewport-lock.sha256",
+    "status": "Compiled",
+    "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
+  },
+  {
     "eventId": "event-20260622T021521Z",
     "timestamp": "20260622T021521Z",
     "eventType": "codex_update",
@@ -25,35 +54,6 @@ window.CHAT_FIRST_STATE_EVENTS = [
     "receiptPath": "receipts/20260622T021521Z-standalone-chat-first-repository.md",
     "logPath": "logs/20260622T021521Z-standalone-chat-first-repository.log",
     "checksumPath": "checksums/20260622T021521Z-standalone-chat-first-repository.sha256",
-    "status": "Compiled",
-    "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
-  },
-  {
-    "eventId": "event-20260622T020743Z",
-    "timestamp": "20260622T020743Z",
-    "eventType": "codex_update",
-    "title": "Chat First Github Netlify Deploy",
-    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
-    "filesChanged": [],
-    "artifactsAffected": [
-      "Project state dashboard",
-      "Recent activity",
-      "Receipt stream"
-    ],
-    "routesAffected": [
-      "project_state",
-      "receipts",
-      "source_status"
-    ],
-    "validationCommands": [
-      "npm run validate:chat-first-shell",
-      "node tools/validate-chat-first-ingestion.js",
-      "npm run validate:chrome-collapse",
-      "npm run validate:checksum"
-    ],
-    "receiptPath": "receipts/20260622T020743Z-chat-first-github-netlify-deploy.md",
-    "logPath": "logs/20260622T020743Z-chat-first-github-netlify-deploy.log",
-    "checksumPath": "checksums/20260622T020743Z-chat-first-github-netlify-deploy.sha256",
     "status": "Compiled",
     "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
   },

@@ -1,0 +1,12 @@
+2026-06-22T02:38:51Z chat-first viewport lock
+
+Scope:
+- Locked horizontal viewport behavior across shell, message stream, tray, and artifact layer.
+- Replaced the closed tray offscreen transform with clipped in-place reveal.
+- Moved stream chrome recede behavior to actual scroll state instead of raw touchmove over the stream.
+- Added cache-busted asset URLs and mobile composer isolation.
+
+Validation:
+- npm run validate:chat-first-shell: pass
+- npm run validate:chrome-collapse: pass
+- Browser QA 393x852: rootScrollWidth=393, bodyScrollWidth=393, streamScrollWidth=365, streamClientWidth=365, scrollX=0, visibleOffenderCount=0, console issues=0

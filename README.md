@@ -59,6 +59,7 @@ The checksum gate validates the latest manifest in `checksums/`.
 - Artifact commands route before natural-language answer-room routing.
 - Registered artifacts open in a full-viewport artifact layer.
 - Uploads do not become approved sources automatically.
+- The viewport is locked to vertical scrolling on mobile and desktop: no horizontal pan, no offscreen closed tray, and no content clipped past the screen edge.
 - Native HTML-in-Canvas is attempted only when the browser exposes the required APIs; otherwise the DOM fallback reports that honestly.
 - The source app and `dist/chat-first-surface-shell` mirror must remain synchronized.
 
@@ -71,4 +72,3 @@ The checksum gate validates the latest manifest in `checksums/`.
 - [Planning: premium UI](docs/PLANNING_PREMIUM_CHAT_UI_SYSTEM.md)
 - [Planning: offer context](docs/PLANNING_OFFER_CONTEXT_ALIGNMENT.md)
 - [Planning: bounded routing](docs/PLANNING_BOUNDED_ASSISTANT_ROUTING_SYSTEM.md)
-

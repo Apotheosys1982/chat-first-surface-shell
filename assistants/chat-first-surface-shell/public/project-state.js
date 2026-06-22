@@ -1,21 +1,21 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T02:16:08.385Z",
+  "generatedAt": "2026-06-22T02:40:21.320Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T021521Z",
+  "latestEventId": "event-20260622T023851Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T023851Z-chat-first-viewport-lock.md",
+      "filename": "20260622T023851Z-chat-first-viewport-lock.md",
+      "timestamp": "20260622T023851Z",
+      "label": "Viewport lock + mobile scroll",
+      "slug": "chat-first-viewport-lock"
+    },
     {
       "path": "receipts/20260622T021521Z-standalone-chat-first-repository.md",
       "filename": "20260622T021521Z-standalone-chat-first-repository.md",
       "timestamp": "20260622T021521Z",
       "label": "Standalone Chat First Repository",
       "slug": "standalone-chat-first-repository"
-    },
-    {
-      "path": "receipts/20260622T020743Z-chat-first-github-netlify-deploy.md",
-      "filename": "20260622T020743Z-chat-first-github-netlify-deploy.md",
-      "timestamp": "20260622T020743Z",
-      "label": "Chat First Github Netlify Deploy",
-      "slug": "chat-first-github-netlify-deploy"
     },
     {
       "path": "receipts/20260622T012134Z-html-canvas-document-stage-spike.md",
@@ -62,18 +62,18 @@ window.CHAT_FIRST_PROJECT_STATE = {
   ],
   "recentLogs": [
     {
+      "path": "logs/20260622T023851Z-chat-first-viewport-lock.log",
+      "filename": "20260622T023851Z-chat-first-viewport-lock.log",
+      "timestamp": "20260622T023851Z",
+      "label": "Viewport lock + mobile scroll",
+      "slug": "chat-first-viewport-lock"
+    },
+    {
       "path": "logs/20260622T021521Z-standalone-chat-first-repository.log",
       "filename": "20260622T021521Z-standalone-chat-first-repository.log",
       "timestamp": "20260622T021521Z",
       "label": "Standalone Chat First Repository",
       "slug": "standalone-chat-first-repository"
-    },
-    {
-      "path": "logs/20260622T020743Z-chat-first-github-netlify-deploy.log",
-      "filename": "20260622T020743Z-chat-first-github-netlify-deploy.log",
-      "timestamp": "20260622T020743Z",
-      "label": "Chat First Github Netlify Deploy",
-      "slug": "chat-first-github-netlify-deploy"
     },
     {
       "path": "logs/20260622T012134Z-html-canvas-document-stage-spike.log",
@@ -106,18 +106,18 @@ window.CHAT_FIRST_PROJECT_STATE = {
   ],
   "recentChecksums": [
     {
+      "path": "checksums/20260622T023851Z-chat-first-viewport-lock.sha256",
+      "filename": "20260622T023851Z-chat-first-viewport-lock.sha256",
+      "timestamp": "20260622T023851Z",
+      "label": "Viewport lock + mobile scroll",
+      "slug": "chat-first-viewport-lock"
+    },
+    {
       "path": "checksums/20260622T021521Z-standalone-chat-first-repository.sha256",
       "filename": "20260622T021521Z-standalone-chat-first-repository.sha256",
       "timestamp": "20260622T021521Z",
       "label": "Standalone Chat First Repository",
       "slug": "standalone-chat-first-repository"
-    },
-    {
-      "path": "checksums/20260622T020743Z-chat-first-github-netlify-deploy.sha256",
-      "filename": "20260622T020743Z-chat-first-github-netlify-deploy.sha256",
-      "timestamp": "20260622T020743Z",
-      "label": "Chat First Github Netlify Deploy",
-      "slug": "chat-first-github-netlify-deploy"
     },
     {
       "path": "checksums/20260622T012134Z-html-canvas-document-stage-spike.sha256",
