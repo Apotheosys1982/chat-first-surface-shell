@@ -1,5 +1,19 @@
 # Handoff Packet: Chat-First Surface Shell
 
+Current-status note: this packet is historical context from before the standalone repository correction. For current operator entry, use `docs/AGENT_QUICK_START.md`, `docs/LATTICE_LIVE_ARTIFACT_REVIEW_PROTOCOL.md`, and the latest receipt/checksum first.
+
+Current standalone repository:
+
+`/Users/johnbarros/Documents/Codex/chat-first-surface-shell`
+
+Current GitHub remote:
+
+`https://github.com/Apotheosys1982/chat-first-surface-shell`
+
+Current Netlify site:
+
+`https://chat-first-surface-shell.netlify.app`
+
 Generated: 2026-06-22  
 Repo: `/Users/johnbarros/Documents/Codex/surface-assistant-feature-surface`  
 Branch: `codex/sv2-biosphere-kids-surface`  

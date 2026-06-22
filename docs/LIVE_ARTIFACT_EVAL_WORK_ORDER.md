@@ -25,14 +25,16 @@ This is the executable Codex checklist for live Surface Shell evaluations. It tu
 | `compiler` | Opens `Compiler report`. |
 | `receipt` | Opens `Receipts directory`. |
 | `draft` | Opens `Surface Diagnosis Draft` in the document stage. |
-| `spreadsheet` | Does not open a fake artifact; returns a missing-artifact response. |
+| `spreadsheet` | Opens `Staged spreadsheet`. |
+| `table` | Opens `Staged spreadsheet`. |
 
 ## Negative And Boundary Checks
 
 - Ask an unsupported regulated or hidden-instruction prompt.
 - Confirm the shell refuses or routes back to source/status artifacts instead of improvising.
-- Type `spreadsheet` before a staged spreadsheet artifact exists.
-- Confirm the missing-artifact response offers Source Inbox, Source Registry, or source-map draft paths.
+- Type an unsupported render request such as `show kanban board`.
+- Confirm no fake artifact opens and the answer stays bounded.
+- Confirm uploaded spreadsheet files are still metadata-only unless parser, OCR, or source-map support exists.
 
 ## Upload Quarantine Check
 

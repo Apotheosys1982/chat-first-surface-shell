@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T04:07:31.342Z",
+  "generatedAt": "2026-06-22T04:38:41.557Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T040651Z",
+  "latestEventId": "event-20260622T043643Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T043643Z-spreadsheet-stage-live-evaluation.md",
+      "filename": "20260622T043643Z-spreadsheet-stage-live-evaluation.md",
+      "timestamp": "20260622T043643Z",
+      "label": "Spreadsheet stage live evaluation",
+      "slug": "spreadsheet-stage-live-evaluation"
+    },
     {
       "path": "receipts/20260622T040651Z-live-artifact-evaluation-protocol.md",
       "filename": "20260622T040651Z-live-artifact-evaluation-protocol.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T021521Z",
       "label": "Standalone Chat First Repository",
       "slug": "standalone-chat-first-repository"
-    },
-    {
-      "path": "receipts/20260622T012134Z-html-canvas-document-stage-spike.md",
-      "filename": "20260622T012134Z-html-canvas-document-stage-spike.md",
-      "timestamp": "20260622T012134Z",
-      "label": "HTML-in-Canvas document stage",
-      "slug": "html-canvas-document-stage-spike"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T043643Z-spreadsheet-stage-live-evaluation.log",
+      "filename": "20260622T043643Z-spreadsheet-stage-live-evaluation.log",
+      "timestamp": "20260622T043643Z",
+      "label": "Spreadsheet stage live evaluation",
+      "slug": "spreadsheet-stage-live-evaluation"
+    },
     {
       "path": "logs/20260622T040651Z-live-artifact-evaluation-protocol.log",
       "filename": "20260622T040651Z-live-artifact-evaluation-protocol.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T024905Z",
       "label": "Scroll stability + chrome collapse",
       "slug": "chat-first-scroll-stability"
-    },
-    {
-      "path": "logs/20260622T023851Z-chat-first-viewport-lock.log",
-      "filename": "20260622T023851Z-chat-first-viewport-lock.log",
-      "timestamp": "20260622T023851Z",
-      "label": "Viewport lock + mobile scroll",
-      "slug": "chat-first-viewport-lock"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T043643Z-spreadsheet-stage-live-evaluation.sha256",
+      "filename": "20260622T043643Z-spreadsheet-stage-live-evaluation.sha256",
+      "timestamp": "20260622T043643Z",
+      "label": "Spreadsheet stage live evaluation",
+      "slug": "spreadsheet-stage-live-evaluation"
+    },
     {
       "path": "checksums/20260622T040651Z-live-artifact-evaluation-protocol.sha256",
       "filename": "20260622T040651Z-live-artifact-evaluation-protocol.sha256",
@@ -139,13 +146,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T024905Z",
       "label": "Scroll stability + chrome collapse",
       "slug": "chat-first-scroll-stability"
-    },
-    {
-      "path": "checksums/20260622T023851Z-chat-first-viewport-lock.sha256",
-      "filename": "20260622T023851Z-chat-first-viewport-lock.sha256",
-      "timestamp": "20260622T023851Z",
-      "label": "Viewport lock + mobile scroll",
-      "slug": "chat-first-viewport-lock"
     }
   ],
   "validations": [

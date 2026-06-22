@@ -7,6 +7,8 @@ const root = path.resolve(__dirname, "..");
 const files = {
   protocol: "docs/LATTICE_LIVE_ARTIFACT_REVIEW_PROTOCOL.md",
   workOrder: "docs/LIVE_ARTIFACT_EVAL_WORK_ORDER.md",
+  quickStart: "docs/AGENT_QUICK_START.md",
+  deployment: "docs/DEPLOYMENT.md",
   readme: "README.md",
   packageJson: "package.json",
   sourceManifest: "assistants/chat-first-surface-shell/source-manifest.json",
@@ -43,6 +45,8 @@ if (checks.some((check) => check.status === "fail")) {
 
 const protocol = read(files.protocol);
 const workOrder = read(files.workOrder);
+const quickStart = read(files.quickStart);
+const deployment = read(files.deployment);
 const readme = read(files.readme);
 const packageJson = JSON.parse(read(files.packageJson));
 const sourceManifest = JSON.parse(read(files.sourceManifest));
@@ -94,9 +98,16 @@ push(checks, "work_order_has_core_commands",
     "`compiler`",
     "`receipt`",
     "`draft`",
-    "`spreadsheet`"
+    "`spreadsheet`",
+    "`table`"
   ].every((command) => workOrder.includes(command)),
   "core shell command matrix"
+);
+
+push(checks, "work_order_expects_spreadsheet_artifact",
+  /\|\s*`spreadsheet`\s*\|\s*Opens `Staged spreadsheet`\./i.test(workOrder) &&
+    /\|\s*`table`\s*\|\s*Opens `Staged spreadsheet`\./i.test(workOrder),
+  "spreadsheet and table are live artifact commands"
 );
 
 push(checks, "work_order_has_negative_and_upload_checks",
@@ -115,23 +126,48 @@ push(checks, "work_order_requires_receipt",
 );
 
 push(checks, "readme_links_protocol_docs",
-  readme.includes("docs/LATTICE_LIVE_ARTIFACT_REVIEW_PROTOCOL.md") &&
+  readme.includes("docs/AGENT_QUICK_START.md") &&
+    readme.includes("docs/LATTICE_LIVE_ARTIFACT_REVIEW_PROTOCOL.md") &&
     readme.includes("docs/LIVE_ARTIFACT_EVAL_WORK_ORDER.md"),
   "README documentation links"
 );
 
 push(checks, "source_manifest_counts_protocol_sources",
-  sourceManifest.normalized_record_count >= 6 &&
+  sourceManifest.normalized_record_count >= 7 &&
+    sourceManifest.source_fields_used.includes("agent quick start") &&
     sourceManifest.source_fields_used.includes("lattice live artifact review protocol") &&
     sourceManifest.source_fields_used.includes("live artifact evaluation work order"),
   "source manifest includes review protocol docs"
 );
 
 push(checks, "sync_includes_protocol_sources",
-  /live-artifact-review-protocol/i.test(syncScript) &&
+  /agent-quick-start/i.test(syncScript) &&
+    /live-artifact-review-protocol/i.test(syncScript) &&
     /live-artifact-eval-work-order/i.test(syncScript) &&
     /Live artifact evaluation protocol/i.test(syncScript),
   "generated source registry includes protocol sources"
+);
+
+push(checks, "quick_start_has_do_not_build_boundary",
+  /Do Not Build Next/i.test(quickStart) &&
+    /Do not implement sockets yet/i.test(quickStart) &&
+    /Do not build twelve artifacts at once/i.test(quickStart) &&
+    /Build the next artifact through the registry/i.test(quickStart),
+  "incoming agents get a hard build boundary"
+);
+
+push(checks, "quick_start_has_operator_block",
+  /Ten Command Operator Block/i.test(quickStart) &&
+    /npm run validate/i.test(quickStart) &&
+    /Live Evidence Rule/i.test(quickStart),
+  "one-page operator checklist"
+);
+
+push(checks, "deployment_documents_cross_repo_cli_fallback",
+  /cross-repo CLI path/i.test(deployment) &&
+    /surface-assistant-feature-surface\/node_modules\/\.bin\/netlify/i.test(deployment) &&
+    /explicit `--site e69fb33f-e59a-4e37-9c4c-67d9963b8a5a`/i.test(deployment),
+  "Netlify CLI fallback is documented as tooling, not identity"
 );
 
 push(checks, "validate_script_wired",

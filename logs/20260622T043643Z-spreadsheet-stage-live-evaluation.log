@@ -1,0 +1,48 @@
+2026-06-22T04:36:43Z spreadsheet-stage-live-evaluation
+
+Scope:
+- Seeded the canonical spreadsheet/table artifact.
+- Added quick-start and deploy hygiene documentation.
+- Ran the first live artifact evaluation under the new protocol.
+
+Local browser:
+- Browser surface: Codex in-app browser.
+- URL: http://127.0.0.1:8899/index.html?v=spreadsheet-stage-local
+- Viewport: 393x852
+
+Commands tested:
+- dashboard -> Project state dashboard -> pass
+- artifacts -> Artifact directory -> pass
+- source map -> Source map -> pass
+- inbox -> Source inbox -> pass
+- events -> Event ledger -> pass
+- compiler -> Compiler report -> pass
+- receipt -> Receipts directory -> pass
+- draft -> Surface Diagnosis Draft -> pass
+- spreadsheet -> Staged spreadsheet -> pass
+- table -> Staged spreadsheet -> pass
+- show kanban board -> no artifact opened -> pass
+
+Viewport metrics:
+- documentElement clientWidth/scrollWidth: 393/393
+- body clientWidth/scrollWidth: 393/393
+- scrollX: 0
+- stream clientWidth/scrollWidth during spreadsheet artifact: 365/365
+
+Chrome motion:
+- Initial: visible.
+- Downward pressure: collapsed.
+- Upward pressure: revealed.
+- Hold after upward pressure: remained revealed.
+- Lateral pressure: no horizontal movement.
+
+Console:
+- No warning or error entries reported by tab.dev.logs.
+
+Validation:
+- npm run validate:js
+- npm run validate:json
+- node tools/validate-chat-first-artifact-router.js
+- npm run validate:chat-first-shell
+- npm run validate:live-artifact-eval
+

@@ -41,6 +41,7 @@ const requiredSeededArtifacts = [
   "document-inbox",
   "event-ledger",
   "compiler-report",
+  "staged-spreadsheet",
   "receipts-directory",
   "checklist",
   "surface-diagnosis-draft"
@@ -84,6 +85,12 @@ const canonicalArtifactContracts = [
     stateAdapterId: "compilerReportAdapter"
   },
   {
+    artifactId: "staged-spreadsheet",
+    artifactType: "spreadsheet",
+    rendererId: "artifactStageRenderer",
+    stateAdapterId: "spreadsheetStageAdapter"
+  },
+  {
     artifactId: "receipts-directory",
     artifactType: "receiptsDirectory",
     rendererId: "nativeShellPanelRenderer",
@@ -104,6 +111,8 @@ const canonicalCommandTargets = [
   ["inbox", "document-inbox"],
   ["events", "event-ledger"],
   ["compiler", "compiler-report"],
+  ["spreadsheet", "staged-spreadsheet"],
+  ["table", "staged-spreadsheet"],
   ["receipt", "receipts-directory"],
   ["draft", "surface-diagnosis-draft"],
   ["report", "surface-diagnosis-draft"],
@@ -218,10 +227,12 @@ function validateTarget(target, checks) {
   push(
     checks,
     target.id,
-    "spreadsheet_stays_missing_until_seeded",
-    /command:\s*["']spreadsheet["'][\s\S]*?missingType:\s*["']spreadsheet["']/i.test(script) &&
-      !/artifactId:\s*["']spreadsheet["']/i.test(script),
-    "spreadsheet command must not open a fake artifact before a staged spreadsheet is seeded"
+    "spreadsheet_table_artifact_seeded",
+    /artifactId:\s*["']staged-spreadsheet["'][\s\S]*?artifactType:\s*["']spreadsheet["'][\s\S]*?stateAdapterId:\s*["']spreadsheetStageAdapter["']/i.test(script) &&
+      /function\s+spreadsheetStageHtml\s*\(/i.test(script) &&
+      !/command:\s*["']spreadsheet["'][\s\S]*?missingType:\s*["']spreadsheet["']/i.test(script) &&
+      !/command:\s*["']table["'][\s\S]*?missingType:\s*["']table["']/i.test(script),
+    "spreadsheet and table commands must open the seeded staged-spreadsheet artifact"
   );
 
   for (const command of requiredCommands) {

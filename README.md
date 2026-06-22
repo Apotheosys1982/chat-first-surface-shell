@@ -65,6 +65,7 @@ The checksum gate validates the latest manifest in `checksums/`.
 
 ## Documentation
 
+- [Agent quick start](docs/AGENT_QUICK_START.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [Lattice live artifact review protocol](docs/LATTICE_LIVE_ARTIFACT_REVIEW_PROTOCOL.md)

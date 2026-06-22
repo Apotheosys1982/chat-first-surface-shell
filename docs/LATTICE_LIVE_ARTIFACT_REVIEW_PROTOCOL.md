@@ -85,3 +85,9 @@ A review is incomplete if:
 - The checklist omits negative or unsupported routes.
 - The evidence package lacks URL, viewport, console status, or command outcomes.
 - A receipt is missing for a committed behavior pass.
+
+## Build Boundary
+
+The protocol is not permission to build every future architecture idea at once.
+
+Until the next artifact proves the current architecture, do not implement sockets, autonomous cross-pane control, PDF field-guide generation, longform content engines, or a wide artifact suite. Build one artifact through the registry, validate it, run the live work order, and save evidence.

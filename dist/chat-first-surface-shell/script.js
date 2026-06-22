@@ -43,6 +43,43 @@
   let uploadedDocuments = loadUploadedDocuments();
   const allowedSourceStatuses = ["Active", "Deprecated", "Uncertain", "Superseded"];
   const allowedIngestionStatuses = ["Uploaded", "Extracted", "Pending review", "Compiled", "Approved", "Rejected", "Needs source map"];
+  const stagedSpreadsheetRows = [
+    {
+      area: "Client onboarding",
+      owner: "Operations",
+      status: "Blocked",
+      sourcePosture: "Needs source map",
+      nextAction: "Confirm which checklist is current before answer routes compile."
+    },
+    {
+      area: "Invoice exceptions",
+      owner: "Finance",
+      status: "Review",
+      sourcePosture: "Uncertain",
+      nextAction: "Import sample policy language; keep rows quarantined until approved."
+    },
+    {
+      area: "Support FAQ",
+      owner: "CX",
+      status: "Ready",
+      sourcePosture: "Active",
+      nextAction: "Convert repeated questions into bounded answer rooms."
+    },
+    {
+      area: "Renewal handoff",
+      owner: "Sales",
+      status: "Draft",
+      sourcePosture: "Pending review",
+      nextAction: "Stage customer-safe fields; exclude account-specific private data."
+    },
+    {
+      area: "SOP cleanup",
+      owner: "Admin",
+      status: "Ready",
+      sourcePosture: "Active",
+      nextAction: "Open checklist and source map before publishing the workflow view."
+    }
+  ];
 
   const sourceDocuments = Array.isArray(sourceRegistry.sources)
     ? sourceRegistry.sources.filter((source) => source.origin !== "userUpload")
@@ -524,6 +561,78 @@
     `;
   }
 
+  function spreadsheetStageHtml() {
+    const totalRows = stagedSpreadsheetRows.length;
+    const activeRows = stagedSpreadsheetRows.filter((row) => row.sourcePosture === "Active").length;
+    const reviewRows = stagedSpreadsheetRows.filter((row) => row.sourcePosture !== "Active").length;
+    const rowHtml = stagedSpreadsheetRows.map((row) => `
+      <div class="spreadsheet-row" role="row">
+        <div role="cell" data-label="Area"><strong>${escapeHtml(row.area)}</strong></div>
+        <div role="cell" data-label="Owner">${escapeHtml(row.owner)}</div>
+        <div role="cell" data-label="Status"><span class="spreadsheet-badge">${escapeHtml(row.status)}</span></div>
+        <div role="cell" data-label="Source posture">${escapeHtml(row.sourcePosture)}</div>
+        <div role="cell" data-label="Next action">${escapeHtml(row.nextAction)}</div>
+      </div>
+    `).join("");
+    return `
+      <div class="state-board spreadsheet-summary">
+        <section class="state-panel state-panel-wide">
+          <p class="state-label">Spreadsheet stage</p>
+          <h3>Messy rows become an operating surface.</h3>
+          <p>This is a seeded spreadsheet/table artifact. It proves the shell can stage structured rows through the same command → artifact ID → state adapter → renderer path without pretending uploaded spreadsheets are parsed or trusted.</p>
+        </section>
+        <section class="state-panel">
+          <p class="state-label">Rows</p>
+          <strong>${escapeHtml(String(totalRows))}</strong>
+          <span>Seeded operational rows with owners, status, source posture, and next action.</span>
+        </section>
+        <section class="state-panel">
+          <p class="state-label">Active source</p>
+          <strong>${escapeHtml(String(activeRows))}</strong>
+          <span>Rows that can point toward compiled behavior after source review.</span>
+        </section>
+        <section class="state-panel">
+          <p class="state-label">Needs review</p>
+          <strong>${escapeHtml(String(reviewRows))}</strong>
+          <span>Rows held back until source mapping, approval, or policy cleanup is complete.</span>
+        </section>
+      </div>
+      <div class="state-section spreadsheet-stage-view">
+        <h3>Operations spreadsheet</h3>
+        <p>Say <strong>spreadsheet</strong> or <strong>table</strong>. The shell opens this registered artifact instead of faking parser support for uploaded files.</p>
+        <div class="spreadsheet-table" role="table" aria-label="Seeded operations spreadsheet">
+          <div class="spreadsheet-header" role="row">
+            <div role="columnheader">Area</div>
+            <div role="columnheader">Owner</div>
+            <div role="columnheader">Status</div>
+            <div role="columnheader">Source posture</div>
+            <div role="columnheader">Next action</div>
+          </div>
+          ${rowHtml}
+        </div>
+      </div>
+      <div class="state-section">
+        <h3>Boundary notes</h3>
+        <div class="state-list">
+          <div class="state-row">
+            <div>
+              <strong>Seeded artifact, not upload parser</strong>
+              <span>PDF, DOCX, image, and uploaded spreadsheet files still stay metadata-only unless parser/OCR/source mapping support exists.</span>
+            </div>
+            <em>Bounded</em>
+          </div>
+          <div class="state-row">
+            <div>
+              <strong>Registry path preserved</strong>
+              <span>Spreadsheet and table commands resolve to <code>staged-spreadsheet</code>, then use the registered state adapter and artifact-stage renderer.</span>
+            </div>
+            <em>Canonical</em>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   function documentDraftStageHtml() {
     return `
       <div class="html-canvas-stage" data-html-canvas-document-stage>
@@ -858,6 +967,11 @@
       meta: "Answer pack · Compiled behavior map",
       html: () => compilerReportHtml()
     },
+    "staged-spreadsheet": {
+      title: "Staged spreadsheet",
+      meta: "Spreadsheet stage · Seeded artifact · Active",
+      html: () => spreadsheetStageHtml()
+    },
     "receipts-directory": {
       title: "Receipts directory",
       meta: "Receipts · Generated state · Active",
@@ -978,6 +1092,7 @@
     eventLedgerAdapter: (context) => ({ ...context, stateEvents }),
     activityLogAdapter: (context) => ({ ...context, projectActivity }),
     compilerReportAdapter: (context) => ({ ...context, compiledAnswerPack }),
+    spreadsheetStageAdapter: (context) => ({ ...context, stagedSpreadsheetRows }),
     receiptStreamAdapter: (context) => ({ ...context, recentReceipts, recentLogs, recentChecksums }),
     checklistAdapter: (context) => context
   };
@@ -1217,6 +1332,27 @@
       visibilityMode: "builder"
     },
     {
+      artifactId: "staged-spreadsheet",
+      artifactType: "spreadsheet",
+      title: "Staged spreadsheet",
+      description: "Seeded spreadsheet/table artifact that turns messy operational rows into a staged working surface.",
+      commandAliases: ["spreadsheet", "sheet", "workbook", "csv", "table", "grid", "data table", "table data"],
+      rendererId: "artifactStageRenderer",
+      stateAdapterId: "spreadsheetStageAdapter",
+      stageMode: "artifactStage",
+      sourceDependencies: ["authored-demo-artifact", "source-registry", "artifact-registry"],
+      status: "Active",
+      actions: ["inspect_rows", "open_source_map", "open_source_inbox"],
+      sourceStatusRequirement: "Active",
+      ingestionStatusRequirement: "Compiled",
+      renderMode: "artifactStage",
+      editable: false,
+      exportable: false,
+      printable: false,
+      origin: "authoredDemoArtifact",
+      visibilityMode: "all"
+    },
+    {
       artifactId: "receipts-directory",
       artifactType: "receiptsDirectory",
       title: "Receipts directory",
@@ -1263,7 +1399,7 @@
   const artifactCommandLexicon = [
     { command: "dashboard", aliases: ["dashboard", "metrics", "report view", "board"], artifactTypes: ["dashboard"], preferredArtifactId: "project-state-dashboard" },
     { command: "artifacts", aliases: ["artifacts", "artifact list", "artifact directory", "views"], artifactTypes: ["artifactDirectory"], preferredArtifactId: "artifact-directory" },
-    { command: "spreadsheet", aliases: ["spreadsheet", "sheet", "workbook", "csv", "table data"], artifactTypes: ["spreadsheet", "table"], missingType: "spreadsheet" },
+    { command: "spreadsheet", aliases: ["spreadsheet", "sheet", "workbook", "csv", "table data"], artifactTypes: ["spreadsheet", "table"], preferredArtifactId: "staged-spreadsheet" },
     { command: "source map", aliases: ["source map", "sources", "approved sources", "source posture"], artifactTypes: ["sourceMap", "sourceRegistry"], preferredArtifactId: "source-map" },
     { command: "source registry", aliases: ["source registry", "registry", "source status", "ingestion status"], artifactTypes: ["sourceRegistry"], preferredArtifactId: "source-registry" },
     { command: "checklist", aliases: ["checklist", "list", "steps", "task list"], artifactTypes: ["checklist", "sop"], preferredArtifactId: "checklist" },
@@ -1275,7 +1411,7 @@
     { command: "draft", aliases: ["draft", "document", "doc", "report draft", "handoff", "writeup", "diagnosis draft"], artifactTypes: ["documentSurface"], preferredArtifactId: "surface-diagnosis-draft" },
     { command: "report", aliases: ["report", "diagnosis report", "surface report", "handoff report"], artifactTypes: ["documentSurface", "report"], preferredArtifactId: "surface-diagnosis-draft" },
     { command: "canvas", aliases: ["canvas", "html canvas", "html-in-canvas", "document stage", "stage"], artifactTypes: ["documentSurface", "report", "draft"], preferredArtifactId: "surface-diagnosis-draft" },
-    { command: "table", aliases: ["table", "grid", "data table"], artifactTypes: ["table", "spreadsheet"], missingType: "table" }
+    { command: "table", aliases: ["table", "grid", "data table"], artifactTypes: ["table", "spreadsheet"], preferredArtifactId: "staged-spreadsheet" }
   ];
 
   const answerRooms = (Array.isArray(compiledAnswerPack.answerRooms) ? compiledAnswerPack.answerRooms : []).map((room) => ({

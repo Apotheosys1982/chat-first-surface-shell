@@ -1,5 +1,35 @@
 window.CHAT_FIRST_STATE_EVENTS = [
   {
+    "eventId": "event-20260622T043643Z",
+    "timestamp": "20260622T043643Z",
+    "eventType": "codex_update",
+    "title": "Spreadsheet stage live evaluation",
+    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
+    "filesChanged": [],
+    "artifactsAffected": [
+      "Project state dashboard",
+      "Recent activity",
+      "Receipt stream"
+    ],
+    "routesAffected": [
+      "project_state",
+      "receipts",
+      "source_status"
+    ],
+    "validationCommands": [
+      "npm run validate:chat-first-shell",
+      "node tools/validate-chat-first-ingestion.js",
+      "npm run validate:chrome-collapse",
+      "npm run validate:live-artifact-eval",
+      "npm run validate:checksum"
+    ],
+    "receiptPath": "receipts/20260622T043643Z-spreadsheet-stage-live-evaluation.md",
+    "logPath": "logs/20260622T043643Z-spreadsheet-stage-live-evaluation.log",
+    "checksumPath": "checksums/20260622T043643Z-spreadsheet-stage-live-evaluation.sha256",
+    "status": "Compiled",
+    "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
+  },
+  {
     "eventId": "event-20260622T040651Z",
     "timestamp": "20260622T040651Z",
     "eventType": "codex_update",
@@ -174,10 +204,10 @@ window.CHAT_FIRST_STATE_EVENTS = [
       "npm run validate:checksum"
     ],
     "receiptPath": "receipts/20260622T023851Z-chat-first-viewport-lock.md",
-    "logPath": "logs/20260622T023851Z-chat-first-viewport-lock.log",
-    "checksumPath": "checksums/20260622T023851Z-chat-first-viewport-lock.sha256",
-    "status": "Compiled",
-    "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
+    "logPath": "",
+    "checksumPath": "",
+    "status": "Pending review",
+    "nextRecommendedAction": "Generate and validate the checksum for this event."
   },
   {
     "eventId": "event-20260622T021521Z",
@@ -204,36 +234,6 @@ window.CHAT_FIRST_STATE_EVENTS = [
       "npm run validate:checksum"
     ],
     "receiptPath": "receipts/20260622T021521Z-standalone-chat-first-repository.md",
-    "logPath": "",
-    "checksumPath": "",
-    "status": "Pending review",
-    "nextRecommendedAction": "Generate and validate the checksum for this event."
-  },
-  {
-    "eventId": "event-20260622T012134Z",
-    "timestamp": "20260622T012134Z",
-    "eventType": "codex_update",
-    "title": "HTML-in-Canvas document stage",
-    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
-    "filesChanged": [],
-    "artifactsAffected": [
-      "Project state dashboard",
-      "Recent activity",
-      "Receipt stream"
-    ],
-    "routesAffected": [
-      "project_state",
-      "receipts",
-      "source_status"
-    ],
-    "validationCommands": [
-      "npm run validate:chat-first-shell",
-      "node tools/validate-chat-first-ingestion.js",
-      "npm run validate:chrome-collapse",
-      "npm run validate:live-artifact-eval",
-      "npm run validate:checksum"
-    ],
-    "receiptPath": "receipts/20260622T012134Z-html-canvas-document-stage-spike.md",
     "logPath": "",
     "checksumPath": "",
     "status": "Pending review",

@@ -67,8 +67,8 @@ const answerRooms = [
     id: "unreadable_file_boundary",
     routeFamily: "source_boundary",
     pattern: "pdf|docx|ocr|image|scan|spreadsheet|excel|xlsx|parser|extract",
-    answer: "This static shell does not include PDF, DOCX, OCR, image, or spreadsheet parsing yet. Those files can be registered as source candidates, but if readable text is not extracted, they stay metadata-only and need OCR, parser support, or manual source mapping before answer routes can be compiled from them.",
-    actions: ["document-inbox", "source-map-draft"]
+    answer: "This static shell includes a seeded staged spreadsheet artifact, but it does not parse uploaded spreadsheet files yet. Uploaded PDFs, DOCX files, images, scans, spreadsheets, and oversized files can be registered as source candidates; if readable text is not extracted, they stay metadata-only and need OCR, parser support, or manual source mapping before answer routes can be compiled from them.",
+    actions: ["staged-spreadsheet", "document-inbox", "source-map-draft"]
   },
   {
     id: "event_ledger",
@@ -102,8 +102,8 @@ const answerRooms = [
     id: "artifact_rendering",
     routeFamily: "artifact_rendering",
     pattern: "render|artifact|dashboard|view|table|sop|checklist",
-    answer: "The shell can render registered artifacts: dashboards, event ledger, source registry, source inbox, compiler report, source maps, checklists, receipts, and workflow views. Render buttons point to known artifacts, not improvised destinations.",
-    actions: ["project-state-dashboard", "artifact-directory", "event-ledger", "source-registry", "compiler-report"]
+    answer: "The shell can render registered artifacts: dashboards, event ledger, source registry, source inbox, compiler report, source maps, checklists, receipts, staged spreadsheets, and workflow views. Render buttons point to known artifacts, not improvised destinations.",
+    actions: ["project-state-dashboard", "staged-spreadsheet", "artifact-directory", "event-ledger", "source-registry", "compiler-report"]
   },
   {
     id: "not_generic_chatbot",
@@ -155,6 +155,7 @@ const compiledPack = {
     "npm run validate:chat-first-shell",
     "node tools/validate-chat-first-ingestion.js",
     "npm run validate:chrome-collapse",
+    "npm run validate:live-artifact-eval",
     "npm run validate:checksum"
   ]
 };

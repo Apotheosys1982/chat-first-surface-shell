@@ -954,6 +954,79 @@ h1 {
   white-space: nowrap;
 }
 
+.spreadsheet-stage-view {
+  max-width: 100%;
+}
+
+.spreadsheet-table {
+  display: grid;
+  max-width: 100%;
+  margin-top: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.spreadsheet-header,
+.spreadsheet-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.72fr) minmax(0, 0.64fr) minmax(0, 0.9fr) minmax(0, 1.35fr);
+  gap: 0;
+}
+
+.spreadsheet-header {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.spreadsheet-header > div,
+.spreadsheet-row > div {
+  min-width: 0;
+  padding: 13px 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.055);
+  overflow-wrap: anywhere;
+}
+
+.spreadsheet-header > div:last-child,
+.spreadsheet-row > div:last-child {
+  border-right: 0;
+}
+
+.spreadsheet-header > div {
+  color: var(--faint);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.spreadsheet-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.spreadsheet-row strong {
+  font-size: 0.94rem;
+}
+
+.spreadsheet-row > div {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.42;
+}
+
+.spreadsheet-badge {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 4px 8px;
+  border: 1px solid rgba(244, 145, 53, 0.28);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .document-note {
   color: var(--faint) !important;
   font-size: 0.92rem;
@@ -1339,6 +1412,33 @@ h1 {
   .state-row {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .spreadsheet-header {
+    display: none;
+  }
+
+  .spreadsheet-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 12px 0;
+  }
+
+  .spreadsheet-row > div {
+    display: grid;
+    grid-template-columns: minmax(84px, 0.42fr) minmax(0, 1fr);
+    gap: 12px;
+    padding: 7px 12px;
+    border-right: 0;
+  }
+
+  .spreadsheet-row > div::before {
+    content: attr(data-label);
+    color: var(--faint);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .artifact-panel {
