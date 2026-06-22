@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T02:52:00.886Z",
+  "generatedAt": "2026-06-22T03:15:56.411Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T024905Z",
+  "latestEventId": "event-20260622T031504Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T031504Z-chat-first-chrome-direction.md",
+      "filename": "20260622T031504Z-chat-first-chrome-direction.md",
+      "timestamp": "20260622T031504Z",
+      "label": "Chrome direction fidelity",
+      "slug": "chat-first-chrome-direction"
+    },
     {
       "path": "receipts/20260622T024905Z-chat-first-scroll-stability.md",
       "filename": "20260622T024905Z-chat-first-scroll-stability.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260621T150711Z",
       "label": "Controlled ingestion + route compiler",
       "slug": "chat-first-controlled-ingestion-route-compiler"
-    },
-    {
-      "path": "receipts/20260621T143103Z-chat-first-stream-autofollow.md",
-      "filename": "20260621T143103Z-chat-first-stream-autofollow.md",
-      "timestamp": "20260621T143103Z",
-      "label": "Streaming auto-follow",
-      "slug": "chat-first-stream-autofollow"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T031504Z-chat-first-chrome-direction.log",
+      "filename": "20260622T031504Z-chat-first-chrome-direction.log",
+      "timestamp": "20260622T031504Z",
+      "label": "Chrome direction fidelity",
+      "slug": "chat-first-chrome-direction"
+    },
     {
       "path": "logs/20260622T024905Z-chat-first-scroll-stability.log",
       "filename": "20260622T024905Z-chat-first-scroll-stability.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260621T191436Z",
       "label": "Artifact command router",
       "slug": "artifact-command-router-registry-spine"
-    },
-    {
-      "path": "logs/20260621T151818Z-chat-first-visible-source-inbox-storage.log",
-      "filename": "20260621T151818Z-chat-first-visible-source-inbox-storage.log",
-      "timestamp": "20260621T151818Z",
-      "label": "Chat First Visible Source Inbox Storage",
-      "slug": "chat-first-visible-source-inbox-storage"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T031504Z-chat-first-chrome-direction.sha256",
+      "filename": "20260622T031504Z-chat-first-chrome-direction.sha256",
+      "timestamp": "20260622T031504Z",
+      "label": "Chrome direction fidelity",
+      "slug": "chat-first-chrome-direction"
+    },
     {
       "path": "checksums/20260622T024905Z-chat-first-scroll-stability.sha256",
       "filename": "20260622T024905Z-chat-first-scroll-stability.sha256",
@@ -139,13 +146,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260621T191436Z",
       "label": "Artifact command router",
       "slug": "artifact-command-router-registry-spine"
-    },
-    {
-      "path": "checksums/20260621T151818Z-chat-first-visible-source-inbox-storage.sha256",
-      "filename": "20260621T151818Z-chat-first-visible-source-inbox-storage.sha256",
-      "timestamp": "20260621T151818Z",
-      "label": "Chat First Visible Source Inbox Storage",
-      "slug": "chat-first-visible-source-inbox-storage"
     }
   ],
   "validations": [

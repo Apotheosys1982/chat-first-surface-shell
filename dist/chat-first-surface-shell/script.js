@@ -1210,7 +1210,7 @@
   }
 
   function canHandleChromeGesture(target) {
-    return !target?.closest?.(".assistant-composer, textarea, .artifact-layer, .side-tray, [data-message-stream]");
+    return !target?.closest?.(".assistant-composer, textarea, .artifact-layer, .side-tray");
   }
 
   function gestureOwnsChrome(deltaY, target) {

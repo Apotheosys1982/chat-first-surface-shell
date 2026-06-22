@@ -1,0 +1,16 @@
+2026-06-22T03:15:04Z chat-first chrome direction
+
+Scope:
+- Restored correct mobile direction behavior for header/composer chrome.
+- Stream touch pressure now reveals/collapses chrome immediately.
+- Stream geometry remains stable during chrome recede.
+
+Validation:
+- npm run validate:chat-first-shell: pass
+- npm run validate:chrome-collapse: pass
+- In-app Browser QA 393x852:
+  - initial: chromeReceded=false, headerOpacity=1, composerOpacity=1, streamClientWidth=365, streamScrollWidth=365, scrollX=0
+  - down-feed: chromeReceded=true, headerOpacity=0, composerOpacity=0, stream geometry unchanged
+  - reverse pressure: chromeReceded=false immediately, settled headerOpacity=1, composerOpacity=1, stream geometry unchanged
+  - second down-feed: chromeReceded=true
+  - console issues=0

@@ -1,5 +1,34 @@
 window.CHAT_FIRST_STATE_EVENTS = [
   {
+    "eventId": "event-20260622T031504Z",
+    "timestamp": "20260622T031504Z",
+    "eventType": "codex_update",
+    "title": "Chrome direction fidelity",
+    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
+    "filesChanged": [],
+    "artifactsAffected": [
+      "Project state dashboard",
+      "Recent activity",
+      "Receipt stream"
+    ],
+    "routesAffected": [
+      "project_state",
+      "receipts",
+      "source_status"
+    ],
+    "validationCommands": [
+      "npm run validate:chat-first-shell",
+      "node tools/validate-chat-first-ingestion.js",
+      "npm run validate:chrome-collapse",
+      "npm run validate:checksum"
+    ],
+    "receiptPath": "receipts/20260622T031504Z-chat-first-chrome-direction.md",
+    "logPath": "logs/20260622T031504Z-chat-first-chrome-direction.log",
+    "checksumPath": "checksums/20260622T031504Z-chat-first-chrome-direction.sha256",
+    "status": "Compiled",
+    "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
+  },
+  {
     "eventId": "event-20260622T024905Z",
     "timestamp": "20260622T024905Z",
     "eventType": "codex_update",
@@ -168,10 +197,10 @@ window.CHAT_FIRST_STATE_EVENTS = [
       "npm run validate:checksum"
     ],
     "receiptPath": "receipts/20260621T151818Z-chat-first-visible-source-inbox-storage.md",
-    "logPath": "logs/20260621T151818Z-chat-first-visible-source-inbox-storage.log",
-    "checksumPath": "checksums/20260621T151818Z-chat-first-visible-source-inbox-storage.sha256",
-    "status": "Compiled",
-    "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
+    "logPath": "",
+    "checksumPath": "",
+    "status": "Pending review",
+    "nextRecommendedAction": "Generate and validate the checksum for this event."
   },
   {
     "eventId": "event-20260621T150711Z",
@@ -197,35 +226,6 @@ window.CHAT_FIRST_STATE_EVENTS = [
       "npm run validate:checksum"
     ],
     "receiptPath": "receipts/20260621T150711Z-chat-first-controlled-ingestion-route-compiler.md",
-    "logPath": "",
-    "checksumPath": "",
-    "status": "Pending review",
-    "nextRecommendedAction": "Generate and validate the checksum for this event."
-  },
-  {
-    "eventId": "event-20260621T143103Z",
-    "timestamp": "20260621T143103Z",
-    "eventType": "codex_update",
-    "title": "Streaming auto-follow",
-    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
-    "filesChanged": [],
-    "artifactsAffected": [
-      "Project state dashboard",
-      "Recent activity",
-      "Receipt stream"
-    ],
-    "routesAffected": [
-      "project_state",
-      "receipts",
-      "source_status"
-    ],
-    "validationCommands": [
-      "npm run validate:chat-first-shell",
-      "node tools/validate-chat-first-ingestion.js",
-      "npm run validate:chrome-collapse",
-      "npm run validate:checksum"
-    ],
-    "receiptPath": "receipts/20260621T143103Z-chat-first-stream-autofollow.md",
     "logPath": "",
     "checksumPath": "",
     "status": "Pending review",
