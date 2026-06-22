@@ -22,6 +22,7 @@ const friendlyLabelBySlug = {
   "chat-first-canonical-artifact-law": "Canonical artifact law",
   "spreadsheet-table-artifact-stage": "Spreadsheet table artifact stage",
   "spreadsheet-stage-live-evaluation": "Spreadsheet stage live evaluation",
+  "renderer-visual-contracts": "Renderer visual contracts",
   "live-artifact-evaluation-protocol": "Live artifact evaluation protocol",
   "chat-first-state-sync-layer": "State sync layer",
   "chat-first-artifact-modal-fullscreen": "Full-viewport artifacts",
@@ -38,7 +39,7 @@ const validationGates = [
   {
     command: "npm run validate:chat-first-shell",
     status: "required",
-    purpose: "Shell UI, artifact, route, source-state, ingestion, and project-state invariants"
+    purpose: "Shell UI, artifact route, renderer visual-contract, source-state, ingestion, and project-state invariants"
   },
   {
     command: "node tools/validate-chat-first-ingestion.js",

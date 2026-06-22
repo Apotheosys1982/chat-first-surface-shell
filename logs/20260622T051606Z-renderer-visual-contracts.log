@@ -1,0 +1,58 @@
+2026-06-22T05:16:06Z renderer-visual-contracts
+
+Scope:
+- Added explicit artifactPlane and visualContract registry fields.
+- Corrected staged work artifacts away from generic/native renderers.
+- Added dashboard, spreadsheet, source map, receipt, and checklist visual contract surfaces.
+- Added renderer visual-contract validation.
+- Fixed mobile internal overflow discovered during in-app browser screenshot QA.
+
+Renderer corrections:
+- project-state-dashboard -> work/dashboard/dashboardStageRenderer/projectStateAdapter
+- staged-spreadsheet -> work/spreadsheet/spreadsheetStageRenderer/spreadsheetStageAdapter
+- surface-diagnosis-draft -> work/document/htmlCanvasDocumentStage/documentStageAdapter
+- source-map -> work/sourceMap/sourceMapStageRenderer/sourceMapAdapter
+- source-registry -> work/sourceMap/sourceMapStageRenderer/sourceRegistryAdapter
+- checklist -> work/checklist/checklistStageRenderer/checklistAdapter
+- receipts-directory -> work/receipt/receiptProofRenderer/receiptAdapter
+
+Control-plane native artifacts by design:
+- artifact-directory
+- document-inbox
+- extracted-text
+- source-map-draft
+- event-ledger
+- activity-log
+- compiler-report
+
+Local browser:
+- Browser surface: Codex in-app browser.
+- URL: http://127.0.0.1:8899/index.html?v=renderer-contracts-final-matrix-2
+- Viewport: 393x852
+- Commands tested: dashboard, spreadsheet, table, draft, report, canvas, source map, source registry, checklist, SOP, receipt, artifacts, inbox, events, compiler.
+- Result: 15/15 pass.
+- Console warnings/errors: none.
+
+Viewport metrics:
+- documentElement clientWidth/scrollWidth: 393/393 on every command.
+- body clientWidth/scrollWidth: 393/393 on every command.
+- artifactBody clientWidth/scrollWidth: 393/393 on every command.
+- overflowing descendants: 0 on every command.
+- scrollX: 0 on every command.
+
+Chrome motion:
+- Downward pressure collapsed header and composer.
+- Upward pressure restored header and composer.
+- Hold after upward pressure kept header and composer visible.
+- Width lock stayed 393/393 with scrollX=0.
+
+Validation:
+- npm run validate:js
+- npm run validate:chat-first-shell
+- node tools/validate-chat-first-renderer-visual-contracts.js
+
+Pending:
+- Sync generated state.
+- Generate checksum manifest.
+- Run npm run validate.
+- Commit, push, and deploy to Netlify production.

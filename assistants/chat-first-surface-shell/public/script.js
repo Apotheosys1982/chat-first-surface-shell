@@ -12,6 +12,7 @@
   const artifactTitle = document.querySelector("[data-artifact-title]");
   const artifactMeta = document.querySelector("[data-artifact-meta]");
   const artifactBody = document.querySelector("[data-artifact-body]");
+  const artifactPanel = artifactLayer?.querySelector(".artifact-panel");
   let lastScrollTop = 0;
   let lastTouchX = null;
   let lastTouchY = null;
@@ -197,6 +198,120 @@
         <em>${escapeHtml(item.timestamp || item.status || "Tracked")}</em>
       </div>
     `).join("");
+  }
+
+  function statusTone(value) {
+    const normalized = String(value || "").toLowerCase();
+    if (/active|approved|compiled|ready|pass|validated/.test(normalized)) return "positive";
+    if (/uncertain|review|pending|needs|draft|blocked/.test(normalized)) return "warning";
+    if (/rejected|deprecated|superseded|fail|unapproved/.test(normalized)) return "critical";
+    return "neutral";
+  }
+
+  function statusChip(value) {
+    const label = String(value || "Tracked");
+    return `<span class="status-chip" data-tone="${statusTone(label)}">${escapeHtml(label)}</span>`;
+  }
+
+  function countBy(items, key, allowedValues) {
+    const counts = Object.fromEntries(allowedValues.map((value) => [value, 0]));
+    for (const item of items || []) {
+      const value = item?.[key] || "Unknown";
+      counts[value] = (counts[value] || 0) + 1;
+    }
+    return counts;
+  }
+
+  function dashboardStageHtml() {
+    const validations = projectState.validations || [];
+    const activeSources = sourceDocuments.filter((source) => source.sourceStatus === "Active").length;
+    const compiledSources = sourceDocuments.filter((source) => source.ingestionStatus === "Compiled" || source.ingestionStatus === "Approved").length;
+    return `
+      <div class="dashboard-stage">
+        <section class="dashboard-hero">
+          <div>
+            <p class="state-label">Operational dashboard</p>
+            <h3>Shell state is live, bounded, and inspectable.</h3>
+            <p>Command routes, receipts, checksums, source posture, and validation gates are staged as operating data instead of hidden repo trivia.</p>
+          </div>
+          <div class="dashboard-status-strip" aria-label="Dashboard status strip">
+            ${statusChip("Active")}
+            ${statusChip("Compiled")}
+            ${statusChip("Validated")}
+          </div>
+        </section>
+        <section class="dashboard-metric-grid" aria-label="Dashboard metrics">
+          <div class="dashboard-metric">
+            <span>Receipts</span>
+            <strong>${escapeHtml(String(recentReceipts.length))}</strong>
+            <small>Latest: ${latestReceipt ? escapeHtml(latestReceipt.label) : "not synced"}</small>
+          </div>
+          <div class="dashboard-metric">
+            <span>Validation gates</span>
+            <strong>${escapeHtml(String(validations.length))}</strong>
+            <small>${validations[0] ? escapeHtml(validations[0].command) : "No gate registered"}</small>
+          </div>
+          <div class="dashboard-metric">
+            <span>Active sources</span>
+            <strong>${escapeHtml(String(activeSources))}</strong>
+            <small>${escapeHtml(String(compiledSources))} compiled or approved records</small>
+          </div>
+          <div class="dashboard-metric">
+            <span>Runtime overlay</span>
+            <strong>${escapeHtml(String(uploadedDocuments.length))}</strong>
+            <small>Local candidates, never trusted automatically</small>
+          </div>
+        </section>
+        <section class="dashboard-grid">
+          <div class="dashboard-panel dashboard-panel-wide">
+            <div class="dashboard-panel-header">
+              <div>
+                <p class="state-label">Recent activity</p>
+                <h4>Event timeline</h4>
+              </div>
+              ${latestEvent ? statusChip(latestEvent.status) : statusChip("Not synced")}
+            </div>
+            <div class="dashboard-timeline">${projectActivity.slice(0, 6).map((item) => `
+              <div class="dashboard-timeline-row">
+                <span aria-hidden="true"></span>
+                <div>
+                  <strong>${escapeHtml(item.title)}</strong>
+                  <small>${escapeHtml(item.detail)}</small>
+                </div>
+                ${statusChip(item.status)}
+              </div>
+            `).join("")}</div>
+          </div>
+          <div class="dashboard-panel">
+            <div class="dashboard-panel-header">
+              <div>
+                <p class="state-label">Source posture</p>
+                <h4>Trust cluster</h4>
+              </div>
+            </div>
+            <div class="dashboard-stack">
+              ${Object.entries(countBy(sourceDocuments, "sourceStatus", allowedSourceStatuses)).map(([label, count]) => `
+                <div><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(count))}</strong></div>
+              `).join("")}
+            </div>
+          </div>
+          <div class="dashboard-panel">
+            <div class="dashboard-panel-header">
+              <div>
+                <p class="state-label">Validation</p>
+                <h4>Gate cluster</h4>
+              </div>
+            </div>
+            <div class="dashboard-validation-list">${validations.slice(0, 5).map((gate) => `
+              <div>
+                <strong>${escapeHtml(gate.command)}</strong>
+                <small>${escapeHtml(gate.purpose || "Required gate")}</small>
+              </div>
+            `).join("")}</div>
+          </div>
+        </section>
+      </div>
+    `;
   }
 
   function formatBytes(bytes) {
@@ -515,7 +630,7 @@
       <div class="state-board">
         <section class="state-panel state-panel-wide">
           <p class="state-label">Compiler invariant</p>
-          <h3>Base pack is approved behavior. Runtime overlay is quarantined material.</h3>
+          <h3>Base compiled answer pack is approved behavior. Runtime overlay is quarantined material.</h3>
           <p>${escapeHtml(compiledAnswerPack.invariant || "Upload does not equal approved source. Event does not equal truth. Ingestion comes before answer.")}</p>
         </section>
         <section class="state-panel">
@@ -561,12 +676,91 @@
     `;
   }
 
+  function sourceCard(source) {
+    const isAnswerable = Boolean(source.canAnswerFrom);
+    return `
+      <div class="source-governance-card" data-source-status="${escapeHtml(source.sourceStatus || "Unknown")}" data-ingestion-status="${escapeHtml(source.ingestionStatus || "Unknown")}">
+        <div>
+          <strong>${escapeHtml(source.title || source.name || source.sourceId)}</strong>
+          <span>${escapeHtml(source.summary || "Source record has no summary yet.")}</span>
+          <small>${escapeHtml(source.path || source.sourceId || source.id)} · ${escapeHtml(source.origin || "unknown origin")} · ${escapeHtml(source.visibilityScope || "unknown scope")}</small>
+        </div>
+        <div class="source-trust-stack">
+          ${statusChip(source.sourceStatus || "Uncertain")}
+          ${statusChip(source.ingestionStatus || "Needs source map")}
+          <span class="answerability-badge" data-answerable="${isAnswerable ? "true" : "false"}">${isAnswerable ? "Answerable" : "Not answerable"}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function sourceMapStageHtml() {
+    const sourceGroups = countBy(sourceDocuments, "sourceStatus", allowedSourceStatuses);
+    const ingestionGroups = countBy([...sourceDocuments, ...uploadedDocuments], "ingestionStatus", allowedIngestionStatuses);
+    const allSources = [...sourceDocuments, ...uploadedDocuments];
+    return `
+      <div class="source-governance">
+        <section class="source-governance-hero">
+          <div>
+            <p class="state-label">Source governance</p>
+            <h3>Trust boundaries are the interface.</h3>
+            <p>${escapeHtml(sourcePostureCopy())}</p>
+          </div>
+          <div class="source-governance-summary">
+            <strong>${escapeHtml(String(sourceDocuments.length))}</strong>
+            <span>approved spine records</span>
+            <small>${escapeHtml(String(uploadedDocuments.length))} local quarantined overlays</small>
+          </div>
+        </section>
+        <section class="source-status-board" aria-label="Source status groups">
+          ${allowedSourceStatuses.map((status) => `
+            <div class="source-status-column" data-tone="${statusTone(status)}">
+              <span>${escapeHtml(status)}</span>
+              <strong>${escapeHtml(String(sourceGroups[status] || 0))}</strong>
+              <small>Source status</small>
+            </div>
+          `).join("")}
+        </section>
+        <section class="ingestion-matrix" aria-label="Ingestion status matrix">
+          <div class="ingestion-matrix-title">
+            <p class="state-label">Ingestion status</p>
+            <h4>Processing is separate from truth.</h4>
+          </div>
+          <div class="ingestion-matrix-grid">
+            ${allowedIngestionStatuses.map((status) => `
+              <div>
+                <span>${escapeHtml(status)}</span>
+                <strong>${escapeHtml(String(ingestionGroups[status] || 0))}</strong>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+        <section class="source-governance-list">
+          <div class="source-list-header">
+            <div>
+              <p class="state-label">Source cards</p>
+              <h4>Approved spine and runtime overlay</h4>
+            </div>
+            ${statusChip("canAnswerFrom shown per source")}
+          </div>
+          <div class="source-card-grid">${allSources.length ? allSources.map(sourceCard).join("") : `
+            <div class="source-governance-card">
+              <div><strong>No sources registered</strong><span>Run the state sync pipeline to generate the source registry.</span></div>
+              <div class="source-trust-stack">${statusChip("Missing")}</div>
+            </div>
+          `}</div>
+        </section>
+      </div>
+    `;
+  }
+
   function spreadsheetStageHtml() {
     const totalRows = stagedSpreadsheetRows.length;
     const activeRows = stagedSpreadsheetRows.filter((row) => row.sourcePosture === "Active").length;
     const reviewRows = stagedSpreadsheetRows.filter((row) => row.sourcePosture !== "Active").length;
-    const rowHtml = stagedSpreadsheetRows.map((row) => `
+    const rowHtml = stagedSpreadsheetRows.map((row, index) => `
       <div class="spreadsheet-row" role="row">
+        <div role="rowheader" data-label="#">${String(index + 1).padStart(2, "0")}</div>
         <div role="cell" data-label="Area"><strong>${escapeHtml(row.area)}</strong></div>
         <div role="cell" data-label="Owner">${escapeHtml(row.owner)}</div>
         <div role="cell" data-label="Status"><span class="spreadsheet-badge">${escapeHtml(row.status)}</span></div>
@@ -575,33 +769,27 @@
       </div>
     `).join("");
     return `
-      <div class="state-board spreadsheet-summary">
-        <section class="state-panel state-panel-wide">
-          <p class="state-label">Spreadsheet stage</p>
-          <h3>Messy rows become an operating surface.</h3>
-          <p>This is a seeded spreadsheet/table artifact. It proves the shell can stage structured rows through the same command → artifact ID → state adapter → renderer path without pretending uploaded spreadsheets are parsed or trusted.</p>
-        </section>
-        <section class="state-panel">
-          <p class="state-label">Rows</p>
-          <strong>${escapeHtml(String(totalRows))}</strong>
-          <span>Seeded operational rows with owners, status, source posture, and next action.</span>
-        </section>
-        <section class="state-panel">
-          <p class="state-label">Active source</p>
-          <strong>${escapeHtml(String(activeRows))}</strong>
-          <span>Rows that can point toward compiled behavior after source review.</span>
-        </section>
-        <section class="state-panel">
-          <p class="state-label">Needs review</p>
-          <strong>${escapeHtml(String(reviewRows))}</strong>
-          <span>Rows held back until source mapping, approval, or policy cleanup is complete.</span>
-        </section>
-      </div>
-      <div class="state-section spreadsheet-stage-view">
-        <h3>Operations spreadsheet</h3>
-        <p>Say <strong>spreadsheet</strong> or <strong>table</strong>. The shell opens this registered artifact instead of faking parser support for uploaded files.</p>
-        <div class="spreadsheet-table" role="table" aria-label="Seeded operations spreadsheet">
+      <div class="spreadsheet-shell">
+        <div class="spreadsheet-titlebar">
+          <div>
+            <p class="state-label">Spreadsheet surface</p>
+            <h3>Operations rows</h3>
+          </div>
+          <div class="spreadsheet-toolbar" aria-label="Spreadsheet toolbar">
+            <button type="button" disabled>Filter</button>
+            <button type="button" disabled>Sort</button>
+            <button type="button" disabled>Export scaffold</button>
+          </div>
+        </div>
+        <div class="spreadsheet-status-strip">
+          <div><span>Rows</span><strong>${escapeHtml(String(totalRows))}</strong></div>
+          <div><span>Active source</span><strong>${escapeHtml(String(activeRows))}</strong></div>
+          <div><span>Needs review</span><strong>${escapeHtml(String(reviewRows))}</strong></div>
+          <div><span>Renderer</span><strong>spreadsheetStageRenderer</strong></div>
+        </div>
+        <div class="spreadsheet-grid" role="table" aria-label="Seeded operations spreadsheet">
           <div class="spreadsheet-header" role="row">
+            <div role="columnheader">#</div>
             <div role="columnheader">Area</div>
             <div role="columnheader">Owner</div>
             <div role="columnheader">Status</div>
@@ -610,25 +798,153 @@
           </div>
           ${rowHtml}
         </div>
-      </div>
-      <div class="state-section">
-        <h3>Boundary notes</h3>
-        <div class="state-list">
-          <div class="state-row">
+        <div class="spreadsheet-boundary">
+          <div>
             <div>
               <strong>Seeded artifact, not upload parser</strong>
               <span>PDF, DOCX, image, and uploaded spreadsheet files still stay metadata-only unless parser/OCR/source mapping support exists.</span>
             </div>
-            <em>Bounded</em>
           </div>
-          <div class="state-row">
+          <div>
             <div>
               <strong>Registry path preserved</strong>
-              <span>Spreadsheet and table commands resolve to <code>staged-spreadsheet</code>, then use the registered state adapter and artifact-stage renderer.</span>
+              <span>Spreadsheet and table commands resolve to <code>staged-spreadsheet</code>, then use <code>spreadsheetStageAdapter</code> and <code>spreadsheetStageRenderer</code>.</span>
             </div>
-            <em>Canonical</em>
           </div>
         </div>
+      </div>
+    `;
+  }
+
+  function receiptProofHtml() {
+    const validations = projectState.validations || [];
+    const latestLog = recentLogs[0];
+    return `
+      <div class="receipt-proof">
+        <section class="receipt-proof-header">
+          <div>
+            <p class="state-label">Validation proof</p>
+            <h3>Latest receipt packet</h3>
+            <p>Receipts, logs, checksums, and validation commands are staged as an audit surface.</p>
+          </div>
+          <div class="receipt-stamp">
+            <span>Latest timestamp</span>
+            <strong>${escapeHtml(latestReceipt?.timestamp || projectState.generatedAt || "not synced")}</strong>
+          </div>
+        </section>
+        <section class="proof-grid">
+          <div class="proof-card">
+            <span>Receipt path</span>
+            <strong>${escapeHtml(latestReceipt?.label || "No receipt")}</strong>
+            <small>${escapeHtml(latestReceipt?.path || "Run sync after creating receipts.")}</small>
+          </div>
+          <div class="proof-card">
+            <span>Checksum path</span>
+            <strong>${escapeHtml(latestChecksum?.label || "No checksum")}</strong>
+            <small>${escapeHtml(latestChecksum?.path || "Checksum manifest missing.")}</small>
+          </div>
+          <div class="proof-card">
+            <span>Log path</span>
+            <strong>${escapeHtml(latestLog?.label || "No log")}</strong>
+            <small>${escapeHtml(latestLog?.path || "Log stream missing.")}</small>
+          </div>
+        </section>
+        <section class="validation-command-board">
+          <div class="source-list-header">
+            <div>
+              <p class="state-label">Validation commands</p>
+              <h4>Required gates</h4>
+            </div>
+            ${statusChip("Pass required")}
+          </div>
+          <div class="validation-command-list">${validations.map((gate) => `
+            <div>
+              <code>${escapeHtml(gate.command)}</code>
+              <span>${escapeHtml(gate.purpose || "Required validation command")}</span>
+              ${statusChip(gate.status || "required")}
+            </div>
+          `).join("")}</div>
+        </section>
+        <section class="proof-timeline">
+          <div>
+            <p class="state-label">Evidence stream</p>
+            <h4>Recent proof packets</h4>
+          </div>
+          <div>${recentReceipts.slice(0, 6).map((receipt) => `
+            <div class="proof-timeline-row">
+              <span>${escapeHtml(receipt.timestamp || "tracked")}</span>
+              <strong>${escapeHtml(receipt.label || receipt.filename)}</strong>
+              <small>${escapeHtml(receipt.path)}</small>
+            </div>
+          `).join("")}</div>
+        </section>
+      </div>
+    `;
+  }
+
+  function checklistStageHtml() {
+    const steps = [
+      {
+        title: "Open the source map before answering",
+        owner: "Operator",
+        status: "Required",
+        detail: "Confirm which source records are Active, Compiled, and answerable."
+      },
+      {
+        title: "Route artifact commands before answer rooms",
+        owner: "Runtime",
+        status: "Active",
+        detail: "Dashboard, spreadsheet, source map, checklist, receipt, and document commands open registered artifacts."
+      },
+      {
+        title: "Keep uploads quarantined",
+        owner: "Source reviewer",
+        status: "Required",
+        detail: "User files are local candidates until source review, compilation, and validation happen."
+      },
+      {
+        title: "Validate before deploy",
+        owner: "Codex",
+        status: "Required",
+        detail: "Run shell, renderer, chrome, live-eval, and checksum gates before production deployment."
+      }
+    ];
+    return `
+      <div class="checklist-runner">
+        <section class="checklist-header">
+          <div>
+            <p class="state-label">Process runner</p>
+            <h3>Build checklist</h3>
+            <p>This artifact is a staged SOP surface: ordered work, owner labels, source posture, and clear completion semantics.</p>
+          </div>
+          <div class="checklist-progress">
+            <strong>${escapeHtml(String(steps.length))}</strong>
+            <span>required steps</span>
+          </div>
+        </section>
+        <section class="process-meta-row">
+          <div><span>Current source</span><strong>authored-demo-artifact</strong></div>
+          <div><span>Contract</span><strong>checklistStageRenderer</strong></div>
+          <div><span>Status</span><strong>Active</strong></div>
+        </section>
+        <section class="check-step-list">
+          ${steps.map((step, index) => `
+            <div class="check-step">
+              <span class="check-index">${index + 1}</span>
+              <span class="check-box" aria-hidden="true"></span>
+              <div>
+                <strong>${escapeHtml(step.title)}</strong>
+                <p>${escapeHtml(step.detail)}</p>
+                <small>${escapeHtml(step.owner)} · ${escapeHtml(step.status)}</small>
+              </div>
+              ${statusChip(step.status)}
+            </div>
+          `).join("")}
+        </section>
+        <section class="checklist-warning">
+          <strong>Boundary</strong>
+          <span>Do not treat this as a document paragraph dump. This renderer is for process execution and SOP review.</span>
+        </section>
       </div>
     `;
   }
@@ -804,7 +1120,9 @@
 
   function artifactDirectoryHtml() {
     const visibleArtifacts = artifactRegistry.filter((entry) => entry.artifactId !== "artifact-directory");
-    const stageLabel = (entry) => entry.stageMode === "artifactStage" ? "Work artifact" : "Control plane";
+    const stageLabel = (entry) => entry.artifactPlane === "work"
+      ? `${entry.visualContract} work artifact`
+      : "Native control plane";
     return `
       <div class="state-section artifact-directory-view">
         <h3>Artifact directory</h3>
@@ -814,7 +1132,7 @@
             <div>
               <strong>${escapeHtml(entry.title)}</strong>
               <span>${escapeHtml(entry.description)}</span>
-              <small class="state-meta">${escapeHtml(entry.artifactId)} · ${escapeHtml(entry.rendererId)} · ${escapeHtml(entry.stateAdapterId || "staticArtifactAdapter")}</small>
+              <small class="state-meta">${escapeHtml(entry.artifactId)} · ${escapeHtml(entry.artifactPlane)} · ${escapeHtml(entry.visualContract)} · ${escapeHtml(entry.rendererId)} · ${escapeHtml(entry.stateAdapterId || "staticArtifactAdapter")}</small>
             </div>
             <em>${escapeHtml(stageLabel(entry))}</em>
           </button>
@@ -832,49 +1150,7 @@
     "project-state-dashboard": {
       title: "Project state dashboard",
       meta: "Runtime state · Local build · Active",
-      html: `
-        <div class="state-board">
-          <section class="state-panel state-panel-wide">
-            <p class="state-label">Current focus</p>
-            <h3>Ask. Render. Inspect. Return.</h3>
-            <p>This shell now tracks its own working state: recent fixes, validation gates, source posture, and the current UI hardening thread.</p>
-          </section>
-          <section class="state-panel">
-            <p class="state-label">Interaction</p>
-            <strong>Chrome collapse</strong>
-            <span>Full header and composer recede on scroll pressure, then return on reverse pressure.</span>
-          </section>
-          <section class="state-panel">
-            <p class="state-label">Assistant</p>
-            <strong>Bounded routes</strong>
-            <span>Smalltalk, source, artifact, boundary, pricing, and project-state questions now route intentionally.</span>
-          </section>
-          <section class="state-panel">
-            <p class="state-label">Validation</p>
-            <strong>Targeted gates</strong>
-            <span>Chat-first shell and chrome-collapse validators are the active checks for this prototype.</span>
-          </section>
-          <section class="state-panel">
-            <p class="state-label">Latest event</p>
-            <strong>${latestEvent ? escapeHtml(latestEvent.title) : "Not synced"}</strong>
-            <span>${latestEvent ? escapeHtml(latestEvent.eventId) : "Run npm run sync:chat-first-state after creating receipts."}</span>
-          </section>
-          <section class="state-panel">
-            <p class="state-label">Latest receipt</p>
-            <strong>${latestReceipt ? escapeHtml(latestReceipt.label) : "Not synced"}</strong>
-            <span>${latestReceipt ? escapeHtml(latestReceipt.path) : "Run npm run sync:chat-first-state after creating receipts."}</span>
-          </section>
-          <section class="state-panel">
-            <p class="state-label">Latest checksum</p>
-            <strong>${latestChecksum ? escapeHtml(latestChecksum.label) : "Not synced"}</strong>
-            <span>${latestChecksum ? escapeHtml(latestChecksum.path) : "Checksum state has not been generated yet."}</span>
-          </section>
-        </div>
-        <div class="state-section">
-          <h3>Recent activity</h3>
-          <div class="state-list">${activityRows()}</div>
-        </div>
-      `
+      html: () => dashboardStageHtml()
     },
     "event-ledger": {
       title: "Event ledger",
@@ -901,34 +1177,12 @@
     "source-map": {
       title: "Source map",
       meta: "Source posture · Active",
-      html: () => `
-        <div class="state-section source-map-view">
-          <h3>Approved source spine</h3>
-          <p>${escapeHtml(sourcePostureCopy())}</p>
-          <div class="state-list source-spine">${sourceRows()}</div>
-        </div>
-        <div class="state-section">
-          <h3>Runtime source overlay</h3>
-          <p>These are local browser imports added through the composer. They are quarantined source candidates, not deployed source-of-truth files and not durable compiled behavior.</p>
-          <div class="state-list">${documentRows()}</div>
-        </div>
-      `
+      html: () => sourceMapStageHtml()
     },
     "source-registry": {
       title: "Source registry",
       meta: "Source lifecycle · Base pack + runtime overlay",
-      html: () => `
-        <div class="state-section">
-          <h3>Base compiled sources</h3>
-          <p>These records come from the generated source registry. They have explicit source and ingestion statuses plus answer/search/render permissions.</p>
-          <div class="state-list">${sourceRegistryRows()}</div>
-        </div>
-        <div class="state-section">
-          <h3>Runtime source overlay</h3>
-          <p>Uploads stay local, quarantined, and untrusted. They can be inspected or searched when extracted, but they do not enter the base compiled answer pack.</p>
-          <div class="state-list">${documentRows()}</div>
-        </div>
-      `
+      html: () => sourceMapStageHtml()
     },
     "document-inbox": {
       title: "Source inbox",
@@ -975,34 +1229,12 @@
     "receipts-directory": {
       title: "Receipts directory",
       meta: "Receipts · Generated state · Active",
-      html: `
-        <div class="state-section receipt-stream-view">
-          <h3>Latest receipts</h3>
-          <p>Generated from the local receipt directory at ${escapeHtml(projectState.generatedAt || "unknown time")}.</p>
-          <div class="state-list">${stateRows(recentReceipts, "No receipts found.")}</div>
-        </div>
-        <div class="state-section">
-          <h3>Validation gates</h3>
-          <div class="state-list">${stateRows(projectState.validations || [], "No validation gates registered.")}</div>
-        </div>
-        <div class="state-section">
-          <h3>Checksums</h3>
-          <div class="state-list">${stateRows(recentChecksums, "No checksum manifests found.")}</div>
-        </div>
-      `
+      html: () => receiptProofHtml()
     },
     "checklist": {
       title: "Build checklist",
       meta: "Checklist · Demo artifact · Active",
-      html: `
-        <ul class="artifact-list">
-          <li>Shell opens directly into chat.</li>
-          <li>Composer uses textarea message-box contract, not a pill.</li>
-          <li>Artifact actions map to registered views.</li>
-          <li>Side tray opens from the trigger side and respects mobile viewport ownership.</li>
-          <li>All motion uses shared motion tokens and reduced-motion fallbacks.</li>
-        </ul>
-      `
+      html: () => checklistStageHtml()
     }
   };
 
@@ -1020,14 +1252,26 @@
     renderArtifactHtml(artifact, context);
   }
 
-  function renderGenericArtifactStage(artifact, registryEntry, context) {
+  function renderSpreadsheetStage(artifact, registryEntry, context) {
+    renderArtifactHtml(artifact, context);
+  }
+
+  function renderSourceMapStage(artifact, registryEntry, context) {
+    renderArtifactHtml(artifact, context);
+  }
+
+  function renderReceiptProof(artifact, registryEntry, context) {
+    renderArtifactHtml(artifact, context);
+  }
+
+  function renderChecklistStage(artifact, registryEntry, context) {
     renderArtifactHtml(artifact, context);
   }
 
   const rendererRegistry = {
     nativeShellPanelRenderer: {
       rendererId: "nativeShellPanelRenderer",
-      artifactTypesSupported: ["artifactDirectory", "sourceMap", "sourceRegistry", "sourceInbox", "extractedText", "sourceMapDraft", "eventLedger", "compilerReport", "receipt"],
+      artifactTypesSupported: ["artifactDirectory", "sourceInbox", "extractedText", "sourceMapDraft", "eventLedger", "compilerReport"],
       stageType: "shellPanel",
       renderFunctionName: "renderNativeShellPanel",
       closeBehavior: "returnToChatState",
@@ -1041,13 +1285,37 @@
       closeBehavior: "returnToChatState",
       render: renderDashboardStage
     },
-    artifactStageRenderer: {
-      rendererId: "artifactStageRenderer",
+    spreadsheetStageRenderer: {
+      rendererId: "spreadsheetStageRenderer",
+      artifactTypesSupported: ["spreadsheet", "table"],
+      stageType: "artifactStage",
+      renderFunctionName: "renderSpreadsheetStage",
+      closeBehavior: "returnToChatState",
+      render: renderSpreadsheetStage
+    },
+    sourceMapStageRenderer: {
+      rendererId: "sourceMapStageRenderer",
+      artifactTypesSupported: ["sourceMap", "sourceRegistry"],
+      stageType: "artifactStage",
+      renderFunctionName: "renderSourceMapStage",
+      closeBehavior: "returnToChatState",
+      render: renderSourceMapStage
+    },
+    receiptProofRenderer: {
+      rendererId: "receiptProofRenderer",
+      artifactTypesSupported: ["receiptsDirectory", "receipt", "validationReport"],
+      stageType: "artifactStage",
+      renderFunctionName: "renderReceiptProof",
+      closeBehavior: "returnToChatState",
+      render: renderReceiptProof
+    },
+    checklistStageRenderer: {
+      rendererId: "checklistStageRenderer",
       artifactTypesSupported: ["checklist", "sop", "processMap"],
       stageType: "artifactStage",
-      renderFunctionName: "renderGenericArtifactStage",
+      renderFunctionName: "renderChecklistStage",
       closeBehavior: "returnToChatState",
-      render: renderGenericArtifactStage
+      render: renderChecklistStage
     },
     htmlCanvasDocumentStage: {
       rendererId: "htmlCanvasDocumentStage",
@@ -1101,6 +1369,8 @@
     {
       artifactId: "project-state-dashboard",
       artifactType: "dashboard",
+      artifactPlane: "work",
+      visualContract: "dashboard",
       title: "Project state dashboard",
       description: "Current shell status, recent receipts, validation gates, source posture, and working activity.",
       commandAliases: ["dashboard", "metrics", "report view", "board", "project state", "status"],
@@ -1122,6 +1392,8 @@
     {
       artifactId: "artifact-directory",
       artifactType: "artifactDirectory",
+      artifactPlane: "control",
+      visualContract: "nativeControl",
       title: "Artifact directory",
       description: "Registry-backed directory for opening artifacts through the same path as composer commands.",
       commandAliases: ["artifacts", "artifact list", "artifact directory", "views"],
@@ -1143,18 +1415,20 @@
     {
       artifactId: "source-map",
       artifactType: "sourceMap",
+      artifactPlane: "work",
+      visualContract: "sourceMap",
       title: "Source map",
       description: "Approved source spine plus local quarantined upload overlay.",
       commandAliases: ["source map", "sources", "approved sources", "source posture"],
-      rendererId: "nativeShellPanelRenderer",
+      rendererId: "sourceMapStageRenderer",
       stateAdapterId: "sourceMapAdapter",
-      stageMode: "shellPanel",
+      stageMode: "artifactStage",
       sourceDependencies: ["source-registry", "runtime-source-overlay"],
       status: "Active",
       actions: ["inspect_sources", "open_source_registry"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "shellPanel",
+      renderMode: "artifactStage",
       editable: false,
       exportable: false,
       printable: false,
@@ -1164,18 +1438,20 @@
     {
       artifactId: "source-registry",
       artifactType: "sourceRegistry",
+      artifactPlane: "work",
+      visualContract: "sourceMap",
       title: "Source registry",
       description: "Source and ingestion status records for base sources and runtime overlays.",
       commandAliases: ["source registry", "registry", "source status", "ingestion status"],
-      rendererId: "nativeShellPanelRenderer",
+      rendererId: "sourceMapStageRenderer",
       stateAdapterId: "sourceRegistryAdapter",
-      stageMode: "shellPanel",
+      stageMode: "artifactStage",
       sourceDependencies: ["source-registry", "runtime-source-overlay"],
       status: "Active",
       actions: ["inspect_statuses", "open_source_map"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "shellPanel",
+      renderMode: "artifactStage",
       editable: false,
       exportable: false,
       printable: false,
@@ -1185,6 +1461,8 @@
     {
       artifactId: "document-inbox",
       artifactType: "sourceInbox",
+      artifactPlane: "control",
+      visualContract: "nativeControl",
       title: "Source inbox",
       description: "Local uploaded source candidates, extracted previews, and source-map needs.",
       commandAliases: ["inbox", "source inbox", "uploads", "uploaded files", "candidates"],
@@ -1206,6 +1484,8 @@
     {
       artifactId: "extracted-text",
       artifactType: "extractedText",
+      artifactPlane: "control",
+      visualContract: "nativeControl",
       title: "Extracted text",
       description: "Searchable local upload previews that remain unapproved until review.",
       commandAliases: ["extracted text", "upload text", "search previews"],
@@ -1227,6 +1507,8 @@
     {
       artifactId: "source-map-draft",
       artifactType: "sourceMapDraft",
+      artifactPlane: "control",
+      visualContract: "nativeControl",
       title: "Source map draft",
       description: "Draft source-map candidates from local uploads that need review before compilation.",
       commandAliases: ["source map draft", "draft source map", "source candidates"],
@@ -1248,6 +1530,8 @@
     {
       artifactId: "surface-diagnosis-draft",
       artifactType: "documentSurface",
+      artifactPlane: "work",
+      visualContract: "document",
       title: "Surface Diagnosis Draft",
       description: "A premium staged document artifact rendered from approved shell state.",
       commandAliases: ["draft", "document", "report", "canvas", "html canvas", "diagnosis draft"],
@@ -1271,6 +1555,8 @@
     {
       artifactId: "event-ledger",
       artifactType: "eventLedger",
+      artifactPlane: "control",
+      visualContract: "nativeControl",
       title: "Event ledger",
       description: "Receipt-backed Codex update events and state changes.",
       commandAliases: ["events", "event ledger", "recent changes", "changes"],
@@ -1292,6 +1578,8 @@
     {
       artifactId: "activity-log",
       artifactType: "eventLedger",
+      artifactPlane: "control",
+      visualContract: "nativeControl",
       title: "Recent hardening log",
       description: "Human-readable activity log for the current shell hardening sequence.",
       commandAliases: ["activity", "recent activity", "hardening log"],
@@ -1313,6 +1601,8 @@
     {
       artifactId: "compiler-report",
       artifactType: "compilerReport",
+      artifactPlane: "control",
+      visualContract: "nativeControl",
       title: "Compiler report",
       description: "Compiled answer rooms, route seeds, and bounded runtime invariant.",
       commandAliases: ["compiler", "compiler report", "answer pack", "route compiler"],
@@ -1334,10 +1624,12 @@
     {
       artifactId: "staged-spreadsheet",
       artifactType: "spreadsheet",
+      artifactPlane: "work",
+      visualContract: "spreadsheet",
       title: "Staged spreadsheet",
       description: "Seeded spreadsheet/table artifact that turns messy operational rows into a staged working surface.",
       commandAliases: ["spreadsheet", "sheet", "workbook", "csv", "table", "grid", "data table", "table data"],
-      rendererId: "artifactStageRenderer",
+      rendererId: "spreadsheetStageRenderer",
       stateAdapterId: "spreadsheetStageAdapter",
       stageMode: "artifactStage",
       sourceDependencies: ["authored-demo-artifact", "source-registry", "artifact-registry"],
@@ -1355,18 +1647,20 @@
     {
       artifactId: "receipts-directory",
       artifactType: "receiptsDirectory",
+      artifactPlane: "work",
+      visualContract: "receipt",
       title: "Receipts directory",
       description: "Latest receipts, logs, checksums, and validation gate state.",
       commandAliases: ["receipt", "receipts", "proof", "validation", "checksum"],
-      rendererId: "nativeShellPanelRenderer",
+      rendererId: "receiptProofRenderer",
       stateAdapterId: "receiptStreamAdapter",
-      stageMode: "shellPanel",
+      stageMode: "artifactStage",
       sourceDependencies: ["receipts", "logs", "checksums", "validation-gates"],
       status: "Active",
       actions: ["inspect_receipt", "verify_checksum"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "shellPanel",
+      renderMode: "artifactStage",
       editable: false,
       exportable: false,
       printable: false,
@@ -1376,10 +1670,12 @@
     {
       artifactId: "checklist",
       artifactType: "checklist",
+      artifactPlane: "work",
+      visualContract: "checklist",
       title: "Build checklist",
       description: "Seed checklist artifact for shell behavior and validation discipline.",
       commandAliases: ["checklist", "list", "steps", "task list", "sop", "procedure", "policy", "process", "operating procedure"],
-      rendererId: "artifactStageRenderer",
+      rendererId: "checklistStageRenderer",
       stateAdapterId: "checklistAdapter",
       stageMode: "artifactStage",
       sourceDependencies: ["authored-demo-artifact"],
@@ -1509,6 +1805,12 @@
     lastFocusTarget = trigger || document.activeElement;
     artifactTitle.textContent = registryEntry.title || artifact.title;
     artifactMeta.textContent = artifact.meta;
+    for (const node of [artifactLayer, artifactPanel, artifactBody]) {
+      if (!node) continue;
+      node.dataset.artifactPlane = registryEntry.artifactPlane || "control";
+      node.dataset.visualContract = registryEntry.visualContract || "nativeControl";
+      node.dataset.rendererId = registryEntry.rendererId;
+    }
     renderer.render(artifact, registryEntry, { ...baseContext, adaptedState });
     artifactBody.scrollTop = 0;
     artifactLayer.classList.add("is-open");

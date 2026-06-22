@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T04:38:41.557Z",
+  "generatedAt": "2026-06-22T05:18:02.628Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T043643Z",
+  "latestEventId": "event-20260622T051606Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T051606Z-renderer-visual-contracts.md",
+      "filename": "20260622T051606Z-renderer-visual-contracts.md",
+      "timestamp": "20260622T051606Z",
+      "label": "Renderer visual contracts",
+      "slug": "renderer-visual-contracts"
+    },
     {
       "path": "receipts/20260622T043643Z-spreadsheet-stage-live-evaluation.md",
       "filename": "20260622T043643Z-spreadsheet-stage-live-evaluation.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T023851Z",
       "label": "Viewport lock + mobile scroll",
       "slug": "chat-first-viewport-lock"
-    },
-    {
-      "path": "receipts/20260622T021521Z-standalone-chat-first-repository.md",
-      "filename": "20260622T021521Z-standalone-chat-first-repository.md",
-      "timestamp": "20260622T021521Z",
-      "label": "Standalone Chat First Repository",
-      "slug": "standalone-chat-first-repository"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T051606Z-renderer-visual-contracts.log",
+      "filename": "20260622T051606Z-renderer-visual-contracts.log",
+      "timestamp": "20260622T051606Z",
+      "label": "Renderer visual contracts",
+      "slug": "renderer-visual-contracts"
+    },
     {
       "path": "logs/20260622T043643Z-spreadsheet-stage-live-evaluation.log",
       "filename": "20260622T043643Z-spreadsheet-stage-live-evaluation.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T031504Z",
       "label": "Chrome direction fidelity",
       "slug": "chat-first-chrome-direction"
-    },
-    {
-      "path": "logs/20260622T024905Z-chat-first-scroll-stability.log",
-      "filename": "20260622T024905Z-chat-first-scroll-stability.log",
-      "timestamp": "20260622T024905Z",
-      "label": "Scroll stability + chrome collapse",
-      "slug": "chat-first-scroll-stability"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T051606Z-renderer-visual-contracts.sha256",
+      "filename": "20260622T051606Z-renderer-visual-contracts.sha256",
+      "timestamp": "20260622T051606Z",
+      "label": "Renderer visual contracts",
+      "slug": "renderer-visual-contracts"
+    },
     {
       "path": "checksums/20260622T043643Z-spreadsheet-stage-live-evaluation.sha256",
       "filename": "20260622T043643Z-spreadsheet-stage-live-evaluation.sha256",
@@ -139,20 +146,13 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T031504Z",
       "label": "Chrome direction fidelity",
       "slug": "chat-first-chrome-direction"
-    },
-    {
-      "path": "checksums/20260622T024905Z-chat-first-scroll-stability.sha256",
-      "filename": "20260622T024905Z-chat-first-scroll-stability.sha256",
-      "timestamp": "20260622T024905Z",
-      "label": "Scroll stability + chrome collapse",
-      "slug": "chat-first-scroll-stability"
     }
   ],
   "validations": [
     {
       "command": "npm run validate:chat-first-shell",
       "status": "required",
-      "purpose": "Shell UI, artifact, route, source-state, ingestion, and project-state invariants"
+      "purpose": "Shell UI, artifact route, renderer visual-contract, source-state, ingestion, and project-state invariants"
     },
     {
       "command": "node tools/validate-chat-first-ingestion.js",

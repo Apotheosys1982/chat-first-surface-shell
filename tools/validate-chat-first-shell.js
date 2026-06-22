@@ -177,7 +177,18 @@ function validateTarget(target, checks) {
   push(checks, target.id, "artifact_panel_owns_viewport", /height\s*:\s*var\(--viewport-safe-height\)/i.test(artifactPanelBlock) && /width\s*:\s*100%/i.test(artifactPanelBlock) && /border-radius\s*:\s*0/i.test(artifactPanelBlock), "artifact panel must take full viewport");
   push(checks, target.id, "artifact_panel_motion_uses_tokens", /transform\s*:/i.test(artifactPanelBlock) && /var\(--wm-motion-duration-standard\)/i.test(artifactPanelBlock), "artifact panel open motion must use shared motion tokens");
   push(checks, target.id, "artifact_header_safe_top", /env\(safe-area-inset-top\)/i.test(artifactHeaderBlock) && /backdrop-filter/i.test(artifactHeaderBlock), "artifact header sits at top with safe-area");
-  push(checks, target.id, "source_map_not_card_bullets", /Approved source spine[\s\S]*state-list/i.test(sourceMapBlock) && !/<ul class=["']artifact-list["']/i.test(sourceMapBlock), "source map uses professional rows, not bullet cards");
+  push(
+    checks,
+    target.id,
+    "source_map_not_card_bullets",
+    /sourceMapStageHtml/i.test(sourceMapBlock) &&
+      /source-governance/i.test(script) &&
+      /source-status-board/i.test(script) &&
+      /ingestion-matrix/i.test(script) &&
+      /source-governance-card/i.test(script) &&
+      !/<ul class=["']artifact-list["']/i.test(sourceMapBlock),
+    "source map uses professional governance boards, not bullet cards"
+  );
   push(checks, target.id, "source_map_uses_friendly_labels", /Assistant Shell Plan/i.test(sourceRegistry) && /Premium UI Plan/i.test(sourceRegistry) && /Offer Context Plan/i.test(sourceRegistry) && /Routing System Plan/i.test(sourceRegistry), "source map primary labels should be human-readable");
   push(checks, target.id, "source_map_preserves_file_metadata", /state-meta/i.test(script) && /PLANNING_CHAT_FIRST_SURFACE_ASSISTANT_SHELL\.md/i.test(sourceRegistry), "filenames remain inspectable as metadata");
   push(checks, target.id, "mode_aware_source_copy_exists", /function sourcePostureCopy/i.test(script) && /shellMode === ["']builder["']/i.test(script), "source map copy must separate builder and buyer/demo posture");

@@ -153,6 +153,7 @@ const compiledPack = {
   ],
   validationCommands: [
     "npm run validate:chat-first-shell",
+    "node tools/validate-chat-first-renderer-visual-contracts.js",
     "node tools/validate-chat-first-ingestion.js",
     "npm run validate:chrome-collapse",
     "npm run validate:live-artifact-eval",

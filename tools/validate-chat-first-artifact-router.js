@@ -63,7 +63,7 @@ const canonicalArtifactContracts = [
   {
     artifactId: "source-map",
     artifactType: "sourceMap",
-    rendererId: "nativeShellPanelRenderer",
+    rendererId: "sourceMapStageRenderer",
     stateAdapterId: "sourceMapAdapter"
   },
   {
@@ -87,13 +87,13 @@ const canonicalArtifactContracts = [
   {
     artifactId: "staged-spreadsheet",
     artifactType: "spreadsheet",
-    rendererId: "artifactStageRenderer",
+    rendererId: "spreadsheetStageRenderer",
     stateAdapterId: "spreadsheetStageAdapter"
   },
   {
     artifactId: "receipts-directory",
     artifactType: "receiptsDirectory",
-    rendererId: "nativeShellPanelRenderer",
+    rendererId: "receiptProofRenderer",
     stateAdapterId: "receiptStreamAdapter"
   },
   {
@@ -101,6 +101,12 @@ const canonicalArtifactContracts = [
     artifactType: "documentSurface",
     rendererId: "htmlCanvasDocumentStage",
     stateAdapterId: "documentDraftAdapter"
+  },
+  {
+    artifactId: "checklist",
+    artifactType: "checklist",
+    rendererId: "checklistStageRenderer",
+    stateAdapterId: "checklistAdapter"
   }
 ];
 
@@ -113,6 +119,8 @@ const canonicalCommandTargets = [
   ["compiler", "compiler-report"],
   ["spreadsheet", "staged-spreadsheet"],
   ["table", "staged-spreadsheet"],
+  ["checklist", "checklist"],
+  ["SOP", "checklist"],
   ["receipt", "receipts-directory"],
   ["draft", "surface-diagnosis-draft"],
   ["report", "surface-diagnosis-draft"],
@@ -122,6 +130,8 @@ const canonicalCommandTargets = [
 const requiredRegistryFields = [
   "artifactId",
   "artifactType",
+  "artifactPlane",
+  "visualContract",
   "title",
   "description",
   "commandAliases",
