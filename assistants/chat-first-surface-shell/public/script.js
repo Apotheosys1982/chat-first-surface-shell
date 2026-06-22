@@ -758,59 +758,105 @@
     const totalRows = stagedSpreadsheetRows.length;
     const activeRows = stagedSpreadsheetRows.filter((row) => row.sourcePosture === "Active").length;
     const reviewRows = stagedSpreadsheetRows.filter((row) => row.sourcePosture !== "Active").length;
-    const rowHtml = stagedSpreadsheetRows.map((row, index) => `
-      <div class="spreadsheet-row" role="row">
-        <div role="rowheader" data-label="#">${String(index + 1).padStart(2, "0")}</div>
-        <div role="cell" data-label="Area"><strong>${escapeHtml(row.area)}</strong></div>
-        <div role="cell" data-label="Owner">${escapeHtml(row.owner)}</div>
-        <div role="cell" data-label="Status"><span class="spreadsheet-badge">${escapeHtml(row.status)}</span></div>
-        <div role="cell" data-label="Source posture">${escapeHtml(row.sourcePosture)}</div>
-        <div role="cell" data-label="Next action">${escapeHtml(row.nextAction)}</div>
+    const columns = [
+      { letter: "A", label: "Area" },
+      { letter: "B", label: "Owner" },
+      { letter: "C", label: "Status" },
+      { letter: "D", label: "Source posture" },
+      { letter: "E", label: "Next action" },
+      { letter: "F", label: "Command" }
+    ];
+    const commandByArea = {
+      "Client onboarding": "checklist",
+      "Invoice exceptions": "source map",
+      "Support FAQ": "dashboard",
+      "Renewal handoff": "receipt",
+      "SOP cleanup": "SOP"
+    };
+    const rowHtml = stagedSpreadsheetRows.map((row, index) => {
+      const rowNumber = index + 1;
+      const selected = index === 0;
+      return `
+      <div class="spreadsheet-row" role="row" aria-rowindex="${rowNumber + 1}">
+        <div class="sheet-row-header" role="rowheader">${rowNumber}</div>
+        <div class="sheet-cell sheet-cell-text${selected ? " is-selected" : ""}" role="gridcell" data-cell="A${rowNumber + 1}">
+          <span>${escapeHtml(row.area)}</span>${selected ? `<i class="sheet-fill-handle" aria-hidden="true"></i>` : ""}
+        </div>
+        <div class="sheet-cell" role="gridcell" data-cell="B${rowNumber + 1}">${escapeHtml(row.owner)}</div>
+        <div class="sheet-cell" role="gridcell" data-cell="C${rowNumber + 1}"><span class="sheet-pill">${escapeHtml(row.status)}</span></div>
+        <div class="sheet-cell" role="gridcell" data-cell="D${rowNumber + 1}">${escapeHtml(row.sourcePosture)}</div>
+        <div class="sheet-cell sheet-cell-long" role="gridcell" data-cell="E${rowNumber + 1}">${escapeHtml(row.nextAction)}</div>
+        <div class="sheet-cell" role="gridcell" data-cell="F${rowNumber + 1}">${escapeHtml(commandByArea[row.area] || "inspect")}</div>
       </div>
-    `).join("");
+    `;
+    }).join("");
+    const emptyRowHtml = Array.from({ length: 12 }, (_, emptyIndex) => {
+      const rowNumber = stagedSpreadsheetRows.length + emptyIndex + 1;
+      return `
+        <div class="spreadsheet-row sheet-row-empty" role="row" aria-rowindex="${rowNumber + 1}">
+          <div class="sheet-row-header" role="rowheader">${rowNumber}</div>
+          ${columns.map((column) => `<div class="sheet-cell" role="gridcell" data-cell="${column.letter}${rowNumber + 1}"></div>`).join("")}
+        </div>
+      `;
+    }).join("");
     return `
       <div class="spreadsheet-shell">
-        <div class="spreadsheet-titlebar">
-          <div>
-            <p class="state-label">Spreadsheet surface</p>
-            <h3>Operations rows</h3>
+        <div class="spreadsheet-appbar">
+          <div class="sheet-file">
+            <strong>Operations workbook.xlsx</strong>
+            <span>${escapeHtml(String(totalRows))} active rows · ${escapeHtml(String(activeRows))} answerable · ${escapeHtml(String(reviewRows))} need review</span>
           </div>
-          <div class="spreadsheet-toolbar" aria-label="Spreadsheet toolbar">
+          <div class="sheet-app-actions" aria-label="Workbook actions">
+            <button type="button" disabled>Share</button>
+            <button type="button" disabled>Export</button>
+          </div>
+        </div>
+        <div class="sheet-menu" role="menubar" aria-label="Spreadsheet menu">
+          <button type="button" role="menuitem" disabled>File</button>
+          <button type="button" role="menuitem" disabled>Edit</button>
+          <button type="button" role="menuitem" disabled>View</button>
+          <button type="button" role="menuitem" disabled>Insert</button>
+          <button type="button" role="menuitem" disabled>Data</button>
+          <button type="button" role="menuitem" disabled>Review</button>
+        </div>
+        <div class="spreadsheet-toolbar" aria-label="Spreadsheet toolbar">
+          <div class="sheet-tool-group">
+            <button type="button" disabled>Undo</button>
+            <button type="button" disabled>Redo</button>
+          </div>
+          <div class="sheet-tool-group">
             <button type="button" disabled>Filter</button>
             <button type="button" disabled>Sort</button>
-            <button type="button" disabled>Export scaffold</button>
+            <button type="button" disabled>Freeze</button>
+          </div>
+          <div class="sheet-tool-group">
+            <button type="button" disabled>Source</button>
+            <button type="button" disabled>Validate</button>
           </div>
         </div>
-        <div class="spreadsheet-status-strip">
-          <div><span>Rows</span><strong>${escapeHtml(String(totalRows))}</strong></div>
-          <div><span>Active source</span><strong>${escapeHtml(String(activeRows))}</strong></div>
-          <div><span>Needs review</span><strong>${escapeHtml(String(reviewRows))}</strong></div>
-          <div><span>Renderer</span><strong>spreadsheetStageRenderer</strong></div>
+        <div class="spreadsheet-formula-bar" aria-label="Formula bar">
+          <span class="sheet-name-box">A2</span>
+          <span class="sheet-fx">fx</span>
+          <div class="sheet-formula-input">=IF(D2="Active","Answerable","Needs review")</div>
         </div>
-        <div class="spreadsheet-grid" role="table" aria-label="Seeded operations spreadsheet">
-          <div class="spreadsheet-header" role="row">
-            <div role="columnheader">#</div>
-            <div role="columnheader">Area</div>
-            <div role="columnheader">Owner</div>
-            <div role="columnheader">Status</div>
-            <div role="columnheader">Source posture</div>
-            <div role="columnheader">Next action</div>
+        <div class="spreadsheet-grid" role="grid" aria-label="Seeded operations spreadsheet" aria-rowcount="${stagedSpreadsheetRows.length + 13}" aria-colcount="${columns.length}">
+          <div class="sheet-column-header" role="row" aria-rowindex="1">
+            <div class="sheet-corner" role="columnheader"></div>
+            ${columns.map((column) => `<div class="sheet-column" role="columnheader" aria-label="${escapeHtml(column.label)}"><span>${escapeHtml(column.letter)}</span><small>${escapeHtml(column.label)}</small></div>`).join("")}
           </div>
           ${rowHtml}
+          ${emptyRowHtml}
         </div>
-        <div class="spreadsheet-boundary">
-          <div>
-            <div>
-              <strong>Seeded artifact, not upload parser</strong>
-              <span>PDF, DOCX, image, and uploaded spreadsheet files still stay metadata-only unless parser/OCR/source mapping support exists.</span>
-            </div>
-          </div>
-          <div>
-            <div>
-              <strong>Registry path preserved</strong>
-              <span>Spreadsheet and table commands resolve to <code>staged-spreadsheet</code>, then use <code>spreadsheetStageAdapter</code> and <code>spreadsheetStageRenderer</code>.</span>
-            </div>
-          </div>
+        <div class="sheet-tab-strip" aria-label="Workbook sheets">
+          <button type="button" class="sheet-tab is-active" disabled>Operations</button>
+          <button type="button" class="sheet-tab" disabled>Sources</button>
+          <button type="button" class="sheet-tab" disabled>Validation</button>
+          <button type="button" class="sheet-tab sheet-tab-add" disabled>+</button>
+        </div>
+        <div class="sheet-statusbar">
+          <span>Ready</span>
+          <span>Renderer: spreadsheetStageRenderer</span>
+          <span>Adapter: spreadsheetStageAdapter</span>
         </div>
       </div>
     `;

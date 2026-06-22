@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T05:18:02.628Z",
+  "generatedAt": "2026-06-22T05:39:57.824Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T051606Z",
+  "latestEventId": "event-20260622T053813Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T053813Z-spreadsheet-app-grid-correction.md",
+      "filename": "20260622T053813Z-spreadsheet-app-grid-correction.md",
+      "timestamp": "20260622T053813Z",
+      "label": "Spreadsheet app grid correction",
+      "slug": "spreadsheet-app-grid-correction"
+    },
     {
       "path": "receipts/20260622T051606Z-renderer-visual-contracts.md",
       "filename": "20260622T051606Z-renderer-visual-contracts.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T024905Z",
       "label": "Scroll stability + chrome collapse",
       "slug": "chat-first-scroll-stability"
-    },
-    {
-      "path": "receipts/20260622T023851Z-chat-first-viewport-lock.md",
-      "filename": "20260622T023851Z-chat-first-viewport-lock.md",
-      "timestamp": "20260622T023851Z",
-      "label": "Viewport lock + mobile scroll",
-      "slug": "chat-first-viewport-lock"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T053813Z-spreadsheet-app-grid-correction.log",
+      "filename": "20260622T053813Z-spreadsheet-app-grid-correction.log",
+      "timestamp": "20260622T053813Z",
+      "label": "Spreadsheet app grid correction",
+      "slug": "spreadsheet-app-grid-correction"
+    },
     {
       "path": "logs/20260622T051606Z-renderer-visual-contracts.log",
       "filename": "20260622T051606Z-renderer-visual-contracts.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T033650Z",
       "label": "Unified artifact open path",
       "slug": "chat-first-artifact-unified-open-path"
-    },
-    {
-      "path": "logs/20260622T031504Z-chat-first-chrome-direction.log",
-      "filename": "20260622T031504Z-chat-first-chrome-direction.log",
-      "timestamp": "20260622T031504Z",
-      "label": "Chrome direction fidelity",
-      "slug": "chat-first-chrome-direction"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T053813Z-spreadsheet-app-grid-correction.sha256",
+      "filename": "20260622T053813Z-spreadsheet-app-grid-correction.sha256",
+      "timestamp": "20260622T053813Z",
+      "label": "Spreadsheet app grid correction",
+      "slug": "spreadsheet-app-grid-correction"
+    },
     {
       "path": "checksums/20260622T051606Z-renderer-visual-contracts.sha256",
       "filename": "20260622T051606Z-renderer-visual-contracts.sha256",
@@ -139,13 +146,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T033650Z",
       "label": "Unified artifact open path",
       "slug": "chat-first-artifact-unified-open-path"
-    },
-    {
-      "path": "checksums/20260622T031504Z-chat-first-chrome-direction.sha256",
-      "filename": "20260622T031504Z-chat-first-chrome-direction.sha256",
-      "timestamp": "20260622T031504Z",
-      "label": "Chrome direction fidelity",
-      "slug": "chat-first-chrome-direction"
     }
   ],
   "validations": [

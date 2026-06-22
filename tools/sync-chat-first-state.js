@@ -21,6 +21,7 @@ const friendlyLabelBySlug = {
   "chat-first-artifact-unified-open-path": "Unified artifact open path",
   "chat-first-canonical-artifact-law": "Canonical artifact law",
   "spreadsheet-table-artifact-stage": "Spreadsheet table artifact stage",
+  "spreadsheet-app-grid-correction": "Spreadsheet app grid correction",
   "spreadsheet-stage-live-evaluation": "Spreadsheet stage live evaluation",
   "renderer-visual-contracts": "Renderer visual contracts",
   "live-artifact-evaluation-protocol": "Live artifact evaluation protocol",

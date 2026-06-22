@@ -71,7 +71,7 @@ const rendererMarkers = [
   },
   {
     id: "spreadsheet_visual_grammar",
-    markers: ["spreadsheet-shell", "spreadsheet-titlebar", "spreadsheet-grid", "spreadsheet-toolbar"]
+    markers: ["spreadsheet-shell", "spreadsheet-grid", "spreadsheet-formula-bar", "sheet-column-header", "sheet-cell", "sheet-tab-strip"]
   },
   {
     id: "document_visual_grammar",
@@ -111,6 +111,11 @@ function extractRegistry(script) {
   } catch (error) {
     return null;
   }
+}
+
+function cssRuleBlocks(css, selector) {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return Array.from(css.matchAll(new RegExp(`${escaped}\\s*\\{[^}]*\\}`, "gi"))).map((match) => match[0]);
 }
 
 function validateTarget(target, checks) {
@@ -192,6 +197,21 @@ function validateTarget(target, checks) {
       markerSet.markers.join(", ")
     );
   }
+
+  const spreadsheetRowBlocks = cssRuleBlocks(css, ".spreadsheet-row");
+  const spreadsheetHeaderBlocks = cssRuleBlocks(css, ".spreadsheet-header");
+  push(
+    checks,
+    target.id,
+    "spreadsheet_keeps_grid_on_mobile",
+    !spreadsheetHeaderBlocks.some((block) => /display\s*:\s*none/i.test(block)) &&
+      !spreadsheetRowBlocks.some((block) => /grid-template-columns\s*:\s*1fr/i.test(block)) &&
+      !/\.spreadsheet-row\s*>\s*div::before/i.test(css) &&
+      /role=["']grid["']/i.test(script) &&
+      /sheet-column-header/i.test(script) &&
+      /spreadsheet-formula-bar/i.test(script),
+    "spreadsheet renderer must stay a grid, not collapse into card rows"
+  );
 }
 
 const checks = [];

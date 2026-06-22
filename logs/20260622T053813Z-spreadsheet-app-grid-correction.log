@@ -1,0 +1,50 @@
+2026-06-22T05:38:13Z spreadsheet-app-grid-correction
+
+Scope:
+- Corrected staged spreadsheet renderer from card/report layout to workbook-style app grid.
+- Preserved canonical artifact route: staged-spreadsheet -> spreadsheetStageAdapter -> spreadsheetStageRenderer.
+- Added formula bar, column letters, row headers, sheet cells, active selection, sheet tabs, and status bar.
+- Removed mobile card-conversion behavior from the spreadsheet visual contract.
+- Added validation against hidden headers, one-column spreadsheet rows, and data-label pseudo-card conversion.
+
+HTML-in-Canvas finding:
+- Native document stage checks drawElementImage() and requestPaint().
+- Current browser path does not expose those APIs.
+- The renderer falls back to DOM with fallback.innerHTML = documentNode.outerHTML.
+- HTML-in-Canvas remains experimental, not the production artifact strategy.
+
+Local in-app browser evidence:
+- Mobile URL: http://127.0.0.1:8899/index.html?v=spreadsheet-app-grid-live-local-2
+- Mobile viewport: 393x852
+- Command: spreadsheet
+- Page width: 393/393
+- window.scrollX: 0
+- Grid client/scroll width: 393/1076
+- Grid internal horizontal scroll after gesture: 520
+- Page window.scrollX after grid gesture: 0
+- Formula bar: present
+- Column header: present
+- Selected cell: present
+- Sheet tabs: present
+- Console warnings/errors: none
+
+Desktop in-app browser evidence:
+- Desktop URL: http://127.0.0.1:8899/index.html?v=spreadsheet-app-grid-live-desktop
+- Desktop viewport: 1280x900
+- Page width: 1280/1280
+- window.scrollX: 0
+- Formula bar: present
+- Column header: present
+- Selected cell: present
+- Sheet tabs: present
+- Console warnings/errors: none
+
+Validation completed before receipt:
+- npm run validate:js
+- node tools/validate-chat-first-renderer-visual-contracts.js
+
+Pending:
+- Sync generated state.
+- Generate checksum manifest.
+- Run npm run validate.
+- Commit, push, and deploy to Netlify production.
