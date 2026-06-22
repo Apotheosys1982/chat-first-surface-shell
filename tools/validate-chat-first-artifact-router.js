@@ -16,6 +16,7 @@ const targets = [
 ];
 
 const requiredCommands = [
+  "artifacts",
   "dashboard",
   "spreadsheet",
   "source map",
@@ -34,7 +35,8 @@ const requiredCommands = [
 ];
 
 const requiredSeededArtifacts = [
-  "artifact-dashboard",
+  "artifact-directory",
+  "project-state-dashboard",
   "source-map",
   "document-inbox",
   "event-ledger",
@@ -58,7 +60,12 @@ const requiredRegistryFields = [
   "exportable",
   "printable",
   "origin",
-  "visibilityMode"
+  "visibilityMode",
+  "stateAdapterId",
+  "stageMode",
+  "sourceDependencies",
+  "status",
+  "actions"
 ];
 
 function exists(relativePath) {
@@ -90,6 +97,11 @@ function validateTarget(target, checks) {
   push(checks, target.id, "resolver_exists", /function\s+resolveArtifactCommand\s*\(/i.test(script), "resolveArtifactCommand(input, context)");
   push(checks, target.id, "resolver_runs_before_answer_route", resolveCallIndex !== -1 && routeCallIndex !== -1 && resolveCallIndex < routeCallIndex, "submitPrompt should check artifact commands before route(input)");
   push(checks, target.id, "direct_open_path_exists", /type:\s*["']direct_open["']/i.test(script) && /openArtifact\(artifactCommand\.artifactId/i.test(script), "clear command opens artifact directly");
+  push(checks, target.id, "legacy_dashboard_id_removed", !/artifact-dashboard/i.test(script), "dashboard must not keep the legacy artifact-dashboard path");
+  push(checks, target.id, "canonical_dashboard_id_registered", /artifactId:\s*["']project-state-dashboard["'][\s\S]*artifactType:\s*["']dashboard["'][\s\S]*rendererId:\s*["']dashboardStageRenderer["'][\s\S]*stateAdapterId:\s*["']projectStateDashboardAdapter["']/i.test(script), "one canonical staged dashboard artifact");
+  push(checks, target.id, "artifact_directory_registered", /artifactId:\s*["']artifact-directory["'][\s\S]*artifactType:\s*["']artifactDirectory["'][\s\S]*rendererId:\s*["']nativeShellPanelRenderer["']/i.test(script), "artifact list is a registered control-plane artifact");
+  push(checks, target.id, "open_artifact_registry_selected_renderer", /const\s+registryEntry\s*=\s*artifactRegistry\.find/i.test(script) && /rendererRegistry\[registryEntry\.rendererId\]/i.test(script) && /stateAdapterRegistry\[registryEntry\.stateAdapterId\]/i.test(script), "openArtifact must choose adapter and renderer from registry");
+  push(checks, target.id, "artifact_directory_clicks_same_open_path", /function\s+artifactDirectoryHtml\s*\([\s\S]*data-artifact-open="\$\{escapeHtml\(entry\.artifactId\)\}"/i.test(script), "artifact directory rows use data-artifact-open with registry artifact IDs");
   push(checks, target.id, "ambiguous_picker_path_exists", /type:\s*["']ambiguous_picker["']/i.test(script) && /function\s+artifactPickerHtml\s*\(/i.test(script), "multiple matches produce compact picker");
   push(checks, target.id, "missing_artifact_path_exists", /type:\s*["']missing_artifact["']/i.test(script) && /No \${escapeHtml\(result\.artifactType\)} artifact is registered/i.test(script), "missing commands produce compact fallback");
   push(checks, target.id, "status_message_is_short", /Opening document stage\./i.test(script) && /Opening \$\{matches\[0\]\.title\.toLowerCase\(\)\}\./i.test(script), "direct command status copy");

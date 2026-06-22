@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T03:15:56.411Z",
+  "generatedAt": "2026-06-22T03:37:36.289Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T031504Z",
+  "latestEventId": "event-20260622T033650Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T033650Z-chat-first-artifact-unified-open-path.md",
+      "filename": "20260622T033650Z-chat-first-artifact-unified-open-path.md",
+      "timestamp": "20260622T033650Z",
+      "label": "Unified artifact open path",
+      "slug": "chat-first-artifact-unified-open-path"
+    },
     {
       "path": "receipts/20260622T031504Z-chat-first-chrome-direction.md",
       "filename": "20260622T031504Z-chat-first-chrome-direction.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260621T151818Z",
       "label": "Chat First Visible Source Inbox Storage",
       "slug": "chat-first-visible-source-inbox-storage"
-    },
-    {
-      "path": "receipts/20260621T150711Z-chat-first-controlled-ingestion-route-compiler.md",
-      "filename": "20260621T150711Z-chat-first-controlled-ingestion-route-compiler.md",
-      "timestamp": "20260621T150711Z",
-      "label": "Controlled ingestion + route compiler",
-      "slug": "chat-first-controlled-ingestion-route-compiler"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T033650Z-chat-first-artifact-unified-open-path.log",
+      "filename": "20260622T033650Z-chat-first-artifact-unified-open-path.log",
+      "timestamp": "20260622T033650Z",
+      "label": "Unified artifact open path",
+      "slug": "chat-first-artifact-unified-open-path"
+    },
     {
       "path": "logs/20260622T031504Z-chat-first-chrome-direction.log",
       "filename": "20260622T031504Z-chat-first-chrome-direction.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T012134Z",
       "label": "HTML-in-Canvas document stage",
       "slug": "html-canvas-document-stage-spike"
-    },
-    {
-      "path": "logs/20260621T191436Z-artifact-command-router-registry-spine.log",
-      "filename": "20260621T191436Z-artifact-command-router-registry-spine.log",
-      "timestamp": "20260621T191436Z",
-      "label": "Artifact command router",
-      "slug": "artifact-command-router-registry-spine"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T033650Z-chat-first-artifact-unified-open-path.sha256",
+      "filename": "20260622T033650Z-chat-first-artifact-unified-open-path.sha256",
+      "timestamp": "20260622T033650Z",
+      "label": "Unified artifact open path",
+      "slug": "chat-first-artifact-unified-open-path"
+    },
     {
       "path": "checksums/20260622T031504Z-chat-first-chrome-direction.sha256",
       "filename": "20260622T031504Z-chat-first-chrome-direction.sha256",
@@ -139,13 +146,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T012134Z",
       "label": "HTML-in-Canvas document stage",
       "slug": "html-canvas-document-stage-spike"
-    },
-    {
-      "path": "checksums/20260621T191436Z-artifact-command-router-registry-spine.sha256",
-      "filename": "20260621T191436Z-artifact-command-router-registry-spine.sha256",
-      "timestamp": "20260621T191436Z",
-      "label": "Artifact command router",
-      "slug": "artifact-command-router-registry-spine"
     }
   ],
   "validations": [

@@ -902,6 +902,22 @@ h1 {
   border-bottom: 1px solid rgba(255, 255, 255, 0.058);
 }
 
+.artifact-directory-row {
+  width: 100%;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.artifact-directory-row:hover,
+.artifact-directory-row:focus-visible {
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .state-row strong,
 .state-row span {
   display: block;

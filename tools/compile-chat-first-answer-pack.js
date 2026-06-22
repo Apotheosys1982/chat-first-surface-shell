@@ -75,7 +75,7 @@ const answerRooms = [
     routeFamily: "project_state",
     pattern: "event\\s+ledger|state\\s+events?|events?|what\\s+changed\\s+recently|recent\\s+activity|what\\s+did\\s+codex\\s+update",
     answer: `The latest compiled event is ${latestEvent?.title || "not synced yet"}. Events are not magic memory; they are structured records that can create route seeds only after compilation and validation.`,
-    actions: ["event-ledger", "artifact-dashboard", "activity-log"]
+    actions: ["event-ledger", "project-state-dashboard", "activity-log"]
   },
   {
     id: "receipt_validation_status",
@@ -103,7 +103,7 @@ const answerRooms = [
     routeFamily: "artifact_rendering",
     pattern: "render|artifact|dashboard|view|table|sop|checklist",
     answer: "The shell can render registered artifacts: dashboards, event ledger, source registry, source inbox, compiler report, source maps, checklists, receipts, and workflow views. Render buttons point to known artifacts, not improvised destinations.",
-    actions: ["artifact-dashboard", "event-ledger", "source-registry", "compiler-report"]
+    actions: ["project-state-dashboard", "artifact-directory", "event-ledger", "source-registry", "compiler-report"]
   },
   {
     id: "not_generic_chatbot",

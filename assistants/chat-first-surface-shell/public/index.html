@@ -14,10 +14,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./motion/motion-tokens.css?v=20260622-chrome-direction">
-    <link rel="stylesheet" href="./motion/view-transition-library.css?v=20260622-chrome-direction">
-    <link rel="stylesheet" href="./motion/shared-element-library.css?v=20260622-chrome-direction">
-    <link rel="stylesheet" href="./styles.css?v=20260622-chrome-direction">
+    <link rel="stylesheet" href="./motion/motion-tokens.css?v=20260622-artifact-unified">
+    <link rel="stylesheet" href="./motion/view-transition-library.css?v=20260622-artifact-unified">
+    <link rel="stylesheet" href="./motion/shared-element-library.css?v=20260622-artifact-unified">
+    <link rel="stylesheet" href="./styles.css?v=20260622-artifact-unified">
   </head>
   <body>
     <div class="app-shell wm-motion-ready" data-shell>
@@ -44,7 +44,7 @@
             <span aria-hidden="true">⇣</span>
             <span>Source inbox</span>
           </button>
-          <button type="button" class="tray-item" data-artifact-open="artifact-dashboard">
+          <button type="button" class="tray-item" data-artifact-open="artifact-directory">
             <span aria-hidden="true">▦</span>
             <span>Artifacts</span>
           </button>
@@ -60,7 +60,7 @@
         <div class="tray-section tray-activity" data-tray-activity>
           <p class="tray-label">Recent activity</p>
           <div class="tray-activity-list" data-tray-activity-list>
-            <button type="button" class="recent-item" data-artifact-open="artifact-dashboard">
+            <button type="button" class="recent-item" data-artifact-open="project-state-dashboard">
               <strong>Project state dashboard</strong>
               <span>Shell status, gates, current fixes</span>
             </button>
@@ -110,7 +110,7 @@
             <h2>The assistant is the app.</h2>
             <p>Ask from approved sources. Render the right view. Keep working. This shell can inspect the source map, open the dashboard, show receipts, or explain what it should refuse.</p>
             <div class="render-actions" aria-label="Suggested render actions">
-              <button type="button" class="artifact-action wm-motion-focusable" data-artifact-open="artifact-dashboard">
+              <button type="button" class="artifact-action wm-motion-focusable" data-artifact-open="project-state-dashboard">
                 <span class="artifact-icon" aria-hidden="true">▦</span>
                 <span>
                   <strong>Open dashboard</strong>
@@ -180,10 +180,10 @@
         </div>
       </section>
     </div>
-    <script src="./project-state.js?v=20260622-chrome-direction"></script>
-    <script src="./state-events.js?v=20260622-chrome-direction"></script>
-    <script src="./source-registry.js?v=20260622-chrome-direction"></script>
-    <script src="./compiled-answer-pack.js?v=20260622-chrome-direction"></script>
-    <script src="./script.js?v=20260622-chrome-direction"></script>
+    <script src="./project-state.js?v=20260622-artifact-unified"></script>
+    <script src="./state-events.js?v=20260622-artifact-unified"></script>
+    <script src="./source-registry.js?v=20260622-artifact-unified"></script>
+    <script src="./compiled-answer-pack.js?v=20260622-artifact-unified"></script>
+    <script src="./script.js?v=20260622-artifact-unified"></script>
   </body>
 </html>

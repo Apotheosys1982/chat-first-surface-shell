@@ -119,7 +119,7 @@
     const title = String(item.title || "");
     const status = String(item.status || "");
     if (/document|source inbox/i.test(title)) return 'data-artifact-open="document-inbox"';
-    if (/dashboard|project state/i.test(title)) return 'data-artifact-open="artifact-dashboard"';
+    if (/dashboard|project state/i.test(title)) return 'data-artifact-open="project-state-dashboard"';
     if (/receipt|checksum/i.test(title) || /receipt/i.test(status)) return 'data-artifact-open="validation-receipt"';
     return 'data-artifact-open="activity-log"';
   }
@@ -693,8 +693,34 @@
     });
   }
 
+  function artifactDirectoryHtml() {
+    const visibleArtifacts = artifactRegistry.filter((entry) => entry.artifactId !== "artifact-directory");
+    const stageLabel = (entry) => entry.stageMode === "artifactStage" ? "Work artifact" : "Control plane";
+    return `
+      <div class="state-section artifact-directory-view">
+        <h3>Artifact directory</h3>
+        <p>Registered artifacts open through one path: command router or list click resolves an artifact ID, then <code>openArtifact(artifactId)</code> uses the registry renderer.</p>
+        <div class="state-list">${visibleArtifacts.map((entry) => `
+          <button type="button" class="state-row artifact-directory-row" data-artifact-open="${escapeHtml(entry.artifactId)}">
+            <div>
+              <strong>${escapeHtml(entry.title)}</strong>
+              <span>${escapeHtml(entry.description)}</span>
+              <small class="state-meta">${escapeHtml(entry.artifactId)} · ${escapeHtml(entry.rendererId)} · ${escapeHtml(entry.stateAdapterId || "staticArtifactAdapter")}</small>
+            </div>
+            <em>${escapeHtml(stageLabel(entry))}</em>
+          </button>
+        `).join("")}</div>
+      </div>
+    `;
+  }
+
   const artifacts = {
-    "artifact-dashboard": {
+    "artifact-directory": {
+      title: "Artifact directory",
+      meta: "Control plane · Registry",
+      html: () => artifactDirectoryHtml()
+    },
+    "project-state-dashboard": {
       title: "Project state dashboard",
       meta: "Runtime state · Local build · Active",
       html: `
@@ -803,7 +829,6 @@
     "surface-diagnosis-draft": {
       title: "Surface Diagnosis Draft",
       meta: "Document stage · HTML-in-Canvas",
-      rendererId: "htmlCanvasDocumentStage",
       html: () => documentDraftStageHtml()
     },
     "extracted-text": {
@@ -867,7 +892,49 @@
     }
   };
 
+  function renderArtifactHtml(artifact, context = {}) {
+    artifactBody.innerHTML = typeof artifact.html === "function"
+      ? artifact.html(context.adaptedState, context)
+      : artifact.html;
+  }
+
+  function renderNativeShellPanel(artifact, registryEntry, context) {
+    renderArtifactHtml(artifact, context);
+  }
+
+  function renderDashboardStage(artifact, registryEntry, context) {
+    renderArtifactHtml(artifact, context);
+  }
+
+  function renderGenericArtifactStage(artifact, registryEntry, context) {
+    renderArtifactHtml(artifact, context);
+  }
+
   const rendererRegistry = {
+    nativeShellPanelRenderer: {
+      rendererId: "nativeShellPanelRenderer",
+      artifactTypesSupported: ["artifactDirectory", "sourceMap", "sourceRegistry", "sourceInbox", "extractedText", "sourceMapDraft", "eventLedger", "compilerReport", "receipt"],
+      stageType: "shellPanel",
+      renderFunctionName: "renderNativeShellPanel",
+      closeBehavior: "returnToChatState",
+      render: renderNativeShellPanel
+    },
+    dashboardStageRenderer: {
+      rendererId: "dashboardStageRenderer",
+      artifactTypesSupported: ["dashboard"],
+      stageType: "artifactStage",
+      renderFunctionName: "renderDashboardStage",
+      closeBehavior: "returnToChatState",
+      render: renderDashboardStage
+    },
+    artifactStageRenderer: {
+      rendererId: "artifactStageRenderer",
+      artifactTypesSupported: ["checklist", "sop", "processMap"],
+      stageType: "artifactStage",
+      renderFunctionName: "renderGenericArtifactStage",
+      closeBehavior: "returnToChatState",
+      render: renderGenericArtifactStage
+    },
     htmlCanvasDocumentStage: {
       rendererId: "htmlCanvasDocumentStage",
       artifactTypesSupported: ["documentSurface", "report", "draft"],
@@ -888,21 +955,74 @@
     }
   };
 
+  const stateAdapterRegistry = {
+    staticArtifactAdapter: (context) => context,
+    artifactDirectoryAdapter: (context) => ({
+      ...context,
+      registeredArtifacts: artifactRegistry.map((entry) => ({ ...entry }))
+    }),
+    projectStateDashboardAdapter: (context) => ({
+      ...context,
+      latestReceipt,
+      latestChecksum,
+      latestEvent,
+      recentReceipts,
+      recentLogs,
+      recentChecksums,
+      validations: projectState.validations || []
+    }),
+    sourceMapAdapter: (context) => ({ ...context, sourceDocuments, uploadedDocuments }),
+    sourceRegistryAdapter: (context) => ({ ...context, sourceRegistry, uploadedDocuments }),
+    sourceInboxAdapter: (context) => ({ ...context, uploadedDocuments }),
+    documentDraftAdapter: (context) => context,
+    eventLedgerAdapter: (context) => ({ ...context, stateEvents }),
+    activityLogAdapter: (context) => ({ ...context, projectActivity }),
+    compilerReportAdapter: (context) => ({ ...context, compiledAnswerPack }),
+    receiptStreamAdapter: (context) => ({ ...context, recentReceipts, recentLogs, recentChecksums }),
+    checklistAdapter: (context) => context
+  };
+
   const artifactRegistry = [
     {
-      artifactId: "artifact-dashboard",
+      artifactId: "project-state-dashboard",
       artifactType: "dashboard",
       title: "Project state dashboard",
       description: "Current shell status, recent receipts, validation gates, source posture, and working activity.",
       commandAliases: ["dashboard", "metrics", "report view", "board", "project state", "status"],
-      rendererId: "project-state-dashboard-renderer",
+      rendererId: "dashboardStageRenderer",
+      stateAdapterId: "projectStateDashboardAdapter",
+      stageMode: "artifactStage",
+      sourceDependencies: ["project-state", "state-events", "source-registry", "compiled-answer-pack", "receipts", "checksums"],
+      status: "Active",
+      actions: ["open_event_ledger", "open_source_registry", "inspect_receipts"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "artifactModal",
+      renderMode: "artifactStage",
       editable: false,
       exportable: false,
       printable: false,
       origin: "compiledProjectState",
+      visibilityMode: "builder"
+    },
+    {
+      artifactId: "artifact-directory",
+      artifactType: "artifactDirectory",
+      title: "Artifact directory",
+      description: "Registry-backed directory for opening artifacts through the same path as composer commands.",
+      commandAliases: ["artifacts", "artifact list", "artifact directory", "views"],
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "artifactDirectoryAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["artifact-registry"],
+      status: "Active",
+      actions: ["open_registered_artifact"],
+      sourceStatusRequirement: "Active",
+      ingestionStatusRequirement: "Compiled",
+      renderMode: "shellPanel",
+      editable: false,
+      exportable: false,
+      printable: false,
+      origin: "artifactRegistry",
       visibilityMode: "builder"
     },
     {
@@ -911,10 +1031,15 @@
       title: "Source map",
       description: "Approved source spine plus local quarantined upload overlay.",
       commandAliases: ["source map", "sources", "approved sources", "source posture"],
-      rendererId: "source-map-renderer",
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "sourceMapAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["source-registry", "runtime-source-overlay"],
+      status: "Active",
+      actions: ["inspect_sources", "open_source_registry"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "artifactModal",
+      renderMode: "shellPanel",
       editable: false,
       exportable: false,
       printable: false,
@@ -927,10 +1052,15 @@
       title: "Source registry",
       description: "Source and ingestion status records for base sources and runtime overlays.",
       commandAliases: ["source registry", "registry", "source status", "ingestion status"],
-      rendererId: "source-registry-renderer",
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "sourceRegistryAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["source-registry", "runtime-source-overlay"],
+      status: "Active",
+      actions: ["inspect_statuses", "open_source_map"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "artifactModal",
+      renderMode: "shellPanel",
       editable: false,
       exportable: false,
       printable: false,
@@ -943,15 +1073,62 @@
       title: "Source inbox",
       description: "Local uploaded source candidates, extracted previews, and source-map needs.",
       commandAliases: ["inbox", "source inbox", "uploads", "uploaded files", "candidates"],
-      rendererId: "source-inbox-renderer",
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "sourceInboxAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["runtime-source-overlay"],
+      status: "Active",
+      actions: ["import_document", "inspect_extracted_text"],
       sourceStatusRequirement: "Uncertain",
       ingestionStatusRequirement: "Uploaded",
-      renderMode: "artifactModal",
+      renderMode: "shellPanel",
       editable: false,
       exportable: false,
       printable: false,
       origin: "runtimeUploadOverlay",
       visibilityMode: "all"
+    },
+    {
+      artifactId: "extracted-text",
+      artifactType: "extractedText",
+      title: "Extracted text",
+      description: "Searchable local upload previews that remain unapproved until review.",
+      commandAliases: ["extracted text", "upload text", "search previews"],
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "sourceInboxAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["runtime-source-overlay"],
+      status: "Unapproved",
+      actions: ["inspect_preview", "open_source_inbox"],
+      sourceStatusRequirement: "Uncertain",
+      ingestionStatusRequirement: "Extracted",
+      renderMode: "shellPanel",
+      editable: false,
+      exportable: false,
+      printable: false,
+      origin: "runtimeUploadOverlay",
+      visibilityMode: "builder"
+    },
+    {
+      artifactId: "source-map-draft",
+      artifactType: "sourceMapDraft",
+      title: "Source map draft",
+      description: "Draft source-map candidates from local uploads that need review before compilation.",
+      commandAliases: ["source map draft", "draft source map", "source candidates"],
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "sourceMapAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["runtime-source-overlay", "source-registry"],
+      status: "Needs review",
+      actions: ["inspect_candidates", "open_source_registry"],
+      sourceStatusRequirement: "Uncertain",
+      ingestionStatusRequirement: "Needs source map",
+      renderMode: "shellPanel",
+      editable: false,
+      exportable: false,
+      printable: false,
+      origin: "runtimeUploadOverlay",
+      visibilityMode: "builder"
     },
     {
       artifactId: "surface-diagnosis-draft",
@@ -962,9 +1139,13 @@
       rendererId: "htmlCanvasDocumentStage",
       stageType: "htmlInCanvas",
       stateAdapterId: "documentDraftAdapter",
+      stageMode: "artifactStage",
+      sourceDependencies: ["project-state", "compiled-answer-pack"],
+      status: "Active",
+      actions: ["render_document_stage"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "fullViewportArtifact",
+      renderMode: "artifactStage",
       editable: false,
       exportable: false,
       printable: false,
@@ -978,10 +1159,15 @@
       title: "Event ledger",
       description: "Receipt-backed Codex update events and state changes.",
       commandAliases: ["events", "event ledger", "recent changes", "changes"],
-      rendererId: "event-ledger-renderer",
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "eventLedgerAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["state-events", "receipts"],
+      status: "Active",
+      actions: ["inspect_event", "open_receipts"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "artifactModal",
+      renderMode: "shellPanel",
       editable: false,
       exportable: false,
       printable: false,
@@ -994,10 +1180,15 @@
       title: "Recent hardening log",
       description: "Human-readable activity log for the current shell hardening sequence.",
       commandAliases: ["activity", "recent activity", "hardening log"],
-      rendererId: "activity-log-renderer",
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "activityLogAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["project-state", "receipts", "logs"],
+      status: "Active",
+      actions: ["inspect_activity"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "artifactModal",
+      renderMode: "shellPanel",
       editable: false,
       exportable: false,
       printable: false,
@@ -1010,10 +1201,15 @@
       title: "Compiler report",
       description: "Compiled answer rooms, route seeds, and bounded runtime invariant.",
       commandAliases: ["compiler", "compiler report", "answer pack", "route compiler"],
-      rendererId: "compiler-report-renderer",
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "compilerReportAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["compiled-answer-pack"],
+      status: "Active",
+      actions: ["inspect_answer_rooms"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "artifactModal",
+      renderMode: "shellPanel",
       editable: false,
       exportable: false,
       printable: false,
@@ -1026,10 +1222,15 @@
       title: "Receipt stream",
       description: "Latest receipts, logs, checksums, and validation gate state.",
       commandAliases: ["receipt", "receipts", "proof", "validation", "checksum"],
-      rendererId: "receipt-stream-renderer",
+      rendererId: "nativeShellPanelRenderer",
+      stateAdapterId: "receiptStreamAdapter",
+      stageMode: "shellPanel",
+      sourceDependencies: ["receipts", "logs", "checksums", "validation-gates"],
+      status: "Active",
+      actions: ["inspect_receipt", "verify_checksum"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "artifactModal",
+      renderMode: "shellPanel",
       editable: false,
       exportable: false,
       printable: false,
@@ -1042,10 +1243,15 @@
       title: "Build checklist",
       description: "Seed checklist artifact for shell behavior and validation discipline.",
       commandAliases: ["checklist", "list", "steps", "task list", "sop", "procedure", "policy", "process", "operating procedure"],
-      rendererId: "checklist-renderer",
+      rendererId: "artifactStageRenderer",
+      stateAdapterId: "checklistAdapter",
+      stageMode: "artifactStage",
+      sourceDependencies: ["authored-demo-artifact"],
+      status: "Active",
+      actions: ["inspect_checklist"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
-      renderMode: "artifactModal",
+      renderMode: "artifactStage",
       editable: false,
       exportable: false,
       printable: false,
@@ -1055,7 +1261,8 @@
   ];
 
   const artifactCommandLexicon = [
-    { command: "dashboard", aliases: ["dashboard", "metrics", "report view", "board"], artifactTypes: ["dashboard"], preferredArtifactId: "artifact-dashboard" },
+    { command: "dashboard", aliases: ["dashboard", "metrics", "report view", "board"], artifactTypes: ["dashboard"], preferredArtifactId: "project-state-dashboard" },
+    { command: "artifacts", aliases: ["artifacts", "artifact list", "artifact directory", "views"], artifactTypes: ["artifactDirectory"], preferredArtifactId: "artifact-directory" },
     { command: "spreadsheet", aliases: ["spreadsheet", "sheet", "workbook", "csv", "table data"], artifactTypes: ["spreadsheet", "table"], missingType: "spreadsheet" },
     { command: "source map", aliases: ["source map", "sources", "approved sources", "source posture"], artifactTypes: ["sourceMap", "sourceRegistry"], preferredArtifactId: "source-map" },
     { command: "source registry", aliases: ["source registry", "registry", "source status", "ingestion status"], artifactTypes: ["sourceRegistry"], preferredArtifactId: "source-registry" },
@@ -1155,18 +1362,18 @@
   }
 
   function openArtifact(id, trigger) {
-    const artifact = artifacts[id];
-    if (!artifact || !artifactLayer) return;
     const registryEntry = artifactRegistry.find((entry) => entry.artifactId === id);
-    const renderer = rendererRegistry[registryEntry?.rendererId || artifact.rendererId];
+    const artifact = registryEntry ? artifacts[registryEntry.artifactId] : null;
+    if (!registryEntry || !artifact || !artifactLayer) return;
+    const stateAdapter = stateAdapterRegistry[registryEntry.stateAdapterId] || stateAdapterRegistry.staticArtifactAdapter;
+    const renderer = rendererRegistry[registryEntry.rendererId];
+    if (!renderer || typeof renderer.render !== "function") return;
+    const baseContext = { projectState, stateEvents, sourceRegistry, uploadedDocuments, compiledAnswerPack };
+    const adaptedState = stateAdapter({ artifact, registryEntry, ...baseContext });
     lastFocusTarget = trigger || document.activeElement;
-    artifactTitle.textContent = artifact.title;
+    artifactTitle.textContent = registryEntry.title || artifact.title;
     artifactMeta.textContent = artifact.meta;
-    if (renderer && typeof renderer.render === "function") {
-      renderer.render(artifact, registryEntry, { projectState, stateEvents, sourceRegistry, uploadedDocuments, compiledAnswerPack });
-    } else {
-      artifactBody.innerHTML = typeof artifact.html === "function" ? artifact.html() : artifact.html;
-    }
+    renderer.render(artifact, registryEntry, { ...baseContext, adaptedState });
     artifactBody.scrollTop = 0;
     artifactLayer.classList.add("is-open");
     artifactLayer.setAttribute("aria-hidden", "false");
@@ -1306,11 +1513,12 @@
   function actionsHtml(actions) {
     if (!actions?.length) return "";
     return `<div class="render-actions">${actions.map((id) => {
+      const registryEntry = artifactRegistry.find((entry) => entry.artifactId === id);
       const artifact = artifacts[id];
-      if (!artifact) return "";
+      if (!registryEntry || !artifact) return "";
       return `<button type="button" class="artifact-action wm-motion-focusable" data-artifact-open="${id}">
         <span class="artifact-icon" aria-hidden="true">▧</span>
-        <span><strong>${artifact.title}</strong><small>${artifact.meta}</small></span>
+        <span><strong>${escapeHtml(registryEntry.title)}</strong><small>${escapeHtml(registryEntry.artifactType)} · ${escapeHtml(registryEntry.status || "Registered")}</small></span>
       </button>`;
     }).join("")}</div>`;
   }

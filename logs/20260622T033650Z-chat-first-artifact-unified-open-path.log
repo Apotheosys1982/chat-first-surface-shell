@@ -1,0 +1,17 @@
+2026-06-22T03:36:50Z chat-first artifact unified open path
+
+Scope:
+- Removed the duplicate dashboard/directory path.
+- Registered artifact-directory as the Artifacts control-plane view.
+- Promoted project-state-dashboard as the one canonical dashboard artifact.
+- Made openArtifact select state adapter and renderer from the registry.
+
+Validation:
+- npm run validate:js: pass
+- npm run validate:chat-first-shell: pass
+- In-app Browser QA 393x852:
+  - no artifact-dashboard ID in rendered DOM
+  - composer command "dashboard" opened Project state dashboard
+  - tray Artifacts opened Artifact directory
+  - Artifact directory Project state dashboard row opened Project state dashboard
+  - console issues=0
