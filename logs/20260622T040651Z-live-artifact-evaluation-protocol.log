@@ -1,0 +1,16 @@
+2026-06-22T04:06:51Z live artifact evaluation protocol
+
+Scope:
+- Added a lattice review protocol for interactive app evaluation.
+- Added a Codex executable work-order template for live artifact testing.
+- Added validation that enforces the three review modes and evidence package requirements.
+
+Protocol:
+- Static Review Mode: reviewer reads the visible artifact and claims.
+- Behavior Review Mode: reviewer writes exact live interaction instructions for Codex.
+- Evidence Review Mode: council/reviewer judges Codex's returned evidence.
+
+Validation:
+- npm run validate:json: pass
+- npm run validate:js: pass
+- npm run validate:live-artifact-eval: pass, 17 checks, 0 failures

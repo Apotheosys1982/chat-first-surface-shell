@@ -20,6 +20,7 @@ const friendlyLabelBySlug = {
   "chat-first-chrome-direction": "Chrome direction fidelity",
   "chat-first-artifact-unified-open-path": "Unified artifact open path",
   "chat-first-canonical-artifact-law": "Canonical artifact law",
+  "live-artifact-evaluation-protocol": "Live artifact evaluation protocol",
   "chat-first-state-sync-layer": "State sync layer",
   "chat-first-artifact-modal-fullscreen": "Full-viewport artifacts",
   "chat-first-project-state-dashboard": "Project state dashboard",
@@ -46,6 +47,11 @@ const validationGates = [
     command: "npm run validate:chrome-collapse",
     status: "required",
     purpose: "Full chrome collapse and motion invariant"
+  },
+  {
+    command: "npm run validate:live-artifact-eval",
+    status: "required",
+    purpose: "Live artifact review protocol, Codex work order, and evidence package invariants"
   },
   {
     command: "npm run validate:checksum",
@@ -154,6 +160,56 @@ const approvedPlanningSources = [
     createdAt: "",
     updatedAt: "",
     summary: "Defines answer rooms, route precedence, confidence, lexicons, and artifact actions."
+  },
+  {
+    sourceId: "live-artifact-review-protocol",
+    title: "Lattice Live Artifact Review Protocol",
+    path: "docs/LATTICE_LIVE_ARTIFACT_REVIEW_PROTOCOL.md",
+    sourceType: "review_protocol",
+    origin: "codex",
+    visibilityScope: "devOnly",
+    sourceStatus: "Active",
+    ingestionStatus: "Approved",
+    extractionStatus: "extracted",
+    extractionMethod: "repo_text",
+    mimeType: "text/markdown",
+    sizeBytes: 0,
+    contentHash: "",
+    blobId: "",
+    canSearch: true,
+    canRender: true,
+    canAnswerFrom: true,
+    routeSeedStatus: "compiled",
+    approvalMode: "repo_controlled",
+    approvedBy: "Codex validated source spine",
+    createdAt: "",
+    updatedAt: "",
+    summary: "Defines static review, behavior review, and evidence review for interactive artifacts."
+  },
+  {
+    sourceId: "live-artifact-eval-work-order",
+    title: "Live Artifact Evaluation Work Order",
+    path: "docs/LIVE_ARTIFACT_EVAL_WORK_ORDER.md",
+    sourceType: "review_work_order",
+    origin: "codex",
+    visibilityScope: "devOnly",
+    sourceStatus: "Active",
+    ingestionStatus: "Approved",
+    extractionStatus: "extracted",
+    extractionMethod: "repo_text",
+    mimeType: "text/markdown",
+    sizeBytes: 0,
+    contentHash: "",
+    blobId: "",
+    canSearch: true,
+    canRender: true,
+    canAnswerFrom: true,
+    routeSeedStatus: "compiled",
+    approvalMode: "repo_controlled",
+    approvedBy: "Codex validated source spine",
+    createdAt: "",
+    updatedAt: "",
+    summary: "Defines the executable Codex checklist and evidence package for live app evaluations."
   }
 ];
 

@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T03:52:16.313Z",
+  "generatedAt": "2026-06-22T04:07:31.342Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T035108Z",
+  "latestEventId": "event-20260622T040651Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T040651Z-live-artifact-evaluation-protocol.md",
+      "filename": "20260622T040651Z-live-artifact-evaluation-protocol.md",
+      "timestamp": "20260622T040651Z",
+      "label": "Live artifact evaluation protocol",
+      "slug": "live-artifact-evaluation-protocol"
+    },
     {
       "path": "receipts/20260622T035108Z-chat-first-canonical-artifact-law.md",
       "filename": "20260622T035108Z-chat-first-canonical-artifact-law.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T012134Z",
       "label": "HTML-in-Canvas document stage",
       "slug": "html-canvas-document-stage-spike"
-    },
-    {
-      "path": "receipts/20260621T191436Z-artifact-command-router-registry-spine.md",
-      "filename": "20260621T191436Z-artifact-command-router-registry-spine.md",
-      "timestamp": "20260621T191436Z",
-      "label": "Artifact command router",
-      "slug": "artifact-command-router-registry-spine"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T040651Z-live-artifact-evaluation-protocol.log",
+      "filename": "20260622T040651Z-live-artifact-evaluation-protocol.log",
+      "timestamp": "20260622T040651Z",
+      "label": "Live artifact evaluation protocol",
+      "slug": "live-artifact-evaluation-protocol"
+    },
     {
       "path": "logs/20260622T035108Z-chat-first-canonical-artifact-law.log",
       "filename": "20260622T035108Z-chat-first-canonical-artifact-law.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T023851Z",
       "label": "Viewport lock + mobile scroll",
       "slug": "chat-first-viewport-lock"
-    },
-    {
-      "path": "logs/20260622T021521Z-standalone-chat-first-repository.log",
-      "filename": "20260622T021521Z-standalone-chat-first-repository.log",
-      "timestamp": "20260622T021521Z",
-      "label": "Standalone Chat First Repository",
-      "slug": "standalone-chat-first-repository"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T040651Z-live-artifact-evaluation-protocol.sha256",
+      "filename": "20260622T040651Z-live-artifact-evaluation-protocol.sha256",
+      "timestamp": "20260622T040651Z",
+      "label": "Live artifact evaluation protocol",
+      "slug": "live-artifact-evaluation-protocol"
+    },
     {
       "path": "checksums/20260622T035108Z-chat-first-canonical-artifact-law.sha256",
       "filename": "20260622T035108Z-chat-first-canonical-artifact-law.sha256",
@@ -139,13 +146,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T023851Z",
       "label": "Viewport lock + mobile scroll",
       "slug": "chat-first-viewport-lock"
-    },
-    {
-      "path": "checksums/20260622T021521Z-standalone-chat-first-repository.sha256",
-      "filename": "20260622T021521Z-standalone-chat-first-repository.sha256",
-      "timestamp": "20260622T021521Z",
-      "label": "Standalone Chat First Repository",
-      "slug": "standalone-chat-first-repository"
     }
   ],
   "validations": [
@@ -163,6 +163,11 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "command": "npm run validate:chrome-collapse",
       "status": "required",
       "purpose": "Full chrome collapse and motion invariant"
+    },
+    {
+      "command": "npm run validate:live-artifact-eval",
+      "status": "required",
+      "purpose": "Live artifact review protocol, Codex work order, and evidence package invariants"
     },
     {
       "command": "npm run validate:checksum",

@@ -8,14 +8,14 @@
     "compile:chat-first-answer-pack": "node tools/compile-chat-first-answer-pack.js",
     "validate:chat-first-shell": "node tools/validate-chat-first-shell.js && node tools/validate-chat-first-artifact-router.js && node tools/validate-chat-first-html-canvas-stage.js && node tools/validate-chat-first-ingestion.js",
     "validate:chrome-collapse": "node tools/validate-chrome-collapse-invariant.js",
+    "validate:live-artifact-eval": "node tools/validate-live-artifact-evaluation-protocol.js",
     "validate:json": "node tools/validate-json.js",
     "validate:js": "node tools/validate-js-syntax.js",
     "validate:checksum": "node tools/validate-latest-checksum.js",
-    "validate": "npm run validate:json && npm run validate:js && npm run validate:chat-first-shell && npm run validate:chrome-collapse && npm run validate:checksum",
+    "validate": "npm run validate:json && npm run validate:js && npm run validate:chat-first-shell && npm run validate:chrome-collapse && npm run validate:live-artifact-eval && npm run validate:checksum",
     "serve": "python3 -m http.server 8899 --directory assistants/chat-first-surface-shell/public"
   },
   "engines": {
     "node": ">=20"
   }
 }
-

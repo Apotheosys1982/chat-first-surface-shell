@@ -67,6 +67,8 @@ The checksum gate validates the latest manifest in `checksums/`.
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Deployment](docs/DEPLOYMENT.md)
+- [Lattice live artifact review protocol](docs/LATTICE_LIVE_ARTIFACT_REVIEW_PROTOCOL.md)
+- [Live artifact evaluation work order](docs/LIVE_ARTIFACT_EVAL_WORK_ORDER.md)
 - [Handoff packet](docs/HANDOFF_CHAT_FIRST_SURFACE_SHELL_20260622.md)
 - [Planning: chat-first shell](docs/PLANNING_CHAT_FIRST_SURFACE_ASSISTANT_SHELL.md)
 - [Planning: premium UI](docs/PLANNING_PREMIUM_CHAT_UI_SYSTEM.md)
