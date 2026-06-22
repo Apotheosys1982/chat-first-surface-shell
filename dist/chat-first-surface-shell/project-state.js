@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T06:03:05.468Z",
+  "generatedAt": "2026-06-22T06:24:02.842Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T060224Z",
+  "latestEventId": "event-20260622T061109Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T061109Z-real-editable-spreadsheet-artifacts.md",
+      "filename": "20260622T061109Z-real-editable-spreadsheet-artifacts.md",
+      "timestamp": "20260622T061109Z",
+      "label": "Real editable spreadsheet artifacts",
+      "slug": "real-editable-spreadsheet-artifacts"
+    },
     {
       "path": "receipts/20260622T060224Z-chat-first-scroll-pressure-contract.md",
       "filename": "20260622T060224Z-chat-first-scroll-pressure-contract.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T033650Z",
       "label": "Unified artifact open path",
       "slug": "chat-first-artifact-unified-open-path"
-    },
-    {
-      "path": "receipts/20260622T031504Z-chat-first-chrome-direction.md",
-      "filename": "20260622T031504Z-chat-first-chrome-direction.md",
-      "timestamp": "20260622T031504Z",
-      "label": "Chrome direction fidelity",
-      "slug": "chat-first-chrome-direction"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T061109Z-real-editable-spreadsheet-artifacts.log",
+      "filename": "20260622T061109Z-real-editable-spreadsheet-artifacts.log",
+      "timestamp": "20260622T061109Z",
+      "label": "Real editable spreadsheet artifacts",
+      "slug": "real-editable-spreadsheet-artifacts"
+    },
     {
       "path": "logs/20260622T060224Z-chat-first-scroll-pressure-contract.log",
       "filename": "20260622T060224Z-chat-first-scroll-pressure-contract.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T040651Z",
       "label": "Live artifact evaluation protocol",
       "slug": "live-artifact-evaluation-protocol"
-    },
-    {
-      "path": "logs/20260622T035108Z-chat-first-canonical-artifact-law.log",
-      "filename": "20260622T035108Z-chat-first-canonical-artifact-law.log",
-      "timestamp": "20260622T035108Z",
-      "label": "Canonical artifact law",
-      "slug": "chat-first-canonical-artifact-law"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T061109Z-real-editable-spreadsheet-artifacts.sha256",
+      "filename": "20260622T061109Z-real-editable-spreadsheet-artifacts.sha256",
+      "timestamp": "20260622T061109Z",
+      "label": "Real editable spreadsheet artifacts",
+      "slug": "real-editable-spreadsheet-artifacts"
+    },
     {
       "path": "checksums/20260622T060224Z-chat-first-scroll-pressure-contract.sha256",
       "filename": "20260622T060224Z-chat-first-scroll-pressure-contract.sha256",
@@ -139,13 +146,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T040651Z",
       "label": "Live artifact evaluation protocol",
       "slug": "live-artifact-evaluation-protocol"
-    },
-    {
-      "path": "checksums/20260622T035108Z-chat-first-canonical-artifact-law.sha256",
-      "filename": "20260622T035108Z-chat-first-canonical-artifact-law.sha256",
-      "timestamp": "20260622T035108Z",
-      "label": "Canonical artifact law",
-      "slug": "chat-first-canonical-artifact-law"
     }
   ],
   "validations": [

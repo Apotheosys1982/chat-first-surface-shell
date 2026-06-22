@@ -1,0 +1,28 @@
+20260622T061109Z real-editable-spreadsheet-artifacts
+
+Changed the spreadsheet renderer from static seeded demo rows to browser-local editable workbook artifacts.
+
+Key implementation points:
+- Added SPREADSHEET_STORE_KEY = chatFirstSurfaceSpreadsheets.v1.
+- Added workbook data model with artifactId, artifactType, origin, visibilityScope, sourceStatus, ingestionStatus, canRender, canEdit, canExport, canAnswerFrom, rendererId, stateAdapterId, columns, tableData, sheets, activeSheet, selectedCell, editHistory, and redoHistory.
+- Converted staged-spreadsheet into Operations workbook.xlsx with editable cells and local persistence.
+- Added createBlankSpreadsheetWorkbook and createAndOpenSpreadsheet.
+- Added spreadsheet picker for multiple workbook artifacts.
+- Removed preferredArtifactId forcing for spreadsheet/table commands.
+- Added CSV export, source feedback, validation feedback, and undo/redo actions.
+- Added CSV/TSV upload parsing into quarantined editable spreadsheet artifacts.
+- Updated validators to enforce editable state, picker behavior, wired controls, and upload trust boundary.
+- Updated quick-start and handoff docs to remove stale artifact-dashboard and validation-receipt references.
+
+Local in-app Browser evidence:
+- Opened local app at http://127.0.0.1:8899/index.html?v=editable-spreadsheet-local.
+- Viewport 393x852.
+- No console warnings/errors.
+- Spreadsheet command opened Operations workbook.xlsx.
+- Cell A2 edited to "Client onboarding - edited locally".
+- Close/reopen preserved edited value.
+- New spreadsheet command opened Untitled spreadsheet 1.
+- New workbook showed userCreated, Uncertain, Pending review, not answerable.
+- Spreadsheet command after creation showed picker with both workbooks and New spreadsheet.
+- Validate and Source controls reflected trust boundary.
+- Export CSV control showed local export feedback.

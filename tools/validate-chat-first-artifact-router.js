@@ -117,8 +117,6 @@ const canonicalCommandTargets = [
   ["inbox", "document-inbox"],
   ["events", "event-ledger"],
   ["compiler", "compiler-report"],
-  ["spreadsheet", "staged-spreadsheet"],
-  ["table", "staged-spreadsheet"],
   ["checklist", "checklist"],
   ["SOP", "checklist"],
   ["receipt", "receipts-directory"],
@@ -242,7 +240,24 @@ function validateTarget(target, checks) {
       /function\s+spreadsheetStageHtml\s*\(/i.test(script) &&
       !/command:\s*["']spreadsheet["'][\s\S]*?missingType:\s*["']spreadsheet["']/i.test(script) &&
       !/command:\s*["']table["'][\s\S]*?missingType:\s*["']table["']/i.test(script),
-    "spreadsheet and table commands must open the seeded staged-spreadsheet artifact"
+    "spreadsheet and table commands must resolve registered spreadsheet artifacts"
+  );
+  push(
+    checks,
+    target.id,
+    "spreadsheet_commands_do_not_force_seed_artifact",
+    !/command:\s*["']spreadsheet["'][\s\S]*?preferredArtifactId:\s*["']staged-spreadsheet["']/i.test(script) &&
+      !/command:\s*["']table["'][\s\S]*?preferredArtifactId:\s*["']staged-spreadsheet["']/i.test(script),
+    "spreadsheet/table commands must allow picker behavior when multiple workbook artifacts exist"
+  );
+  push(
+    checks,
+    target.id,
+    "spreadsheet_picker_create_path_exists",
+    /function\s+spreadsheetPickerHtml\s*\(/i.test(script) &&
+      /data-spreadsheet-create/i.test(script) &&
+      /createBlankSpreadsheetWorkbook/i.test(script),
+    "spreadsheet picker includes a local create path"
   );
 
   for (const command of requiredCommands) {

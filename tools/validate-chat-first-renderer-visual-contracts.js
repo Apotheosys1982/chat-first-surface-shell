@@ -104,7 +104,7 @@ function push(checks, target, check, ok, detail = "") {
 }
 
 function extractRegistry(script) {
-  const match = script.match(/const artifactRegistry = (\[[\s\S]*?\n  \]);\n\n  const artifactCommandLexicon/);
+  const match = script.match(/const artifactRegistry = (\[[\s\S]*?\n  \]);\n\n  (?:function spreadsheetRegistryEntry|const artifactCommandLexicon)/);
   if (!match) return null;
   try {
     return Function(`return ${match[1]}`)();
@@ -211,6 +211,41 @@ function validateTarget(target, checks) {
       /sheet-column-header/i.test(script) &&
       /spreadsheet-formula-bar/i.test(script),
     "spreadsheet renderer must stay a grid, not collapse into card rows"
+  );
+  push(
+    checks,
+    target.id,
+    "spreadsheet_cells_are_editable_local_state",
+    /SPREADSHEET_STORE_KEY/i.test(script) &&
+      /contenteditable="\$\{workbook\.canEdit/i.test(script) &&
+      /data-spreadsheet-cell/i.test(script) &&
+      /saveSpreadsheetStore/i.test(script),
+    "spreadsheet cells must edit and persist through browser-local workbook state"
+  );
+  push(
+    checks,
+    target.id,
+    "spreadsheet_controls_are_wired_or_explicitly_disabled",
+    /data-spreadsheet-action=["']export["']/i.test(script) &&
+      /function\s+exportWorkbookCsv\s*\(/i.test(script) &&
+      /data-spreadsheet-action=["']undo["']/i.test(script) &&
+      /data-spreadsheet-action=["']redo["']/i.test(script) &&
+      /data-spreadsheet-action=["']source["']/i.test(script) &&
+      /data-spreadsheet-action=["']validate["']/i.test(script) &&
+      /Filter is not implemented/i.test(script) &&
+      /Sort is not implemented/i.test(script) &&
+      /Freeze panes are not implemented/i.test(script),
+    "no fake live controls: export/undo/redo/source/validate are wired; unfinished controls explain disabled state"
+  );
+  push(
+    checks,
+    target.id,
+    "spreadsheet_trust_boundary_fields_exist",
+    /sourceStatus/i.test(script) &&
+      /ingestionStatus/i.test(script) &&
+      /canAnswerFrom/i.test(script) &&
+      /Renderable does not mean approved answer truth/i.test(script),
+    "spreadsheet artifact availability must stay separate from approved answer truth"
   );
 }
 

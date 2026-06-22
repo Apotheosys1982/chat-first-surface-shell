@@ -87,7 +87,14 @@ function validateTarget(target, checks) {
   push(checks, target.id, "indexeddb_blob_path_exists", /indexedDB\.open\(["']chatFirstSurfaceSources["']/i.test(script) && /blobId/i.test(script), "IndexedDB used for local blob persistence where available");
   push(checks, target.id, "visible_source_inbox_storage_status", /data-source-inbox-status/i.test(html) && /Local Source Inbox/i.test(script) && /chatFirstSurfaceSources/i.test(script) && /chatFirstSurfaceDocuments\.v1/i.test(script) && /source-inbox-status/i.test(styles), "upload storage location is visible in UI and explains IndexedDB/localStorage");
   push(checks, target.id, "user_uploads_default_uncertain", /origin:\s*["']userUpload["']/i.test(script) && /let\s+sourceStatus\s*=\s*["']Uncertain["']/i.test(script), "uploads default to Uncertain");
-  push(checks, target.id, "user_uploads_never_answerable", /canAnswerFrom:\s*false/i.test(script) && !/origin:\s*["']userUpload["'][\s\S]*canAnswerFrom:\s*true/i.test(script), "uploaded overlay records cannot answer from source truth");
+  push(
+    checks,
+    target.id,
+    "user_uploads_never_answerable",
+    /origin:\s*["']userUpload["'][\s\S]{0,1200}?canAnswerFrom:\s*false/i.test(script) &&
+      !/origin:\s*["']userUpload["'][\s\S]{0,1200}?canAnswerFrom:\s*true/i.test(script),
+    "uploaded overlay records cannot answer from source truth"
+  );
   push(checks, target.id, "user_uploads_not_auto_approved", userUploadSources.every((source) => source.sourceStatus !== "Active" && source.ingestionStatus !== "Approved"), "registry must not ship auto-approved user uploads");
   push(checks, target.id, "unsupported_parser_boundary_copy", /PDFs?[\s\S]*DOCX[\s\S]*images[\s\S]*spreadsheets[\s\S]*metadata-only/i.test(script + JSON.stringify(answerPack)) && /parser\/OCR|Parser\/OCR|OCR/i.test(script + JSON.stringify(answerPack)), "PDF/DOCX/image/spreadsheet limits stated");
   push(checks, target.id, "search_upload_humble_copy", /Search is not the same as understanding/i.test(script) && /search (only )?extracted (local )?text|search this extracted preview/i.test(script + JSON.stringify(answerPack)), "upload search does not imply trust");

@@ -27,9 +27,12 @@
   const CHROME_SCROLL_THRESHOLD = 10;
   const STREAM_INTERVAL_MS = 18;
   const DOCUMENT_STORE_KEY = "chatFirstSurfaceDocuments.v1";
+  const SPREADSHEET_STORE_KEY = "chatFirstSurfaceSpreadsheets.v1";
   const MAX_DOCUMENTS = 12;
+  const MAX_SPREADSHEETS = 12;
   const MAX_PREVIEW_CHARS = 4200;
   const MAX_READABLE_BYTES = 750 * 1024;
+  const DEFAULT_SPREADSHEET_ROW_COUNT = 20;
   const projectState = window.CHAT_FIRST_PROJECT_STATE || {};
   const stateEvents = Array.isArray(window.CHAT_FIRST_STATE_EVENTS) ? window.CHAT_FIRST_STATE_EVENTS : [];
   const sourceRegistry = window.CHAT_FIRST_SOURCE_REGISTRY || { sources: [] };
@@ -81,16 +84,318 @@
       nextAction: "Open checklist and source map before publishing the workflow view."
     }
   ];
+  const spreadsheetColumns = [
+    { letter: "A", key: "area", label: "Area", width: 190 },
+    { letter: "B", key: "owner", label: "Owner", width: 150 },
+    { letter: "C", key: "status", label: "Status", width: 132 },
+    { letter: "D", key: "sourcePosture", label: "Source posture", width: 170 },
+    { letter: "E", key: "nextAction", label: "Next action", width: 360 },
+    { letter: "F", key: "command", label: "Command", width: 180 }
+  ];
 
   const sourceDocuments = Array.isArray(sourceRegistry.sources)
     ? sourceRegistry.sources.filter((source) => source.origin !== "userUpload")
     : [];
+  let spreadsheetStore = loadSpreadsheetStore();
+  let activeSpreadsheetId = "staged-spreadsheet";
 
   function sourcePostureCopy() {
     if (shellMode === "builder") {
       return "These are the working source documents this local shell is allowed to explain. The readable label comes first; the actual repo filename stays visible as metadata for inspection.";
     }
     return "These are the approved source areas this assistant is allowed to explain. Technical file names stay available as metadata, but the primary labels are written for people.";
+  }
+
+  function columnLetter(index) {
+    let letter = "";
+    let value = index + 1;
+    while (value > 0) {
+      const remainder = (value - 1) % 26;
+      letter = String.fromCharCode(65 + remainder) + letter;
+      value = Math.floor((value - 1) / 26);
+    }
+    return letter;
+  }
+
+  function defaultSpreadsheetColumns(count = spreadsheetColumns.length) {
+    return Array.from({ length: count }, (_, index) => {
+      const seeded = spreadsheetColumns[index] || {};
+      return {
+        letter: seeded.letter || columnLetter(index),
+        key: seeded.key || `column${index + 1}`,
+        label: seeded.label || `Column ${columnLetter(index)}`,
+        width: seeded.width || (index === 4 ? 320 : 160)
+      };
+    });
+  }
+
+  function blankSpreadsheetRows(rowCount = DEFAULT_SPREADSHEET_ROW_COUNT, columnCount = spreadsheetColumns.length) {
+    return Array.from({ length: rowCount }, () => Array.from({ length: columnCount }, () => ""));
+  }
+
+  function seedSpreadsheetRows() {
+    const commandByArea = {
+      "Client onboarding": "checklist",
+      "Invoice exceptions": "source map",
+      "Support FAQ": "dashboard",
+      "Renewal handoff": "receipt",
+      "SOP cleanup": "SOP"
+    };
+    const seeded = stagedSpreadsheetRows.map((row) => [
+      row.area,
+      row.owner,
+      row.status,
+      row.sourcePosture,
+      row.nextAction,
+      commandByArea[row.area] || "inspect"
+    ]);
+    return [
+      ...seeded,
+      ...blankSpreadsheetRows(Math.max(0, DEFAULT_SPREADSHEET_ROW_COUNT - seeded.length))
+    ];
+  }
+
+  function createSeedSpreadsheetWorkbook() {
+    const nowIso = new Date().toISOString();
+    return {
+      artifactId: "staged-spreadsheet",
+      artifactType: "spreadsheet",
+      title: "Operations workbook.xlsx",
+      description: "Editable seeded operations workbook for artifact renderer validation.",
+      origin: "seedDemo",
+      visibilityScope: "builderDemo",
+      sourceStatus: "Active",
+      ingestionStatus: "Compiled",
+      canRender: true,
+      canEdit: true,
+      canExport: true,
+      canAnswerFrom: true,
+      rendererId: "spreadsheetStageRenderer",
+      stateAdapterId: "spreadsheetStageAdapter",
+      createdAt: nowIso,
+      updatedAt: nowIso,
+      columns: defaultSpreadsheetColumns(),
+      tableData: seedSpreadsheetRows(),
+      sheets: ["Operations"],
+      activeSheet: "Operations",
+      selectedCell: { rowIndex: 0, columnIndex: 0 },
+      editHistory: [],
+      redoHistory: []
+    };
+  }
+
+  function normalizeSpreadsheetWorkbook(candidate, fallback = {}) {
+    const seed = fallback.artifactId ? fallback : createSeedSpreadsheetWorkbook();
+    const raw = candidate && typeof candidate === "object" ? candidate : {};
+    const columns = Array.isArray(raw.columns) && raw.columns.length
+      ? raw.columns.map((column, index) => ({
+        letter: column.letter || columnLetter(index),
+        key: column.key || `column${index + 1}`,
+        label: column.label || column.letter || columnLetter(index),
+        width: Number(column.width) || (index === 4 ? 320 : 160)
+      }))
+      : seed.columns.map((column) => ({ ...column }));
+    const tableData = Array.isArray(raw.tableData)
+      ? raw.tableData.map((row) => Array.from({ length: columns.length }, (_, index) => String(Array.isArray(row) ? row[index] || "" : "")))
+      : seed.tableData.map((row) => row.slice());
+    while (tableData.length < DEFAULT_SPREADSHEET_ROW_COUNT) {
+      tableData.push(Array.from({ length: columns.length }, () => ""));
+    }
+    const selectedCell = raw.selectedCell && Number.isInteger(raw.selectedCell.rowIndex) && Number.isInteger(raw.selectedCell.columnIndex)
+      ? {
+        rowIndex: Math.max(0, Math.min(tableData.length - 1, raw.selectedCell.rowIndex)),
+        columnIndex: Math.max(0, Math.min(columns.length - 1, raw.selectedCell.columnIndex))
+      }
+      : { rowIndex: 0, columnIndex: 0 };
+    return {
+      artifactId: raw.artifactId || seed.artifactId,
+      artifactType: "spreadsheet",
+      title: raw.title || seed.title,
+      description: raw.description || seed.description,
+      origin: raw.origin || seed.origin || "userCreated",
+      visibilityScope: raw.visibilityScope || seed.visibilityScope || "localSession",
+      sourceStatus: allowedSourceStatuses.includes(raw.sourceStatus) ? raw.sourceStatus : seed.sourceStatus || "Uncertain",
+      ingestionStatus: allowedIngestionStatuses.includes(raw.ingestionStatus) ? raw.ingestionStatus : seed.ingestionStatus || "Pending review",
+      canRender: raw.canRender !== false,
+      canEdit: raw.canEdit !== false,
+      canExport: raw.canExport !== false,
+      canAnswerFrom: typeof raw.canAnswerFrom === "boolean" ? raw.canAnswerFrom : Boolean(seed.canAnswerFrom),
+      rendererId: "spreadsheetStageRenderer",
+      stateAdapterId: "spreadsheetStageAdapter",
+      createdAt: raw.createdAt || seed.createdAt || new Date().toISOString(),
+      updatedAt: raw.updatedAt || seed.updatedAt || new Date().toISOString(),
+      columns,
+      rows: tableData.length,
+      tableData,
+      cells: raw.cells || {},
+      sheets: Array.isArray(raw.sheets) && raw.sheets.length ? raw.sheets : seed.sheets || ["Sheet 1"],
+      activeSheet: raw.activeSheet || seed.activeSheet || "Sheet 1",
+      selectedCell,
+      editHistory: Array.isArray(raw.editHistory) ? raw.editHistory.slice(-80) : [],
+      redoHistory: Array.isArray(raw.redoHistory) ? raw.redoHistory.slice(-80) : []
+    };
+  }
+
+  function loadSpreadsheetStore() {
+    const seed = createSeedSpreadsheetWorkbook();
+    try {
+      const parsed = JSON.parse(localStorage.getItem(SPREADSHEET_STORE_KEY) || "{}");
+      const workbooks = Array.isArray(parsed.workbooks) ? parsed.workbooks : [];
+      const normalized = workbooks.map((workbook) => normalizeSpreadsheetWorkbook(workbook, workbook.artifactId === seed.artifactId ? seed : {}));
+      const hasSeed = normalized.some((workbook) => workbook.artifactId === seed.artifactId);
+      return {
+        version: 1,
+        workbooks: [
+          hasSeed ? normalized.find((workbook) => workbook.artifactId === seed.artifactId) : seed,
+          ...normalized.filter((workbook) => workbook.artifactId !== seed.artifactId)
+        ].slice(0, MAX_SPREADSHEETS)
+      };
+    } catch (error) {
+      return { version: 1, workbooks: [seed] };
+    }
+  }
+
+  function saveSpreadsheetStore() {
+    try {
+      localStorage.setItem(SPREADSHEET_STORE_KEY, JSON.stringify({
+        version: 1,
+        workbooks: spreadsheetStore.workbooks.slice(0, MAX_SPREADSHEETS)
+      }));
+    } catch (error) {
+      // Local storage can be unavailable in private browsing or locked-down contexts.
+    }
+  }
+
+  function spreadsheetWorkbooks() {
+    return spreadsheetStore.workbooks;
+  }
+
+  function getSpreadsheetWorkbook(artifactId = activeSpreadsheetId) {
+    return spreadsheetWorkbooks().find((workbook) => workbook.artifactId === artifactId) || spreadsheetWorkbooks()[0] || createSeedSpreadsheetWorkbook();
+  }
+
+  function spreadsheetSourceRecords() {
+    return spreadsheetWorkbooks().map((workbook) => ({
+      sourceId: workbook.artifactId,
+      id: workbook.artifactId,
+      title: workbook.title,
+      name: workbook.title,
+      origin: workbook.origin,
+      visibilityScope: workbook.visibilityScope,
+      sourceStatus: workbook.sourceStatus,
+      ingestionStatus: workbook.ingestionStatus,
+      canAnswerFrom: workbook.canAnswerFrom,
+      summary: `${workbook.canEdit ? "Editable" : "Read-only"} workbook artifact. Renderable locally; answer truth is gated by source status and ingestion status.`,
+      path: `localStorage:${SPREADSHEET_STORE_KEY}`
+    }));
+  }
+
+  function workbookCellName(workbook, rowIndex, columnIndex) {
+    const column = workbook.columns[columnIndex] || { letter: columnLetter(columnIndex) };
+    return `${column.letter}${rowIndex + 2}`;
+  }
+
+  function workbookCellValue(workbook, rowIndex, columnIndex) {
+    const row = workbook.tableData[rowIndex] || [];
+    return String(row[columnIndex] || "");
+  }
+
+  function setWorkbookCellValue(workbook, rowIndex, columnIndex, value) {
+    while (workbook.tableData.length <= rowIndex) {
+      workbook.tableData.push(Array.from({ length: workbook.columns.length }, () => ""));
+    }
+    while (workbook.tableData[rowIndex].length < workbook.columns.length) {
+      workbook.tableData[rowIndex].push("");
+    }
+    workbook.tableData[rowIndex][columnIndex] = String(value || "");
+    workbook.updatedAt = new Date().toISOString();
+  }
+
+  function recordWorkbookEdit(workbook, rowIndex, columnIndex, before, after) {
+    if (before === after) return;
+    workbook.editHistory = Array.isArray(workbook.editHistory) ? workbook.editHistory : [];
+    workbook.redoHistory = [];
+    workbook.editHistory.push({
+      rowIndex,
+      columnIndex,
+      before,
+      after,
+      at: new Date().toISOString()
+    });
+    workbook.editHistory = workbook.editHistory.slice(-80);
+  }
+
+  function createBlankSpreadsheetWorkbook(title = "") {
+    const nowIso = new Date().toISOString();
+    const existingCount = spreadsheetWorkbooks().filter((workbook) => workbook.origin === "userCreated").length + 1;
+    return normalizeSpreadsheetWorkbook({
+      artifactId: `local-spreadsheet-${Date.now()}`,
+      title: title || `Untitled spreadsheet ${existingCount}`,
+      description: "Blank local spreadsheet artifact created in this browser.",
+      origin: "userCreated",
+      visibilityScope: "localSession",
+      sourceStatus: "Uncertain",
+      ingestionStatus: "Pending review",
+      canRender: true,
+      canEdit: true,
+      canExport: true,
+      canAnswerFrom: false,
+      createdAt: nowIso,
+      updatedAt: nowIso,
+      columns: defaultSpreadsheetColumns(),
+      tableData: blankSpreadsheetRows(),
+      sheets: ["Sheet 1"],
+      activeSheet: "Sheet 1",
+      selectedCell: { rowIndex: 0, columnIndex: 0 },
+      editHistory: [],
+      redoHistory: []
+    });
+  }
+
+  function parseDelimitedRows(text, delimiter) {
+    return String(text || "")
+      .split(/\r?\n/)
+      .filter((line) => line.trim().length)
+      .slice(0, DEFAULT_SPREADSHEET_ROW_COUNT)
+      .map((line) => line.split(delimiter).map((cell) => cell.trim().replace(/^"|"$/g, "")));
+  }
+
+  function createSpreadsheetFromDelimitedText(fileName, text, delimiter = ",") {
+    const rows = parseDelimitedRows(text, delimiter);
+    if (!rows.length) return null;
+    const columnCount = Math.max(spreadsheetColumns.length, ...rows.map((row) => row.length));
+    const columns = defaultSpreadsheetColumns(columnCount);
+    const tableData = rows.map((row) => Array.from({ length: columnCount }, (_, index) => row[index] || ""));
+    while (tableData.length < DEFAULT_SPREADSHEET_ROW_COUNT) {
+      tableData.push(Array.from({ length: columnCount }, () => ""));
+    }
+    const nowIso = new Date().toISOString();
+    return normalizeSpreadsheetWorkbook({
+      artifactId: `uploaded-spreadsheet-${Date.now()}`,
+      title: fileName || "Uploaded spreadsheet candidate",
+      description: "Parsed local CSV/TSV upload. It is renderable and editable, but not approved answer truth.",
+      origin: "userUpload",
+      visibilityScope: "localSession",
+      sourceStatus: "Uncertain",
+      ingestionStatus: "Extracted",
+      canRender: true,
+      canEdit: true,
+      canExport: true,
+      canAnswerFrom: false,
+      createdAt: nowIso,
+      updatedAt: nowIso,
+      columns,
+      tableData,
+      sheets: ["Imported"],
+      activeSheet: "Imported",
+      selectedCell: { rowIndex: 0, columnIndex: 0 },
+      editHistory: [],
+      redoHistory: []
+    });
+  }
+
+  function isDelimitedSpreadsheetFile(file) {
+    return /\.(csv|tsv)$/i.test(file.name || "") || /text\/(csv|tab-separated-values)/i.test(file.type || "");
   }
 
   const projectActivity = [
@@ -444,6 +749,7 @@
           <small class="state-meta">
             ${escapeHtml(doc.origin)} · ${escapeHtml(doc.visibilityScope)} · Source: ${escapeHtml(doc.sourceStatus)} · Ingestion: ${escapeHtml(doc.ingestionStatus)} · Answerable: ${doc.canAnswerFrom ? "yes" : "no"}
           </small>
+          ${doc.spreadsheetArtifactId ? `<button type="button" class="inline-artifact-link" data-artifact-open="${escapeHtml(doc.spreadsheetArtifactId)}">Open parsed spreadsheet artifact</button>` : ""}
           ${doc.preview ? `<pre class="doc-preview">${escapeHtml(doc.preview)}</pre>` : ""}
         </div>
         <em>${escapeHtml(doc.sourceStatus)} / ${escapeHtml(doc.ingestionStatus)}</em>
@@ -472,6 +778,12 @@
           </div>
         </div>
         <p class="document-note">Uploaded files are a runtime source overlay: local, quarantined, inspectable, and not trusted. Text-like files store a short extracted preview. PDFs, DOC, DOCX, images, spreadsheets, oversized files, and binary files are metadata-only until a parser, OCR, or source-map review exists.</p>
+        <div class="source-inbox-actions">
+          <button type="button" class="artifact-action wm-motion-focusable" data-spreadsheet-create>
+            <span class="artifact-icon" aria-hidden="true">▦</span>
+            <span><strong>Create blank spreadsheet</strong><small>Local editable artifact · not approved source truth</small></span>
+          </button>
+        </div>
         <div class="state-list">${documentRows()}</div>
       </div>
     `;
@@ -482,6 +794,7 @@
     if (!selected.length) return;
 
     const imported = [];
+    const importedSpreadsheetIds = [];
     for (const [index, file] of selected.entries()) {
       const createdAt = new Date().toISOString();
       const contentHash = await hashFile(file);
@@ -494,6 +807,7 @@
       let extractionStatus = readable ? "not_attempted" : "unsupported";
       let extractionMethod = readable ? "browser_file_reader" : "none";
       let canSearch = false;
+      let spreadsheetArtifactId = "";
       let summary = `${file.type || "Unknown type"} · ${formatBytes(file.size)} · Imported ${new Date().toLocaleString()}`;
 
       if (readable) {
@@ -504,6 +818,17 @@
           extractionStatus = preview.length ? "extracted" : "failed";
           canSearch = Boolean(preview.length);
           summary = `${file.type || "Text file"} · ${formatBytes(file.size)} · ${preview.length ? "Extracted text preview is searchable locally; not approved as truth" : "No readable text found; source mapping needed"}`;
+          if (preview && isDelimitedSpreadsheetFile(file)) {
+            const workbook = createSpreadsheetFromDelimitedText(file.name || "Uploaded spreadsheet candidate", text, /\.tsv$/i.test(file.name || "") ? "\t" : ",");
+            if (workbook) {
+              spreadsheetStore.workbooks = [workbook, ...spreadsheetStore.workbooks].slice(0, MAX_SPREADSHEETS);
+              saveSpreadsheetStore();
+              syncSpreadsheetArtifacts();
+              spreadsheetArtifactId = workbook.artifactId;
+              importedSpreadsheetIds.push(workbook.artifactId);
+              summary = `${file.type || "Delimited text"} · ${formatBytes(file.size)} · Parsed into editable local spreadsheet artifact; still not approved as source truth`;
+            }
+          }
         } catch (error) {
           ingestionStatus = "Needs source map";
           extractionStatus = "failed";
@@ -540,6 +865,7 @@
         canSearch,
         canRender: true,
         canAnswerFrom: false,
+        spreadsheetArtifactId,
         routeSeedStatus: canSearch ? "temporary_overlay" : "needs_source_map",
         contentHash,
         blobId: blobStored ? blobId : "",
@@ -556,7 +882,7 @@
     addMessage("system", `<span>${imported.length} document${imported.length === 1 ? "" : "s"} registered as quarantined source candidate${imported.length === 1 ? "" : "s"}.</span>`);
     streamAssistantMessage(
       `I registered this in the local Source Inbox. The file cache uses IndexedDB when available; the metadata index uses localStorage key ${DOCUMENT_STORE_KEY}. Nothing was sent to a server. It is not approved as a source yet. I can show it, search extracted text if available, create a source-map draft, or queue it for surface diagnosis.`,
-      ["document-inbox", "extracted-text", "source-map-draft", "source-registry"]
+      ["document-inbox", "extracted-text", "source-map-draft", "source-registry", ...importedSpreadsheetIds]
     );
   }
 
@@ -695,9 +1021,10 @@
   }
 
   function sourceMapStageHtml() {
-    const sourceGroups = countBy(sourceDocuments, "sourceStatus", allowedSourceStatuses);
-    const ingestionGroups = countBy([...sourceDocuments, ...uploadedDocuments], "ingestionStatus", allowedIngestionStatuses);
-    const allSources = [...sourceDocuments, ...uploadedDocuments];
+    const spreadsheetSources = spreadsheetSourceRecords();
+    const allSources = [...sourceDocuments, ...uploadedDocuments, ...spreadsheetSources];
+    const sourceGroups = countBy(allSources, "sourceStatus", allowedSourceStatuses);
+    const ingestionGroups = countBy(allSources, "ingestionStatus", allowedIngestionStatuses);
     return `
       <div class="source-governance">
         <section class="source-governance-hero">
@@ -754,107 +1081,101 @@
     `;
   }
 
-  function spreadsheetStageHtml() {
-    const totalRows = stagedSpreadsheetRows.length;
-    const activeRows = stagedSpreadsheetRows.filter((row) => row.sourcePosture === "Active").length;
-    const reviewRows = stagedSpreadsheetRows.filter((row) => row.sourcePosture !== "Active").length;
-    const columns = [
-      { letter: "A", label: "Area" },
-      { letter: "B", label: "Owner" },
-      { letter: "C", label: "Status" },
-      { letter: "D", label: "Source posture" },
-      { letter: "E", label: "Next action" },
-      { letter: "F", label: "Command" }
-    ];
-    const commandByArea = {
-      "Client onboarding": "checklist",
-      "Invoice exceptions": "source map",
-      "Support FAQ": "dashboard",
-      "Renewal handoff": "receipt",
-      "SOP cleanup": "SOP"
-    };
-    const rowHtml = stagedSpreadsheetRows.map((row, index) => {
-      const rowNumber = index + 1;
-      const selected = index === 0;
+  function spreadsheetStageHtml(adaptedState = {}) {
+    const workbook = normalizeSpreadsheetWorkbook(adaptedState.workbook || getSpreadsheetWorkbook(activeSpreadsheetId));
+    const selected = workbook.selectedCell || { rowIndex: 0, columnIndex: 0 };
+    const selectedName = workbookCellName(workbook, selected.rowIndex, selected.columnIndex);
+    const selectedValue = workbookCellValue(workbook, selected.rowIndex, selected.columnIndex);
+    const filledRows = workbook.tableData.filter((row) => row.some((cell) => String(cell || "").trim())).length;
+    const answerLabel = workbook.canAnswerFrom ? "answerable" : "not answerable";
+    const reviewRows = workbook.canAnswerFrom ? 0 : filledRows;
+    const columnGrid = `48px ${workbook.columns.map((column) => `${Number(column.width) || 160}px`).join(" ")}`;
+    const minWidth = 48 + workbook.columns.reduce((total, column) => total + (Number(column.width) || 160), 0);
+    const gridStyle = `grid-template-columns:${columnGrid};min-width:${minWidth}px`;
+    const rowHtml = workbook.tableData.map((row, rowIndex) => {
+      const rowNumber = rowIndex + 1;
       return `
-      <div class="spreadsheet-row" role="row" aria-rowindex="${rowNumber + 1}">
-        <div class="sheet-row-header" role="rowheader">${rowNumber}</div>
-        <div class="sheet-cell sheet-cell-text${selected ? " is-selected" : ""}" role="gridcell" data-cell="A${rowNumber + 1}">
-          <span>${escapeHtml(row.area)}</span>${selected ? `<i class="sheet-fill-handle" aria-hidden="true"></i>` : ""}
-        </div>
-        <div class="sheet-cell" role="gridcell" data-cell="B${rowNumber + 1}">${escapeHtml(row.owner)}</div>
-        <div class="sheet-cell" role="gridcell" data-cell="C${rowNumber + 1}"><span class="sheet-pill">${escapeHtml(row.status)}</span></div>
-        <div class="sheet-cell" role="gridcell" data-cell="D${rowNumber + 1}">${escapeHtml(row.sourcePosture)}</div>
-        <div class="sheet-cell sheet-cell-long" role="gridcell" data-cell="E${rowNumber + 1}">${escapeHtml(row.nextAction)}</div>
-        <div class="sheet-cell" role="gridcell" data-cell="F${rowNumber + 1}">${escapeHtml(commandByArea[row.area] || "inspect")}</div>
-      </div>
-    `;
-    }).join("");
-    const emptyRowHtml = Array.from({ length: 12 }, (_, emptyIndex) => {
-      const rowNumber = stagedSpreadsheetRows.length + emptyIndex + 1;
-      return `
-        <div class="spreadsheet-row sheet-row-empty" role="row" aria-rowindex="${rowNumber + 1}">
+        <div class="spreadsheet-row${row.some((cell) => String(cell || "").trim()) ? "" : " sheet-row-empty"}" role="row" aria-rowindex="${rowIndex + 2}" style="${gridStyle}">
           <div class="sheet-row-header" role="rowheader">${rowNumber}</div>
-          ${columns.map((column) => `<div class="sheet-cell" role="gridcell" data-cell="${column.letter}${rowNumber + 1}"></div>`).join("")}
+          ${workbook.columns.map((column, columnIndex) => {
+            const cellName = workbookCellName(workbook, rowIndex, columnIndex);
+            const cellValue = String(row[columnIndex] || "");
+            const isSelected = selected.rowIndex === rowIndex && selected.columnIndex === columnIndex;
+            const isLong = cellValue.length > 38 || /next|action|description/i.test(column.key || "");
+            const isStrong = columnIndex === 0 && cellValue;
+            return `<div
+              class="sheet-cell${isSelected ? " is-selected" : ""}${isLong ? " sheet-cell-long" : ""}${isStrong ? " sheet-cell-text" : ""}"
+              role="gridcell"
+              tabindex="0"
+              contenteditable="${workbook.canEdit ? "true" : "false"}"
+              spellcheck="false"
+              data-spreadsheet-cell
+              data-sheet-id="${escapeHtml(workbook.artifactId)}"
+              data-row-index="${rowIndex}"
+              data-col-index="${columnIndex}"
+              data-cell="${escapeHtml(cellName)}"
+              aria-label="${escapeHtml(`${cellName} ${column.label}`)}">${escapeHtml(cellValue)}</div>`;
+          }).join("")}
         </div>
       `;
     }).join("");
     return `
-      <div class="spreadsheet-shell">
+      <div class="spreadsheet-shell" data-sheet-id="${escapeHtml(workbook.artifactId)}">
         <div class="spreadsheet-appbar">
           <div class="sheet-file">
-            <strong>Operations workbook.xlsx</strong>
-            <span>${escapeHtml(String(totalRows))} active rows · ${escapeHtml(String(activeRows))} answerable · ${escapeHtml(String(reviewRows))} need review</span>
+            <strong>${escapeHtml(workbook.title)}</strong>
+            <span>${escapeHtml(String(filledRows))} filled rows · ${escapeHtml(workbook.origin)} · ${escapeHtml(workbook.sourceStatus)} / ${escapeHtml(workbook.ingestionStatus)} · ${escapeHtml(answerLabel)}</span>
           </div>
           <div class="sheet-app-actions" aria-label="Workbook actions">
-            <button type="button" disabled>Share</button>
-            <button type="button" disabled>Export</button>
+            <button type="button" data-spreadsheet-action="share" data-sheet-id="${escapeHtml(workbook.artifactId)}">Share</button>
+            <button type="button" data-spreadsheet-action="export" data-sheet-id="${escapeHtml(workbook.artifactId)}">Export CSV</button>
           </div>
         </div>
         <div class="sheet-menu" role="menubar" aria-label="Spreadsheet menu">
-          <button type="button" role="menuitem" disabled>File</button>
-          <button type="button" role="menuitem" disabled>Edit</button>
-          <button type="button" role="menuitem" disabled>View</button>
-          <button type="button" role="menuitem" disabled>Insert</button>
-          <button type="button" role="menuitem" disabled>Data</button>
-          <button type="button" role="menuitem" disabled>Review</button>
+          <button type="button" role="menuitem" disabled title="File menus are not implemented in this local prototype.">File</button>
+          <button type="button" role="menuitem" disabled title="Edit menus are represented by toolbar actions in this prototype.">Edit</button>
+          <button type="button" role="menuitem" disabled title="View menus are not implemented in this local prototype.">View</button>
+          <button type="button" role="menuitem" disabled title="Insert is not implemented in this local prototype.">Insert</button>
+          <button type="button" role="menuitem" disabled title="Data tools are intentionally limited to validation/export for v1.">Data</button>
+          <button type="button" role="menuitem" disabled title="Review is represented by the Validate control for v1.">Review</button>
         </div>
         <div class="spreadsheet-toolbar" aria-label="Spreadsheet toolbar">
           <div class="sheet-tool-group">
-            <button type="button" disabled>Undo</button>
-            <button type="button" disabled>Redo</button>
+            <button type="button" data-spreadsheet-action="undo" data-sheet-id="${escapeHtml(workbook.artifactId)}"${workbook.editHistory.length ? "" : " disabled title=\"No edits to undo yet.\""}>Undo</button>
+            <button type="button" data-spreadsheet-action="redo" data-sheet-id="${escapeHtml(workbook.artifactId)}"${workbook.redoHistory.length ? "" : " disabled title=\"No edits to redo yet.\""}>Redo</button>
           </div>
           <div class="sheet-tool-group">
-            <button type="button" disabled>Filter</button>
-            <button type="button" disabled>Sort</button>
-            <button type="button" disabled>Freeze</button>
+            <button type="button" disabled title="Filter is not implemented in this local spreadsheet prototype.">Filter</button>
+            <button type="button" disabled title="Sort is not implemented in this local spreadsheet prototype.">Sort</button>
+            <button type="button" disabled title="Freeze panes are not implemented in this local spreadsheet prototype.">Freeze</button>
           </div>
           <div class="sheet-tool-group">
-            <button type="button" disabled>Source</button>
-            <button type="button" disabled>Validate</button>
+            <button type="button" data-spreadsheet-action="source" data-sheet-id="${escapeHtml(workbook.artifactId)}">Source</button>
+            <button type="button" data-spreadsheet-action="validate" data-sheet-id="${escapeHtml(workbook.artifactId)}">Validate</button>
           </div>
         </div>
         <div class="spreadsheet-formula-bar" aria-label="Formula bar">
-          <span class="sheet-name-box">A2</span>
+          <span class="sheet-name-box" data-spreadsheet-name-box>${escapeHtml(selectedName)}</span>
           <span class="sheet-fx">fx</span>
-          <div class="sheet-formula-input">=IF(D2="Active","Answerable","Needs review")</div>
+          <input class="sheet-formula-input" data-spreadsheet-formula data-sheet-id="${escapeHtml(workbook.artifactId)}" value="${escapeHtml(selectedValue)}" aria-label="Selected cell value">
         </div>
-        <div class="spreadsheet-grid" role="grid" aria-label="Seeded operations spreadsheet" aria-rowcount="${stagedSpreadsheetRows.length + 13}" aria-colcount="${columns.length}">
-          <div class="sheet-column-header" role="row" aria-rowindex="1">
+        <div class="sheet-feedback" data-spreadsheet-feedback>
+          Local workbook state saves to <code>${SPREADSHEET_STORE_KEY}</code>. Renderable does not mean approved answer truth.
+        </div>
+        <div class="spreadsheet-grid" role="grid" aria-label="${escapeHtml(workbook.title)}" aria-rowcount="${workbook.tableData.length + 1}" aria-colcount="${workbook.columns.length}">
+          <div class="sheet-column-header" role="row" aria-rowindex="1" style="${gridStyle}">
             <div class="sheet-corner" role="columnheader"></div>
-            ${columns.map((column) => `<div class="sheet-column" role="columnheader" aria-label="${escapeHtml(column.label)}"><span>${escapeHtml(column.letter)}</span><small>${escapeHtml(column.label)}</small></div>`).join("")}
+            ${workbook.columns.map((column) => `<div class="sheet-column" role="columnheader" aria-label="${escapeHtml(column.label)}"><span>${escapeHtml(column.letter)}</span><small>${escapeHtml(column.label)}</small></div>`).join("")}
           </div>
           ${rowHtml}
-          ${emptyRowHtml}
         </div>
         <div class="sheet-tab-strip" aria-label="Workbook sheets">
-          <button type="button" class="sheet-tab is-active" disabled>Operations</button>
-          <button type="button" class="sheet-tab" disabled>Sources</button>
-          <button type="button" class="sheet-tab" disabled>Validation</button>
-          <button type="button" class="sheet-tab sheet-tab-add" disabled>+</button>
+          ${(workbook.sheets || [workbook.activeSheet || "Sheet 1"]).map((sheet) => `<button type="button" class="sheet-tab${sheet === workbook.activeSheet ? " is-active" : ""}" disabled title="Multi-sheet switching is not implemented yet.">${escapeHtml(sheet)}</button>`).join("")}
+          <button type="button" class="sheet-tab sheet-tab-add" disabled title="Add sheet is not implemented in this local prototype.">+</button>
         </div>
         <div class="sheet-statusbar">
-          <span>Ready</span>
+          <span>${escapeHtml(workbook.canEdit ? "Editable" : "Read-only")}</span>
+          <span>${escapeHtml(String(filledRows))} filled · ${escapeHtml(String(reviewRows))} gated</span>
           <span>Renderer: spreadsheetStageRenderer</span>
           <span>Adapter: spreadsheetStageAdapter</span>
         </div>
@@ -1268,9 +1589,9 @@
       html: () => compilerReportHtml()
     },
     "staged-spreadsheet": {
-      title: "Staged spreadsheet",
-      meta: "Spreadsheet stage · Seeded artifact · Active",
-      html: () => spreadsheetStageHtml()
+      title: "Operations workbook.xlsx",
+      meta: "Spreadsheet stage · Editable local workbook · Active",
+      html: (adaptedState) => spreadsheetStageHtml(adaptedState)
     },
     "receipts-directory": {
       title: "Receipts directory",
@@ -1406,7 +1727,12 @@
     eventLedgerAdapter: (context) => ({ ...context, stateEvents }),
     activityLogAdapter: (context) => ({ ...context, projectActivity }),
     compilerReportAdapter: (context) => ({ ...context, compiledAnswerPack }),
-    spreadsheetStageAdapter: (context) => ({ ...context, stagedSpreadsheetRows }),
+    spreadsheetStageAdapter: (context) => ({
+      ...context,
+      stagedSpreadsheetRows,
+      workbook: getSpreadsheetWorkbook(context.registryEntry?.artifactId || activeSpreadsheetId),
+      workbooks: spreadsheetWorkbooks()
+    }),
     receiptStreamAdapter: (context) => ({ ...context, recentReceipts, recentLogs, recentChecksums }),
     checklistAdapter: (context) => context
   };
@@ -1672,23 +1998,28 @@
       artifactType: "spreadsheet",
       artifactPlane: "work",
       visualContract: "spreadsheet",
-      title: "Staged spreadsheet",
-      description: "Seeded spreadsheet/table artifact that turns messy operational rows into a staged working surface.",
+      title: "Operations workbook.xlsx",
+      description: "Editable seeded spreadsheet/table artifact that persists local workbook state.",
       commandAliases: ["spreadsheet", "sheet", "workbook", "csv", "table", "grid", "data table", "table data"],
       rendererId: "spreadsheetStageRenderer",
       stateAdapterId: "spreadsheetStageAdapter",
       stageMode: "artifactStage",
       sourceDependencies: ["authored-demo-artifact", "source-registry", "artifact-registry"],
       status: "Active",
-      actions: ["inspect_rows", "open_source_map", "open_source_inbox"],
+      actions: ["edit_cells", "export_csv", "inspect_source_status", "validate_workbook"],
       sourceStatusRequirement: "Active",
       ingestionStatusRequirement: "Compiled",
       renderMode: "artifactStage",
-      editable: false,
-      exportable: false,
+      editable: true,
+      exportable: true,
       printable: false,
-      origin: "authoredDemoArtifact",
-      visibilityMode: "all"
+      origin: "seedDemo",
+      visibilityMode: "all",
+      visibilityScope: "builderDemo",
+      canRender: true,
+      canEdit: true,
+      canExport: true,
+      canAnswerFrom: true
     },
     {
       artifactId: "receipts-directory",
@@ -1738,10 +2069,62 @@
     }
   ];
 
+  function spreadsheetRegistryEntry(workbook) {
+    return {
+      artifactId: workbook.artifactId,
+      artifactType: "spreadsheet",
+      artifactPlane: "work",
+      visualContract: "spreadsheet",
+      title: workbook.title,
+      description: workbook.description,
+      commandAliases: ["spreadsheet", "sheet", "workbook", "csv", "table", workbook.title].filter(Boolean),
+      rendererId: "spreadsheetStageRenderer",
+      stateAdapterId: "spreadsheetStageAdapter",
+      stageMode: "artifactStage",
+      sourceDependencies: ["runtime-spreadsheet-store", "source-registry", "artifact-registry"],
+      status: workbook.sourceStatus,
+      actions: ["edit_cells", "export_csv", "inspect_source_status", "validate_workbook"],
+      sourceStatusRequirement: workbook.sourceStatus,
+      ingestionStatusRequirement: workbook.ingestionStatus,
+      renderMode: "artifactStage",
+      editable: workbook.canEdit,
+      exportable: workbook.canExport,
+      printable: false,
+      origin: workbook.origin,
+      visibilityMode: "all",
+      visibilityScope: workbook.visibilityScope,
+      canRender: workbook.canRender,
+      canEdit: workbook.canEdit,
+      canExport: workbook.canExport,
+      canAnswerFrom: workbook.canAnswerFrom,
+      createdAt: workbook.createdAt,
+      updatedAt: workbook.updatedAt
+    };
+  }
+
+  function syncSpreadsheetArtifacts() {
+    for (const workbook of spreadsheetWorkbooks()) {
+      const entry = spreadsheetRegistryEntry(workbook);
+      const registryIndex = artifactRegistry.findIndex((candidate) => candidate.artifactId === workbook.artifactId);
+      if (registryIndex === -1) {
+        artifactRegistry.push(entry);
+      } else {
+        artifactRegistry[registryIndex] = { ...artifactRegistry[registryIndex], ...entry };
+      }
+      artifacts[workbook.artifactId] = {
+        title: workbook.title,
+        meta: `Spreadsheet stage · ${workbook.sourceStatus} / ${workbook.ingestionStatus}`,
+        html: (adaptedState) => spreadsheetStageHtml(adaptedState)
+      };
+    }
+  }
+
+  syncSpreadsheetArtifacts();
+
   const artifactCommandLexicon = [
     { command: "dashboard", aliases: ["dashboard", "metrics", "report view", "board"], artifactTypes: ["dashboard"], preferredArtifactId: "project-state-dashboard" },
     { command: "artifacts", aliases: ["artifacts", "artifact list", "artifact directory", "views"], artifactTypes: ["artifactDirectory"], preferredArtifactId: "artifact-directory" },
-    { command: "spreadsheet", aliases: ["spreadsheet", "sheet", "workbook", "csv", "table data"], artifactTypes: ["spreadsheet", "table"], preferredArtifactId: "staged-spreadsheet" },
+    { command: "spreadsheet", aliases: ["spreadsheet", "sheet", "workbook", "csv", "table data"], artifactTypes: ["spreadsheet", "table"] },
     { command: "source map", aliases: ["source map", "sources", "approved sources", "source posture"], artifactTypes: ["sourceMap", "sourceRegistry"], preferredArtifactId: "source-map" },
     { command: "source registry", aliases: ["source registry", "registry", "source status", "ingestion status"], artifactTypes: ["sourceRegistry"], preferredArtifactId: "source-registry" },
     { command: "checklist", aliases: ["checklist", "list", "steps", "task list"], artifactTypes: ["checklist", "sop"], preferredArtifactId: "checklist" },
@@ -1753,7 +2136,7 @@
     { command: "draft", aliases: ["draft", "document", "doc", "report draft", "handoff", "writeup", "diagnosis draft"], artifactTypes: ["documentSurface"], preferredArtifactId: "surface-diagnosis-draft" },
     { command: "report", aliases: ["report", "diagnosis report", "surface report", "handoff report"], artifactTypes: ["documentSurface", "report"], preferredArtifactId: "surface-diagnosis-draft" },
     { command: "canvas", aliases: ["canvas", "html canvas", "html-in-canvas", "document stage", "stage"], artifactTypes: ["documentSurface", "report", "draft"], preferredArtifactId: "surface-diagnosis-draft" },
-    { command: "table", aliases: ["table", "grid", "data table"], artifactTypes: ["table", "spreadsheet"], preferredArtifactId: "staged-spreadsheet" }
+    { command: "table", aliases: ["table", "grid", "data table"], artifactTypes: ["table", "spreadsheet"] }
   ];
 
   const answerRooms = (Array.isArray(compiledAnswerPack.answerRooms) ? compiledAnswerPack.answerRooms : []).map((room) => ({
@@ -1846,6 +2229,9 @@
     const stateAdapter = stateAdapterRegistry[registryEntry.stateAdapterId] || stateAdapterRegistry.staticArtifactAdapter;
     const renderer = rendererRegistry[registryEntry.rendererId];
     if (!renderer || typeof renderer.render !== "function") return;
+    if (registryEntry.artifactType === "spreadsheet" || registryEntry.artifactType === "table") {
+      activeSpreadsheetId = registryEntry.artifactId;
+    }
     const baseContext = { projectState, stateEvents, sourceRegistry, uploadedDocuments, compiledAnswerPack };
     const adaptedState = stateAdapter({ artifact, registryEntry, ...baseContext });
     lastFocusTarget = trigger || document.activeElement;
@@ -2046,7 +2432,39 @@
     return artifactRegistry.filter((artifact) => types.has(artifact.artifactType));
   }
 
+  function spreadsheetArtifacts() {
+    return artifactRegistry
+      .filter((entry) => entry.artifactType === "spreadsheet" && artifacts[entry.artifactId])
+      .sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
+  }
+
+  function spreadsheetTitleMatch(input) {
+    const normalized = normalizeArtifactCommandInput(input)
+      .replace(/^(please\s+)?(open|show|view|render|launch|load|display|pull\s+up|bring\s+up)\s+(me\s+)?(the\s+)?/, "")
+      .replace(/^(the|a|an)\s+/, "")
+      .trim();
+    if (!normalized) return null;
+    return spreadsheetArtifacts().find((entry) => {
+      const title = normalizeArtifactCommandInput(entry.title);
+      const titleWithoutExtension = title.replace(/\.(csv|tsv|xlsx)$/i, "");
+      const aliases = [entry.artifactId, title, titleWithoutExtension]
+        .map((value) => normalizeArtifactCommandInput(value));
+      return aliases.includes(normalized);
+    }) || null;
+  }
+
   function resolveArtifactCommand(input, context = {}) {
+    const spreadsheetMatch = spreadsheetTitleMatch(input);
+    if (spreadsheetMatch) {
+      return {
+        type: "direct_open",
+        command: "spreadsheet",
+        artifactId: spreadsheetMatch.artifactId,
+        artifact: spreadsheetMatch,
+        statusMessage: `Opening ${spreadsheetMatch.title.toLowerCase()}.`
+      };
+    }
+
     const candidate = commandCandidate(input);
     if (!candidate) return { type: "not_artifact_command" };
 
@@ -2085,6 +2503,9 @@
   }
 
   function artifactPickerHtml(result) {
+    if (/spreadsheet|table/i.test(result.artifactType || result.command || "")) {
+      return spreadsheetPickerHtml(result);
+    }
     return `
       <p>I found multiple ${escapeHtml(result.artifactType)} artifacts. Choose one.</p>
       <div class="render-actions">${result.candidates.map((candidate) => `
@@ -2099,12 +2520,176 @@
     `;
   }
 
+  function spreadsheetPickerHtml(result = {}) {
+    const candidates = result.candidates?.length ? result.candidates : spreadsheetArtifacts();
+    return `
+      <p>${candidates.length > 1 ? "Choose a spreadsheet artifact." : "Spreadsheet artifacts are renderable local workbooks. Source truth is still gated separately."}</p>
+      <div class="render-actions spreadsheet-picker-actions">
+        ${candidates.map((candidate) => `
+          <button type="button" class="artifact-action wm-motion-focusable" data-artifact-open="${escapeHtml(candidate.artifactId)}">
+            <span class="artifact-icon" aria-hidden="true">▦</span>
+            <span>
+              <strong>${escapeHtml(candidate.title)}</strong>
+              <small>${escapeHtml(candidate.origin || "unknown")} · ${escapeHtml(candidate.sourceStatusRequirement || "Uncertain")} / ${escapeHtml(candidate.ingestionStatusRequirement || "Pending review")} · ${candidate.canAnswerFrom ? "answerable" : "not answerable"}${candidate.updatedAt ? ` · ${escapeHtml(new Date(candidate.updatedAt).toLocaleString())}` : ""}</small>
+            </span>
+          </button>
+        `).join("")}
+        <button type="button" class="artifact-action wm-motion-focusable" data-spreadsheet-create>
+          <span class="artifact-icon" aria-hidden="true">＋</span>
+          <span><strong>New spreadsheet</strong><small>Blank local workbook · Uncertain / Pending review · not answerable</small></span>
+        </button>
+      </div>
+    `;
+  }
+
   function missingArtifactHtml(result) {
+    const isSpreadsheet = /spreadsheet|table/i.test(result.artifactType || result.command || "");
     return `
       <p>No ${escapeHtml(result.artifactType)} artifact is registered for this surface yet.</p>
-      <p class="message-note">I can open the Source Inbox, show the Source Registry, or create a source-map draft path. Imported files stay quarantined until review, compilation, and validation.</p>
-      ${actionsHtml(result.fallbackActions)}
+      <p class="message-note">${isSpreadsheet ? "I can create a blank local spreadsheet artifact. It will be renderable/editable immediately, but it will not be approved source truth." : "I can open the Source Inbox, show the Source Registry, or create a source-map draft path. Imported files stay quarantined until review, compilation, and validation."}</p>
+      ${isSpreadsheet ? spreadsheetPickerHtml({ candidates: [] }) : actionsHtml(result.fallbackActions)}
     `;
+  }
+
+  function spreadsheetValidationSummary(workbook) {
+    const filledRows = workbook.tableData.filter((row) => row.some((cell) => String(cell || "").trim())).length;
+    const filledCells = workbook.tableData.reduce((total, row) => total + row.filter((cell) => String(cell || "").trim()).length, 0);
+    const issues = [];
+    if (!workbook.columns.length) issues.push("No columns");
+    if (!filledRows) issues.push("No filled rows");
+    if (!workbook.canRender) issues.push("Cannot render");
+    if (!workbook.canEdit) issues.push("Read-only");
+    if (!workbook.canExport) issues.push("Export disabled");
+    if (!workbook.canAnswerFrom) issues.push("Not approved answer truth");
+    return {
+      filledRows,
+      filledCells,
+      issues,
+      status: issues.length ? "Needs review" : "Ready"
+    };
+  }
+
+  function spreadsheetSourceStatusHtml(workbook) {
+    return `
+      <strong>${escapeHtml(workbook.title)}</strong>
+      <span>Origin: ${escapeHtml(workbook.origin)} · Scope: ${escapeHtml(workbook.visibilityScope)} · Source: ${escapeHtml(workbook.sourceStatus)} · Ingestion: ${escapeHtml(workbook.ingestionStatus)} · canAnswerFrom=${workbook.canAnswerFrom ? "true" : "false"}</span>
+    `;
+  }
+
+  function spreadsheetValidationHtml(workbook) {
+    const summary = spreadsheetValidationSummary(workbook);
+    return `
+      <strong>${escapeHtml(summary.status)}</strong>
+      <span>${escapeHtml(String(summary.filledRows))} filled rows · ${escapeHtml(String(summary.filledCells))} filled cells · ${escapeHtml(workbook.sourceStatus)} / ${escapeHtml(workbook.ingestionStatus)} · ${workbook.canAnswerFrom ? "approved for answers" : "not approved for answers"}</span>
+      ${summary.issues.length ? `<small>${escapeHtml(summary.issues.join(" · "))}</small>` : ""}
+    `;
+  }
+
+  function setSpreadsheetFeedback(html) {
+    const feedback = artifactBody?.querySelector("[data-spreadsheet-feedback]");
+    if (feedback) feedback.innerHTML = html;
+  }
+
+  function csvEscape(value) {
+    const stringValue = String(value || "");
+    return /[",\n\r]/.test(stringValue)
+      ? `"${stringValue.replace(/"/g, '""')}"`
+      : stringValue;
+  }
+
+  function workbookToCsv(workbook) {
+    const header = workbook.columns.map((column) => csvEscape(column.label));
+    const rows = workbook.tableData
+      .filter((row) => row.some((cell) => String(cell || "").trim()))
+      .map((row) => workbook.columns.map((_, index) => csvEscape(row[index] || "")));
+    return [header, ...rows].map((row) => row.join(",")).join("\n");
+  }
+
+  function safeDownloadName(title) {
+    return `${String(title || "spreadsheet").replace(/[^a-z0-9_-]+/gi, "-").replace(/^-+|-+$/g, "").toLowerCase() || "spreadsheet"}.csv`;
+  }
+
+  function exportWorkbookCsv(artifactId = activeSpreadsheetId) {
+    const workbook = getSpreadsheetWorkbook(artifactId);
+    if (!workbook?.canExport) {
+      setSpreadsheetFeedback("<strong>Export unavailable</strong><span>This workbook is not marked exportable.</span>");
+      return false;
+    }
+    const blob = new Blob([workbookToCsv(workbook)], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = safeDownloadName(workbook.title);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    setSpreadsheetFeedback(`<strong>CSV export started</strong><span>${escapeHtml(workbook.title)} exported from local browser state. No server upload occurred.</span>`);
+    return true;
+  }
+
+  function createAndOpenSpreadsheet(trigger) {
+    const workbook = createBlankSpreadsheetWorkbook();
+    spreadsheetStore.workbooks = [workbook, ...spreadsheetStore.workbooks].slice(0, MAX_SPREADSHEETS);
+    activeSpreadsheetId = workbook.artifactId;
+    saveSpreadsheetStore();
+    syncSpreadsheetArtifacts();
+    openArtifact(workbook.artifactId, trigger || composer);
+    return workbook;
+  }
+
+  function isCreateSpreadsheetCommand(input) {
+    return /^(create|new|make|start|add)\s+(a\s+|an\s+)?(blank\s+|new\s+)?(spreadsheet|sheet|workbook|table)$/i.test(normalizeArtifactCommandInput(input)) ||
+      /^(create|new|make|start|add)\s+(spreadsheet|sheet|workbook|table)$/i.test(normalizeArtifactCommandInput(input));
+  }
+
+  function isSpreadsheetPickerCommand(input) {
+    return /^(show|list|view|open)\s+(all\s+)?(spreadsheets|sheets|workbooks|tables)$/i.test(normalizeArtifactCommandInput(input)) ||
+      /^(spreadsheets|sheets|workbooks|tables)$/i.test(normalizeArtifactCommandInput(input));
+  }
+
+  function isSpreadsheetAnswerabilityCommand(input) {
+    return /(can|could|should|is|are).*(answer|trusted|approved|source truth).*(spreadsheet|sheet|workbook|table)|spreadsheet.*(approved|answerable|source truth)/i.test(normalizeArtifactCommandInput(input));
+  }
+
+  function isSpreadsheetExportCommand(input) {
+    return /^(export|download)\s+(the\s+)?(spreadsheet|sheet|workbook|table|csv)$/i.test(normalizeArtifactCommandInput(input));
+  }
+
+  function isSpreadsheetValidateCommand(input) {
+    return /^(validate|check|review)\s+(the\s+)?(spreadsheet|sheet|workbook|table)$/i.test(normalizeArtifactCommandInput(input));
+  }
+
+  function handleSpreadsheetAssistantCommand(input) {
+    if (isCreateSpreadsheetCommand(input)) {
+      const workbook = createAndOpenSpreadsheet(composer);
+      addMessage("system", `<span>Created ${escapeHtml(workbook.title)} as a local editable spreadsheet artifact. It is Uncertain / Pending review and cannot be used as answer truth.</span>`);
+      return true;
+    }
+    if (isSpreadsheetPickerCommand(input)) {
+      addMessage("assistant", spreadsheetPickerHtml({ candidates: spreadsheetArtifacts() }));
+      return true;
+    }
+    if (isSpreadsheetAnswerabilityCommand(input)) {
+      const workbook = getSpreadsheetWorkbook(activeSpreadsheetId);
+      const answer = workbook.canAnswerFrom
+        ? `${workbook.title} is currently marked ${workbook.sourceStatus} / ${workbook.ingestionStatus} with canAnswerFrom=true. It can render and edit locally, and this seeded workbook is allowed in the demo answer posture.`
+        : `${workbook.title} can render, edit, and export locally, but it cannot be used as approved answer truth because it is ${workbook.sourceStatus} / ${workbook.ingestionStatus} with canAnswerFrom=false. It needs review, compilation, and validation first.`;
+      addMessage("assistant", `<p>${escapeHtml(answer)}</p>${spreadsheetPickerHtml({ candidates: spreadsheetArtifacts() })}`);
+      return true;
+    }
+    if (isSpreadsheetExportCommand(input)) {
+      const workbook = getSpreadsheetWorkbook(activeSpreadsheetId);
+      const ok = exportWorkbookCsv(workbook.artifactId);
+      addMessage("system", `<span>${ok ? `Exported ${escapeHtml(workbook.title)} as CSV from local browser state.` : `Could not export ${escapeHtml(workbook.title)}.`}</span>`);
+      return true;
+    }
+    if (isSpreadsheetValidateCommand(input)) {
+      const workbook = getSpreadsheetWorkbook(activeSpreadsheetId);
+      addMessage("assistant", `<p>Spreadsheet validation is local and trust-aware.</p><div class="state-row"><div>${spreadsheetValidationHtml(workbook)}</div><em>${escapeHtml(workbook.canAnswerFrom ? "Answerable" : "Gated")}</em></div>`);
+      return true;
+    }
+    return false;
   }
 
   function route(input) {
@@ -2121,6 +2706,9 @@
     if (!input) return;
     setChromeReceded(true);
     addMessage("user", `<p>${escapeHtml(input)}</p>`);
+    if (handleSpreadsheetAssistantCommand(input)) {
+      return;
+    }
     const artifactCommand = resolveArtifactCommand(input, { uploadedDocuments });
     if (artifactCommand.type === "direct_open") {
       addMessage("system", `<span>${escapeHtml(artifactCommand.statusMessage)}</span>`);
@@ -2139,16 +2727,145 @@
     streamAssistantMessage(response.answer, response.actions, { follow: true });
   }
 
+  function updateSpreadsheetSelection(cell) {
+    if (!cell) return;
+    const workbook = getSpreadsheetWorkbook(cell.dataset.sheetId);
+    const rowIndex = Number(cell.dataset.rowIndex);
+    const columnIndex = Number(cell.dataset.colIndex);
+    if (!Number.isInteger(rowIndex) || !Number.isInteger(columnIndex)) return;
+    activeSpreadsheetId = workbook.artifactId;
+    workbook.selectedCell = { rowIndex, columnIndex };
+    workbook.updatedAt = new Date().toISOString();
+    saveSpreadsheetStore();
+    artifactBody?.querySelectorAll("[data-spreadsheet-cell].is-selected").forEach((node) => node.classList.remove("is-selected"));
+    cell.classList.add("is-selected");
+    const nameBox = artifactBody?.querySelector("[data-spreadsheet-name-box]");
+    const formula = artifactBody?.querySelector("[data-spreadsheet-formula]");
+    if (nameBox) nameBox.textContent = workbookCellName(workbook, rowIndex, columnIndex);
+    if (formula) formula.value = workbookCellValue(workbook, rowIndex, columnIndex);
+  }
+
+  function persistSpreadsheetCell(cell, trackHistory = false) {
+    if (!cell) return;
+    const workbook = getSpreadsheetWorkbook(cell.dataset.sheetId);
+    const rowIndex = Number(cell.dataset.rowIndex);
+    const columnIndex = Number(cell.dataset.colIndex);
+    if (!Number.isInteger(rowIndex) || !Number.isInteger(columnIndex)) return;
+    const before = cell.dataset.originalValue || "";
+    const after = cell.textContent || "";
+    setWorkbookCellValue(workbook, rowIndex, columnIndex, after);
+    if (trackHistory) {
+      recordWorkbookEdit(workbook, rowIndex, columnIndex, before, after);
+      cell.dataset.originalValue = after;
+    }
+    saveSpreadsheetStore();
+    updateSpreadsheetSelection(cell);
+  }
+
+  function updateSelectedCellFromFormula(input) {
+    if (!input) return;
+    const workbook = getSpreadsheetWorkbook(input.dataset.sheetId);
+    const selected = workbook.selectedCell || { rowIndex: 0, columnIndex: 0 };
+    const before = workbookCellValue(workbook, selected.rowIndex, selected.columnIndex);
+    const after = input.value || "";
+    setWorkbookCellValue(workbook, selected.rowIndex, selected.columnIndex, after);
+    recordWorkbookEdit(workbook, selected.rowIndex, selected.columnIndex, before, after);
+    saveSpreadsheetStore();
+    const cell = artifactBody?.querySelector(`[data-spreadsheet-cell][data-row-index="${selected.rowIndex}"][data-col-index="${selected.columnIndex}"]`);
+    if (cell) {
+      cell.textContent = after;
+      cell.dataset.originalValue = after;
+      cell.classList.toggle("sheet-row-empty", !after);
+      updateSpreadsheetSelection(cell);
+    }
+  }
+
+  function rerenderOpenSpreadsheet() {
+    const registryEntry = artifactRegistry.find((entry) => entry.artifactId === activeSpreadsheetId);
+    const artifact = registryEntry ? artifacts[registryEntry.artifactId] : null;
+    const renderer = registryEntry ? rendererRegistry[registryEntry.rendererId] : null;
+    if (!registryEntry || !artifact || !renderer) return;
+    const stateAdapter = stateAdapterRegistry[registryEntry.stateAdapterId] || stateAdapterRegistry.staticArtifactAdapter;
+    const baseContext = { projectState, stateEvents, sourceRegistry, uploadedDocuments, compiledAnswerPack };
+    const adaptedState = stateAdapter({ artifact, registryEntry, ...baseContext });
+    renderer.render(artifact, registryEntry, { ...baseContext, adaptedState });
+  }
+
+  function undoSpreadsheetEdit(artifactId) {
+    const workbook = getSpreadsheetWorkbook(artifactId);
+    const edit = workbook.editHistory.pop();
+    if (!edit) return;
+    setWorkbookCellValue(workbook, edit.rowIndex, edit.columnIndex, edit.before);
+    workbook.selectedCell = { rowIndex: edit.rowIndex, columnIndex: edit.columnIndex };
+    workbook.redoHistory = Array.isArray(workbook.redoHistory) ? workbook.redoHistory : [];
+    workbook.redoHistory.push(edit);
+    saveSpreadsheetStore();
+    rerenderOpenSpreadsheet();
+    setSpreadsheetFeedback(`<strong>Undo applied</strong><span>${escapeHtml(workbookCellName(workbook, edit.rowIndex, edit.columnIndex))} restored to previous value.</span>`);
+  }
+
+  function redoSpreadsheetEdit(artifactId) {
+    const workbook = getSpreadsheetWorkbook(artifactId);
+    const edit = workbook.redoHistory.pop();
+    if (!edit) return;
+    setWorkbookCellValue(workbook, edit.rowIndex, edit.columnIndex, edit.after);
+    workbook.selectedCell = { rowIndex: edit.rowIndex, columnIndex: edit.columnIndex };
+    workbook.editHistory = Array.isArray(workbook.editHistory) ? workbook.editHistory : [];
+    workbook.editHistory.push(edit);
+    saveSpreadsheetStore();
+    rerenderOpenSpreadsheet();
+    setSpreadsheetFeedback(`<strong>Redo applied</strong><span>${escapeHtml(workbookCellName(workbook, edit.rowIndex, edit.columnIndex))} reapplied.</span>`);
+  }
+
+  function runSpreadsheetAction(button) {
+    const artifactId = button?.dataset.sheetId || activeSpreadsheetId;
+    const workbook = getSpreadsheetWorkbook(artifactId);
+    switch (button?.dataset.spreadsheetAction) {
+      case "share":
+        setSpreadsheetFeedback("<strong>Share is not implemented</strong><span>This static local prototype does not transmit workbook data or create public share links.</span>");
+        break;
+      case "export":
+        exportWorkbookCsv(artifactId);
+        break;
+      case "undo":
+        undoSpreadsheetEdit(artifactId);
+        break;
+      case "redo":
+        redoSpreadsheetEdit(artifactId);
+        break;
+      case "source":
+        setSpreadsheetFeedback(spreadsheetSourceStatusHtml(workbook));
+        break;
+      case "validate":
+        setSpreadsheetFeedback(spreadsheetValidationHtml(workbook));
+        break;
+      default:
+        break;
+    }
+  }
+
   document.addEventListener("click", (event) => {
     const openTray = event.target.closest("[data-tray-open]");
     const closeTray = event.target.closest("[data-tray-close]");
     const importButton = event.target.closest("[data-document-import]");
+    const spreadsheetCreateButton = event.target.closest("[data-spreadsheet-create]");
+    const spreadsheetActionButton = event.target.closest("[data-spreadsheet-action]");
     const artifactButton = event.target.closest("[data-artifact-open]");
     const promptButton = event.target.closest("[data-prompt]");
     if (openTray) setTray(true);
     if (closeTray || event.target.closest("[data-tray-scrim]")) setTray(false);
     if (importButton) {
       documentInput?.click();
+      return;
+    }
+    if (spreadsheetCreateButton) {
+      const workbook = createAndOpenSpreadsheet(spreadsheetCreateButton);
+      addMessage("system", `<span>Created ${escapeHtml(workbook.title)}. It is local, editable, and not approved for answers.</span>`);
+      setTray(false);
+      return;
+    }
+    if (spreadsheetActionButton) {
+      runSpreadsheetAction(spreadsheetActionButton);
       return;
     }
     if (artifactButton) {
@@ -2160,6 +2877,39 @@
       setTray(false);
     }
     if (event.target.closest("[data-artifact-close]")) closeArtifact();
+  });
+
+  document.addEventListener("focusin", (event) => {
+    const cell = event.target.closest("[data-spreadsheet-cell]");
+    if (!cell) return;
+    cell.dataset.originalValue = cell.textContent || "";
+    updateSpreadsheetSelection(cell);
+  });
+
+  document.addEventListener("input", (event) => {
+    const cell = event.target.closest("[data-spreadsheet-cell]");
+    if (cell) {
+      persistSpreadsheetCell(cell, false);
+      return;
+    }
+    if (event.target.matches("[data-spreadsheet-formula]")) {
+      updateSelectedCellFromFormula(event.target);
+    }
+  });
+
+  document.addEventListener("focusout", (event) => {
+    const cell = event.target.closest("[data-spreadsheet-cell]");
+    if (cell) {
+      persistSpreadsheetCell(cell, true);
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    const cell = event.target.closest("[data-spreadsheet-cell]");
+    if (cell && event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      cell.blur();
+    }
   });
 
   documentInput?.addEventListener("change", async (event) => {

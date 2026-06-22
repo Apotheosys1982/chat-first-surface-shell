@@ -153,19 +153,27 @@ Direct commands route before normal answer-room routing:
 - `diagnosis draft`
 - `spreadsheet`
 - `table`
+- `new spreadsheet`
+- `show all spreadsheets`
+- `validate spreadsheet`
+- `export spreadsheet`
 
-Seeded artifacts include:
+Canonical artifacts include:
 
-- `artifact-dashboard`
+- `project-state-dashboard`
+- `artifact-directory`
 - `source-map`
 - `source-registry`
 - `document-inbox`
 - `event-ledger`
 - `activity-log`
 - `compiler-report`
-- `validation-receipt`
+- `receipts-directory`
+- `staged-spreadsheet`
 - `checklist`
 - `surface-diagnosis-draft`
+
+Spreadsheet/table commands now resolve registered workbook artifacts. With one spreadsheet they open it; with multiple spreadsheets they render a picker. New local workbooks are editable, exportable, and persisted in the browser under `chatFirstSurfaceSpreadsheets.v1`, but user-created/uploaded workbooks remain `Uncertain`, unapproved, and `canAnswerFrom=false` until review, compilation, and validation.
 
 If an artifact is missing, the router returns a compact missing-artifact fallback instead of a long generic answer.
 

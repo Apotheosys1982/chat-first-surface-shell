@@ -357,6 +357,10 @@ h1 {
   color: var(--faint);
 }
 
+.spreadsheet-picker-actions {
+  gap: 8px;
+}
+
 .prompt-row {
   grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
 }
@@ -1039,7 +1043,7 @@ h1 {
 
 .spreadsheet-shell {
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto auto auto auto auto minmax(0, 1fr) auto auto;
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -1179,6 +1183,20 @@ h1 {
   box-shadow: 0 1px 0 rgba(24, 35, 49, 0.04);
 }
 
+.spreadsheet-toolbar button:not(:disabled):hover,
+.sheet-app-actions button:not(:disabled):hover {
+  border-color: rgba(31, 111, 235, 0.34);
+  color: #1659a0;
+}
+
+.spreadsheet-toolbar button:disabled,
+.sheet-app-actions button:disabled,
+.sheet-menu button:disabled,
+.sheet-tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
 .spreadsheet-formula-bar {
   display: grid;
   grid-template-columns: 76px 34px minmax(0, 1fr);
@@ -1218,10 +1236,44 @@ h1 {
   min-width: 0;
   padding: 0 10px;
   overflow: hidden;
+  border: 1px solid rgba(24, 35, 49, 0.14);
   color: #162230;
   font: 0.82rem/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+input.sheet-formula-input {
+  width: 100%;
+  outline: 0;
+}
+
+.sheet-feedback {
+  display: grid;
+  gap: 2px;
+  min-height: 38px;
+  align-content: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(24, 35, 49, 0.1);
+  background: #fff;
+  color: rgba(24, 35, 49, 0.68);
+  font-size: 0.74rem;
+  line-height: 1.25;
+}
+
+.sheet-feedback strong {
+  color: #132033;
+}
+
+.sheet-feedback span,
+.sheet-feedback small {
+  display: block;
+}
+
+.sheet-feedback code {
+  color: #185ea8;
+  font: inherit;
+  font-weight: 800;
 }
 
 .spreadsheet-grid {
@@ -1337,6 +1389,15 @@ h1 {
   line-height: 1.35;
 }
 
+.sheet-cell[contenteditable="true"] {
+  cursor: text;
+  outline: 0;
+}
+
+.sheet-cell[contenteditable="true"]:focus {
+  background: #fff;
+}
+
 .sheet-cell-text {
   color: #172433;
   font-weight: 800;
@@ -1360,6 +1421,18 @@ h1 {
   box-shadow:
     inset 0 0 0 2px #1f6feb,
     0 0 0 1px rgba(31, 111, 235, 0.18);
+}
+
+.sheet-cell.is-selected::after {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #fff;
+  border-radius: 2px;
+  background: #1f6feb;
+  content: "";
 }
 
 .sheet-fill-handle {
@@ -1929,6 +2002,34 @@ h1 {
 .document-note {
   color: var(--faint) !important;
   font-size: 0.92rem;
+}
+
+.source-inbox-actions {
+  margin-top: 16px;
+}
+
+.inline-artifact-link {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 32px;
+  align-items: center;
+  margin-top: 10px;
+  padding: 0 10px;
+  border: 1px solid rgba(216, 232, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(216, 232, 255, 0.06);
+  color: rgba(244, 247, 251, 0.86);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.inline-artifact-link:hover,
+.inline-artifact-link:focus-visible {
+  border-color: rgba(216, 232, 255, 0.26);
+  background: rgba(216, 232, 255, 0.1);
 }
 
 .storage-map {

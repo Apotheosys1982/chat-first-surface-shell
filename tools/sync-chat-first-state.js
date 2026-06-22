@@ -24,6 +24,7 @@ const friendlyLabelBySlug = {
   "spreadsheet-table-artifact-stage": "Spreadsheet table artifact stage",
   "spreadsheet-app-grid-correction": "Spreadsheet app grid correction",
   "spreadsheet-stage-live-evaluation": "Spreadsheet stage live evaluation",
+  "real-editable-spreadsheet-artifacts": "Real editable spreadsheet artifacts",
   "renderer-visual-contracts": "Renderer visual contracts",
   "live-artifact-evaluation-protocol": "Live artifact evaluation protocol",
   "chat-first-state-sync-layer": "State sync layer",

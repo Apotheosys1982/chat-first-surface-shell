@@ -63,8 +63,9 @@ Build the next artifact through the registry, validator, live work order, receip
 | `compiler` | `compiler-report` |
 | `receipt` | `receipts-directory` |
 | `draft` | `surface-diagnosis-draft` |
-| `spreadsheet` | `staged-spreadsheet` |
-| `table` | `staged-spreadsheet` |
+| `spreadsheet` | Opens the only spreadsheet artifact, or shows the spreadsheet picker when multiple workbook artifacts exist |
+| `table` | Same spreadsheet/table artifact picker path |
+| `new spreadsheet` | Creates a blank local workbook artifact, then opens it through `openArtifact(artifactId)` |
 
 ## Live Evidence Rule
 
