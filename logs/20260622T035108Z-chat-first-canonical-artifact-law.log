@@ -1,0 +1,25 @@
+2026-06-22T03:51:08Z chat-first canonical artifact law
+
+Scope:
+- Canonicalized the receipts artifact as receipts-directory.
+- Updated runtime, tray, generated answer actions, and command lexicon to use receipts-directory.
+- Added router validation for canonical artifact registry contracts and command preferred-artifact targets.
+- Preserved spreadsheet/table as missing-artifact commands until a real seeded spreadsheet artifact exists.
+
+Validation:
+- npm run validate:js: pass
+- npm run validate:chat-first-shell: pass
+- node tools/validate-chat-first-artifact-router.js: pass, 158 checks, 0 failures
+- In-app Browser QA 393x852:
+  - receipt -> Receipts directory
+  - dashboard -> Project state dashboard
+  - source map -> Source map
+  - inbox -> Source inbox
+  - events -> Event ledger
+  - compiler -> Compiler report
+  - draft -> Surface Diagnosis Draft
+  - artifacts -> Artifact directory
+  - spreadsheet -> missing artifact response
+  - rootScrollWidth=393, bodyScrollWidth=393, clientWidth=393, scrollX=0
+  - no artifact-dashboard ID in rendered DOM
+  - no validation-receipt ID in rendered DOM

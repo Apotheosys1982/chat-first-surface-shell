@@ -41,9 +41,73 @@ const requiredSeededArtifacts = [
   "document-inbox",
   "event-ledger",
   "compiler-report",
-  "validation-receipt",
+  "receipts-directory",
   "checklist",
   "surface-diagnosis-draft"
+];
+
+const canonicalArtifactContracts = [
+  {
+    artifactId: "project-state-dashboard",
+    artifactType: "dashboard",
+    rendererId: "dashboardStageRenderer",
+    stateAdapterId: "projectStateDashboardAdapter"
+  },
+  {
+    artifactId: "artifact-directory",
+    artifactType: "artifactDirectory",
+    rendererId: "nativeShellPanelRenderer",
+    stateAdapterId: "artifactDirectoryAdapter"
+  },
+  {
+    artifactId: "source-map",
+    artifactType: "sourceMap",
+    rendererId: "nativeShellPanelRenderer",
+    stateAdapterId: "sourceMapAdapter"
+  },
+  {
+    artifactId: "document-inbox",
+    artifactType: "sourceInbox",
+    rendererId: "nativeShellPanelRenderer",
+    stateAdapterId: "sourceInboxAdapter"
+  },
+  {
+    artifactId: "event-ledger",
+    artifactType: "eventLedger",
+    rendererId: "nativeShellPanelRenderer",
+    stateAdapterId: "eventLedgerAdapter"
+  },
+  {
+    artifactId: "compiler-report",
+    artifactType: "compilerReport",
+    rendererId: "nativeShellPanelRenderer",
+    stateAdapterId: "compilerReportAdapter"
+  },
+  {
+    artifactId: "receipts-directory",
+    artifactType: "receiptsDirectory",
+    rendererId: "nativeShellPanelRenderer",
+    stateAdapterId: "receiptStreamAdapter"
+  },
+  {
+    artifactId: "surface-diagnosis-draft",
+    artifactType: "documentSurface",
+    rendererId: "htmlCanvasDocumentStage",
+    stateAdapterId: "documentDraftAdapter"
+  }
+];
+
+const canonicalCommandTargets = [
+  ["dashboard", "project-state-dashboard"],
+  ["artifacts", "artifact-directory"],
+  ["source map", "source-map"],
+  ["inbox", "document-inbox"],
+  ["events", "event-ledger"],
+  ["compiler", "compiler-report"],
+  ["receipt", "receipts-directory"],
+  ["draft", "surface-diagnosis-draft"],
+  ["report", "surface-diagnosis-draft"],
+  ["canvas", "surface-diagnosis-draft"]
 ];
 
 const requiredRegistryFields = [
@@ -80,6 +144,30 @@ function push(checks, target, check, ok, detail = "") {
   checks.push({ target, check, status: ok ? "pass" : "fail", detail });
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function registryContractExists(script, contract) {
+  const fields = [
+    ["artifactId", contract.artifactId],
+    ["artifactType", contract.artifactType],
+    ["rendererId", contract.rendererId],
+    ["stateAdapterId", contract.stateAdapterId]
+  ];
+  const pattern = fields
+    .map(([field, value]) => `${field}:\\s*["']${escapeRegExp(value)}["']`)
+    .join("[\\s\\S]*");
+  return new RegExp(pattern, "i").test(script);
+}
+
+function commandPrefersArtifact(script, command, artifactId) {
+  return new RegExp(
+    `command:\\s*["']${escapeRegExp(command)}["'][\\s\\S]*?preferredArtifactId:\\s*["']${escapeRegExp(artifactId)}["']`,
+    "i"
+  ).test(script);
+}
+
 function validateTarget(target, checks) {
   const scriptPath = `${target.publicDir}/script.js`;
   if (!exists(scriptPath)) {
@@ -98,6 +186,7 @@ function validateTarget(target, checks) {
   push(checks, target.id, "resolver_runs_before_answer_route", resolveCallIndex !== -1 && routeCallIndex !== -1 && resolveCallIndex < routeCallIndex, "submitPrompt should check artifact commands before route(input)");
   push(checks, target.id, "direct_open_path_exists", /type:\s*["']direct_open["']/i.test(script) && /openArtifact\(artifactCommand\.artifactId/i.test(script), "clear command opens artifact directly");
   push(checks, target.id, "legacy_dashboard_id_removed", !/artifact-dashboard/i.test(script), "dashboard must not keep the legacy artifact-dashboard path");
+  push(checks, target.id, "legacy_receipt_id_removed", !/validation-receipt/i.test(script), "receipts must not keep the legacy validation-receipt path");
   push(checks, target.id, "canonical_dashboard_id_registered", /artifactId:\s*["']project-state-dashboard["'][\s\S]*artifactType:\s*["']dashboard["'][\s\S]*rendererId:\s*["']dashboardStageRenderer["'][\s\S]*stateAdapterId:\s*["']projectStateDashboardAdapter["']/i.test(script), "one canonical staged dashboard artifact");
   push(checks, target.id, "artifact_directory_registered", /artifactId:\s*["']artifact-directory["'][\s\S]*artifactType:\s*["']artifactDirectory["'][\s\S]*rendererId:\s*["']nativeShellPanelRenderer["']/i.test(script), "artifact list is a registered control-plane artifact");
   push(checks, target.id, "open_artifact_registry_selected_renderer", /const\s+registryEntry\s*=\s*artifactRegistry\.find/i.test(script) && /rendererRegistry\[registryEntry\.rendererId\]/i.test(script) && /stateAdapterRegistry\[registryEntry\.stateAdapterId\]/i.test(script), "openArtifact must choose adapter and renderer from registry");
@@ -106,8 +195,37 @@ function validateTarget(target, checks) {
   push(checks, target.id, "missing_artifact_path_exists", /type:\s*["']missing_artifact["']/i.test(script) && /No \${escapeHtml\(result\.artifactType\)} artifact is registered/i.test(script), "missing commands produce compact fallback");
   push(checks, target.id, "status_message_is_short", /Opening document stage\./i.test(script) && /Opening \$\{matches\[0\]\.title\.toLowerCase\(\)\}\./i.test(script), "direct command status copy");
 
+  for (const contract of canonicalArtifactContracts) {
+    push(
+      checks,
+      target.id,
+      `canonical_${contract.artifactId}_contract`,
+      registryContractExists(script, contract),
+      `${contract.artifactId} -> ${contract.rendererId} / ${contract.stateAdapterId}`
+    );
+  }
+
+  for (const [command, artifactId] of canonicalCommandTargets) {
+    push(
+      checks,
+      target.id,
+      `command_${command.replace(/\s+/g, "_")}_prefers_${artifactId}`,
+      commandPrefersArtifact(script, command, artifactId),
+      `${command} -> ${artifactId}`
+    );
+  }
+
+  push(
+    checks,
+    target.id,
+    "spreadsheet_stays_missing_until_seeded",
+    /command:\s*["']spreadsheet["'][\s\S]*?missingType:\s*["']spreadsheet["']/i.test(script) &&
+      !/artifactId:\s*["']spreadsheet["']/i.test(script),
+    "spreadsheet command must not open a fake artifact before a staged spreadsheet is seeded"
+  );
+
   for (const command of requiredCommands) {
-    const escaped = command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escaped = escapeRegExp(command);
     push(checks, target.id, `command_${command.replace(/\s+/g, "_")}_registered`, new RegExp(`["']${escaped}["']`, "i").test(script), command);
   }
 

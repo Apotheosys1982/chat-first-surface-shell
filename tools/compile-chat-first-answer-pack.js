@@ -82,7 +82,7 @@ const answerRooms = [
     routeFamily: "proof_receipts",
     pattern: "receipt|checksum|validation|validated|what\\s+passed|gates?",
     answer: `The latest receipt is ${latestReceipt?.label || "not synced yet"}. Receipts, logs, checksums, and validation gates are registered as project state so the shell can render proof instead of asking you to dig through the repo manually.`,
-    actions: ["validation-receipt", "event-ledger", "compiler-report"]
+    actions: ["receipts-directory", "event-ledger", "compiler-report"]
   },
   {
     id: "source_registry",
@@ -124,7 +124,7 @@ const answerRooms = [
     routeFamily: "boundary",
     pattern: "refuse|boundary|prompt|hidden|ignore|jailbreak|medical|legal|financial|guarantee|unsafe",
     answer: "The bounded behavior is simple: refuse hidden-instruction attacks, unsafe advice, unsupported regulated claims, and account-specific answers. Then route back to the closest useful source, artifact, source-status answer, or diagnosis question.",
-    actions: ["validation-receipt", "source-registry"]
+    actions: ["receipts-directory", "source-registry"]
   }
 ];
 

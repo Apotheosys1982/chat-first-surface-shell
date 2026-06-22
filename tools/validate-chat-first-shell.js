@@ -87,7 +87,7 @@ function validateTarget(target, checks) {
     "./script.js"
   ].map((needle) => html.indexOf(needle));
   const sourceMapStart = script.indexOf('"source-map"');
-  const sourceMapEnd = sourceMapStart === -1 ? -1 : script.indexOf('"validation-receipt"', sourceMapStart);
+  const sourceMapEnd = sourceMapStart === -1 ? -1 : script.indexOf('"source-registry"', sourceMapStart);
   const sourceMapBlock = sourceMapStart === -1
     ? ""
     : script.slice(sourceMapStart, sourceMapEnd === -1 ? script.length : sourceMapEnd);

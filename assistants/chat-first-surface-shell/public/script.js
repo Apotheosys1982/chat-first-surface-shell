@@ -120,7 +120,7 @@
     const status = String(item.status || "");
     if (/document|source inbox/i.test(title)) return 'data-artifact-open="document-inbox"';
     if (/dashboard|project state/i.test(title)) return 'data-artifact-open="project-state-dashboard"';
-    if (/receipt|checksum/i.test(title) || /receipt/i.test(status)) return 'data-artifact-open="validation-receipt"';
+    if (/receipt|checksum/i.test(title) || /receipt/i.test(status)) return 'data-artifact-open="receipts-directory"';
     return 'data-artifact-open="activity-log"';
   }
 
@@ -858,9 +858,9 @@
       meta: "Answer pack · Compiled behavior map",
       html: () => compilerReportHtml()
     },
-    "validation-receipt": {
-      title: "Receipt stream",
-      meta: "Receipt · Generated state · Active",
+    "receipts-directory": {
+      title: "Receipts directory",
+      meta: "Receipts · Generated state · Active",
       html: `
         <div class="state-section receipt-stream-view">
           <h3>Latest receipts</h3>
@@ -1217,9 +1217,9 @@
       visibilityMode: "builder"
     },
     {
-      artifactId: "validation-receipt",
-      artifactType: "receipt",
-      title: "Receipt stream",
+      artifactId: "receipts-directory",
+      artifactType: "receiptsDirectory",
+      title: "Receipts directory",
       description: "Latest receipts, logs, checksums, and validation gate state.",
       commandAliases: ["receipt", "receipts", "proof", "validation", "checksum"],
       rendererId: "nativeShellPanelRenderer",
@@ -1268,7 +1268,7 @@
     { command: "source registry", aliases: ["source registry", "registry", "source status", "ingestion status"], artifactTypes: ["sourceRegistry"], preferredArtifactId: "source-registry" },
     { command: "checklist", aliases: ["checklist", "list", "steps", "task list"], artifactTypes: ["checklist", "sop"], preferredArtifactId: "checklist" },
     { command: "SOP", aliases: ["sop", "procedure", "policy", "process", "operating procedure"], artifactTypes: ["sop", "checklist", "processMap"], preferredArtifactId: "checklist" },
-    { command: "receipt", aliases: ["receipt", "receipts", "proof", "validation", "checksum"], artifactTypes: ["receipt", "validationReport"], preferredArtifactId: "validation-receipt" },
+    { command: "receipt", aliases: ["receipt", "receipts", "proof", "validation", "checksum"], artifactTypes: ["receiptsDirectory", "receipt", "validationReport"], preferredArtifactId: "receipts-directory" },
     { command: "inbox", aliases: ["inbox", "source inbox", "uploads", "uploaded files", "candidates"], artifactTypes: ["sourceInbox"], preferredArtifactId: "document-inbox" },
     { command: "events", aliases: ["events", "event ledger", "activity", "recent changes", "changes"], artifactTypes: ["eventLedger"], preferredArtifactId: "event-ledger" },
     { command: "compiler", aliases: ["compiler", "compiler report", "answer pack", "route compiler"], artifactTypes: ["compilerReport"], preferredArtifactId: "compiler-report" },

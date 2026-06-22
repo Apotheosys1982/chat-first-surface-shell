@@ -1,11 +1,11 @@
 window.CHAT_FIRST_ANSWER_PACK = {
-  "generatedAt": "2026-06-22T03:37:36.482Z",
+  "generatedAt": "2026-06-22T03:52:36.900Z",
   "source": "tools/compile-chat-first-answer-pack.js",
   "mode": "static_runtime_compiled_pack",
   "invariant": "Upload does not equal approved source. Event does not equal truth. Ingestion comes before answer.",
   "sourceCount": 12,
   "eventCount": 8,
-  "latestEventId": "event-20260622T033650Z",
+  "latestEventId": "event-20260622T035108Z",
   "answerRooms": [
     {
       "id": "smalltalk_bounded_greeting",
@@ -72,7 +72,7 @@ window.CHAT_FIRST_ANSWER_PACK = {
       "id": "event_ledger",
       "routeFamily": "project_state",
       "pattern": "event\\s+ledger|state\\s+events?|events?|what\\s+changed\\s+recently|recent\\s+activity|what\\s+did\\s+codex\\s+update",
-      "answer": "The latest compiled event is Unified artifact open path. Events are not magic memory; they are structured records that can create route seeds only after compilation and validation.",
+      "answer": "The latest compiled event is Canonical artifact law. Events are not magic memory; they are structured records that can create route seeds only after compilation and validation.",
       "actions": [
         "event-ledger",
         "project-state-dashboard",
@@ -83,9 +83,9 @@ window.CHAT_FIRST_ANSWER_PACK = {
       "id": "receipt_validation_status",
       "routeFamily": "proof_receipts",
       "pattern": "receipt|checksum|validation|validated|what\\s+passed|gates?",
-      "answer": "The latest receipt is Unified artifact open path. Receipts, logs, checksums, and validation gates are registered as project state so the shell can render proof instead of asking you to dig through the repo manually.",
+      "answer": "The latest receipt is Canonical artifact law. Receipts, logs, checksums, and validation gates are registered as project state so the shell can render proof instead of asking you to dig through the repo manually.",
       "actions": [
-        "validation-receipt",
+        "receipts-directory",
         "event-ledger",
         "compiler-report"
       ]
@@ -150,7 +150,7 @@ window.CHAT_FIRST_ANSWER_PACK = {
       "pattern": "refuse|boundary|prompt|hidden|ignore|jailbreak|medical|legal|financial|guarantee|unsafe",
       "answer": "The bounded behavior is simple: refuse hidden-instruction attacks, unsafe advice, unsupported regulated claims, and account-specific answers. Then route back to the closest useful source, artifact, source-status answer, or diagnosis question.",
       "actions": [
-        "validation-receipt",
+        "receipts-directory",
         "source-registry"
       ]
     }

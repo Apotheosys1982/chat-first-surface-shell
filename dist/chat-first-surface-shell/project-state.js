@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T03:37:36.289Z",
+  "generatedAt": "2026-06-22T03:52:16.313Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T033650Z",
+  "latestEventId": "event-20260622T035108Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T035108Z-chat-first-canonical-artifact-law.md",
+      "filename": "20260622T035108Z-chat-first-canonical-artifact-law.md",
+      "timestamp": "20260622T035108Z",
+      "label": "Canonical artifact law",
+      "slug": "chat-first-canonical-artifact-law"
+    },
     {
       "path": "receipts/20260622T033650Z-chat-first-artifact-unified-open-path.md",
       "filename": "20260622T033650Z-chat-first-artifact-unified-open-path.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260621T191436Z",
       "label": "Artifact command router",
       "slug": "artifact-command-router-registry-spine"
-    },
-    {
-      "path": "receipts/20260621T151818Z-chat-first-visible-source-inbox-storage.md",
-      "filename": "20260621T151818Z-chat-first-visible-source-inbox-storage.md",
-      "timestamp": "20260621T151818Z",
-      "label": "Chat First Visible Source Inbox Storage",
-      "slug": "chat-first-visible-source-inbox-storage"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T035108Z-chat-first-canonical-artifact-law.log",
+      "filename": "20260622T035108Z-chat-first-canonical-artifact-law.log",
+      "timestamp": "20260622T035108Z",
+      "label": "Canonical artifact law",
+      "slug": "chat-first-canonical-artifact-law"
+    },
     {
       "path": "logs/20260622T033650Z-chat-first-artifact-unified-open-path.log",
       "filename": "20260622T033650Z-chat-first-artifact-unified-open-path.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T021521Z",
       "label": "Standalone Chat First Repository",
       "slug": "standalone-chat-first-repository"
-    },
-    {
-      "path": "logs/20260622T012134Z-html-canvas-document-stage-spike.log",
-      "filename": "20260622T012134Z-html-canvas-document-stage-spike.log",
-      "timestamp": "20260622T012134Z",
-      "label": "HTML-in-Canvas document stage",
-      "slug": "html-canvas-document-stage-spike"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T035108Z-chat-first-canonical-artifact-law.sha256",
+      "filename": "20260622T035108Z-chat-first-canonical-artifact-law.sha256",
+      "timestamp": "20260622T035108Z",
+      "label": "Canonical artifact law",
+      "slug": "chat-first-canonical-artifact-law"
+    },
     {
       "path": "checksums/20260622T033650Z-chat-first-artifact-unified-open-path.sha256",
       "filename": "20260622T033650Z-chat-first-artifact-unified-open-path.sha256",
@@ -139,13 +146,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T021521Z",
       "label": "Standalone Chat First Repository",
       "slug": "standalone-chat-first-repository"
-    },
-    {
-      "path": "checksums/20260622T012134Z-html-canvas-document-stage-spike.sha256",
-      "filename": "20260622T012134Z-html-canvas-document-stage-spike.sha256",
-      "timestamp": "20260622T012134Z",
-      "label": "HTML-in-Canvas document stage",
-      "slug": "html-canvas-document-stage-spike"
     }
   ],
   "validations": [

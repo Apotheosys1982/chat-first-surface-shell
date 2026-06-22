@@ -19,6 +19,7 @@ const friendlyLabelBySlug = {
   "chat-first-scroll-stability": "Scroll stability + chrome collapse",
   "chat-first-chrome-direction": "Chrome direction fidelity",
   "chat-first-artifact-unified-open-path": "Unified artifact open path",
+  "chat-first-canonical-artifact-law": "Canonical artifact law",
   "chat-first-state-sync-layer": "State sync layer",
   "chat-first-artifact-modal-fullscreen": "Full-viewport artifacts",
   "chat-first-project-state-dashboard": "Project state dashboard",
