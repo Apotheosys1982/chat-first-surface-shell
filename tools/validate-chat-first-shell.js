@@ -202,7 +202,8 @@ function validateTarget(target, checks) {
   push(checks, target.id, "message_stream_has_stable_scroll_padding", /scroll-padding-top\s*:/i.test(streamBlock) && /scroll-padding-bottom\s*:/i.test(streamBlock), "stream keeps stable scroll padding for fixed chrome overlays");
   push(checks, target.id, "header_motion_uses_transform_opacity", /transform\s*:/i.test(recededHeaderBlock) && /opacity\s*:\s*0/i.test(recededHeaderBlock), "header transform + opacity");
   push(checks, target.id, "composer_motion_uses_transform_opacity", /transform\s*:/i.test(recededComposerBlock) && /opacity\s*:\s*0/i.test(recededComposerBlock), "composer transform + opacity");
-  push(checks, target.id, "scroll_direction_controls_chrome", /chrome-receded/.test(script) && /delta\s*>\s*CHROME_SCROLL_THRESHOLD/.test(script) && /requestChromeRecede\(true\)/i.test(script), "scroll delta toggles chrome");
+  push(checks, target.id, "scroll_direction_controls_chrome", /chrome-receded/.test(script) && /delta\s*<\s*-CHROME_SCROLL_THRESHOLD/.test(script) && /requestChromeRecede\(false\)/i.test(script), "upward scroll delta reveals chrome");
+  push(checks, target.id, "scroll_position_does_not_auto_hide_chrome", !/top\s*>\s*CHROME_SCROLL_THRESHOLD/i.test(script) && !/!\s*shell\?\.classList\.contains\(["']chrome-receded["']\)\s*&&\s*top/i.test(script), "scroll position alone must not hide header/composer after upward pressure");
   push(checks, target.id, "gesture_direction_controls_chrome", /addEventListener\(["']wheel["']/i.test(script) && /addEventListener\(["']touchmove["']/i.test(script) && /gestureOwnsChrome/i.test(script), "wheel/touch direction toggles chrome without requiring scrollTop movement");
   push(checks, target.id, "smalltalk_route_exists", /how\\s\+are\\s\+you|hello|hey/i.test(answerPack) && /I’m here and ready|I'm here and ready/i.test(answerPack), "simple greetings must not hit generic fallback");
   push(

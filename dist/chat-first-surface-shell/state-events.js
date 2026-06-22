@@ -1,5 +1,35 @@
 window.CHAT_FIRST_STATE_EVENTS = [
   {
+    "eventId": "event-20260622T060224Z",
+    "timestamp": "20260622T060224Z",
+    "eventType": "codex_update",
+    "title": "Scroll pressure contract",
+    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
+    "filesChanged": [],
+    "artifactsAffected": [
+      "Project state dashboard",
+      "Recent activity",
+      "Receipt stream"
+    ],
+    "routesAffected": [
+      "project_state",
+      "receipts",
+      "source_status"
+    ],
+    "validationCommands": [
+      "npm run validate:chat-first-shell",
+      "node tools/validate-chat-first-ingestion.js",
+      "npm run validate:chrome-collapse",
+      "npm run validate:live-artifact-eval",
+      "npm run validate:checksum"
+    ],
+    "receiptPath": "receipts/20260622T060224Z-chat-first-scroll-pressure-contract.md",
+    "logPath": "logs/20260622T060224Z-chat-first-scroll-pressure-contract.log",
+    "checksumPath": "checksums/20260622T060224Z-chat-first-scroll-pressure-contract.sha256",
+    "status": "Compiled",
+    "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
+  },
+  {
     "eventId": "event-20260622T053813Z",
     "timestamp": "20260622T053813Z",
     "eventType": "codex_update",
@@ -174,10 +204,10 @@ window.CHAT_FIRST_STATE_EVENTS = [
       "npm run validate:checksum"
     ],
     "receiptPath": "receipts/20260622T033650Z-chat-first-artifact-unified-open-path.md",
-    "logPath": "logs/20260622T033650Z-chat-first-artifact-unified-open-path.log",
-    "checksumPath": "checksums/20260622T033650Z-chat-first-artifact-unified-open-path.sha256",
-    "status": "Compiled",
-    "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
+    "logPath": "",
+    "checksumPath": "",
+    "status": "Pending review",
+    "nextRecommendedAction": "Generate and validate the checksum for this event."
   },
   {
     "eventId": "event-20260622T031504Z",
@@ -204,36 +234,6 @@ window.CHAT_FIRST_STATE_EVENTS = [
       "npm run validate:checksum"
     ],
     "receiptPath": "receipts/20260622T031504Z-chat-first-chrome-direction.md",
-    "logPath": "",
-    "checksumPath": "",
-    "status": "Pending review",
-    "nextRecommendedAction": "Generate and validate the checksum for this event."
-  },
-  {
-    "eventId": "event-20260622T024905Z",
-    "timestamp": "20260622T024905Z",
-    "eventType": "codex_update",
-    "title": "Scroll stability + chrome collapse",
-    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
-    "filesChanged": [],
-    "artifactsAffected": [
-      "Project state dashboard",
-      "Recent activity",
-      "Receipt stream"
-    ],
-    "routesAffected": [
-      "project_state",
-      "receipts",
-      "source_status"
-    ],
-    "validationCommands": [
-      "npm run validate:chat-first-shell",
-      "node tools/validate-chat-first-ingestion.js",
-      "npm run validate:chrome-collapse",
-      "npm run validate:live-artifact-eval",
-      "npm run validate:checksum"
-    ],
-    "receiptPath": "receipts/20260622T024905Z-chat-first-scroll-stability.md",
     "logPath": "",
     "checksumPath": "",
     "status": "Pending review",

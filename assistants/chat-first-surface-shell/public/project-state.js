@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T05:39:57.824Z",
+  "generatedAt": "2026-06-22T06:03:05.468Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T053813Z",
+  "latestEventId": "event-20260622T060224Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260622T060224Z-chat-first-scroll-pressure-contract.md",
+      "filename": "20260622T060224Z-chat-first-scroll-pressure-contract.md",
+      "timestamp": "20260622T060224Z",
+      "label": "Scroll pressure contract",
+      "slug": "chat-first-scroll-pressure-contract"
+    },
     {
       "path": "receipts/20260622T053813Z-spreadsheet-app-grid-correction.md",
       "filename": "20260622T053813Z-spreadsheet-app-grid-correction.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T031504Z",
       "label": "Chrome direction fidelity",
       "slug": "chat-first-chrome-direction"
-    },
-    {
-      "path": "receipts/20260622T024905Z-chat-first-scroll-stability.md",
-      "filename": "20260622T024905Z-chat-first-scroll-stability.md",
-      "timestamp": "20260622T024905Z",
-      "label": "Scroll stability + chrome collapse",
-      "slug": "chat-first-scroll-stability"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260622T060224Z-chat-first-scroll-pressure-contract.log",
+      "filename": "20260622T060224Z-chat-first-scroll-pressure-contract.log",
+      "timestamp": "20260622T060224Z",
+      "label": "Scroll pressure contract",
+      "slug": "chat-first-scroll-pressure-contract"
+    },
     {
       "path": "logs/20260622T053813Z-spreadsheet-app-grid-correction.log",
       "filename": "20260622T053813Z-spreadsheet-app-grid-correction.log",
@@ -95,16 +102,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T035108Z",
       "label": "Canonical artifact law",
       "slug": "chat-first-canonical-artifact-law"
-    },
-    {
-      "path": "logs/20260622T033650Z-chat-first-artifact-unified-open-path.log",
-      "filename": "20260622T033650Z-chat-first-artifact-unified-open-path.log",
-      "timestamp": "20260622T033650Z",
-      "label": "Unified artifact open path",
-      "slug": "chat-first-artifact-unified-open-path"
     }
   ],
   "recentChecksums": [
+    {
+      "path": "checksums/20260622T060224Z-chat-first-scroll-pressure-contract.sha256",
+      "filename": "20260622T060224Z-chat-first-scroll-pressure-contract.sha256",
+      "timestamp": "20260622T060224Z",
+      "label": "Scroll pressure contract",
+      "slug": "chat-first-scroll-pressure-contract"
+    },
     {
       "path": "checksums/20260622T053813Z-spreadsheet-app-grid-correction.sha256",
       "filename": "20260622T053813Z-spreadsheet-app-grid-correction.sha256",
@@ -139,13 +146,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T035108Z",
       "label": "Canonical artifact law",
       "slug": "chat-first-canonical-artifact-law"
-    },
-    {
-      "path": "checksums/20260622T033650Z-chat-first-artifact-unified-open-path.sha256",
-      "filename": "20260622T033650Z-chat-first-artifact-unified-open-path.sha256",
-      "timestamp": "20260622T033650Z",
-      "label": "Unified artifact open path",
-      "slug": "chat-first-artifact-unified-open-path"
     }
   ],
   "validations": [

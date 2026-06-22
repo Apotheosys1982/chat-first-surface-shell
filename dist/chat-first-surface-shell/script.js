@@ -2237,8 +2237,6 @@
       requestChromeRecede(false);
     } else if (delta < -CHROME_SCROLL_THRESHOLD) {
       requestChromeRecede(false);
-    } else if (delta > CHROME_SCROLL_THRESHOLD || (!shell?.classList.contains("chrome-receded") && top > CHROME_SCROLL_THRESHOLD)) {
-      requestChromeRecede(true);
     }
     lastScrollTop = top;
   }, { passive: true });

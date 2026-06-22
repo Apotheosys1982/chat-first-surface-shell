@@ -1,0 +1,33 @@
+2026-06-22T06:02:24Z chat-first-scroll-pressure-contract
+
+Scope:
+- Fixed chat header/composer pressure contract.
+- Removed scroll-position auto-hide from the message stream scroll handler.
+- Preserved down-feed hide through wheel/touch pressure.
+- Added validation that stream position cannot auto-hide chrome after upward pressure reveals it.
+
+Root cause:
+- `chrome-receded` had two authorities: gesture pressure and scroll position.
+- The stream scroll handler could hide chrome after upward pressure because `scrollTop` was still greater than the threshold.
+
+Local browser evidence:
+- Browser surface: Codex in-app browser.
+- URL: http://127.0.0.1:8899/index.html?v=scroll-pressure-contract-local
+- Viewport: 393x852.
+- Initial: visible, chromeReceded=false, headerOpacity=1, composerOpacity=1.
+- Down-feed pressure: hidden, chromeReceded=true, scrollTop=153.
+- Up-feed pressure: revealed, chromeReceded=false, scrollTop=83.
+- Hold after up pressure: stayed revealed, chromeReceded=false, headerOpacity=1, composerOpacity=1, scrollTop=83.
+- Second down-feed pressure: hidden again, chromeReceded=true, scrollTop=153.
+- Width lock: 393/393, scrollX=0.
+- Console warnings/errors: none.
+
+Validation completed before receipt:
+- npm run validate:js
+- npm run validate:chrome-collapse
+
+Pending:
+- Sync generated state.
+- Generate checksum manifest.
+- Run npm run validate.
+- Commit, push, deploy, and smoke test production.

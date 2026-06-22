@@ -18,6 +18,7 @@ const friendlyLabelBySlug = {
   "chat-first-viewport-lock": "Viewport lock + mobile scroll",
   "chat-first-scroll-stability": "Scroll stability + chrome collapse",
   "chat-first-chrome-direction": "Chrome direction fidelity",
+  "chat-first-scroll-pressure-contract": "Scroll pressure contract",
   "chat-first-artifact-unified-open-path": "Unified artifact open path",
   "chat-first-canonical-artifact-law": "Canonical artifact law",
   "spreadsheet-table-artifact-stage": "Spreadsheet table artifact stage",
