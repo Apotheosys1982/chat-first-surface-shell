@@ -1,8 +1,15 @@
 window.CHAT_FIRST_PROJECT_STATE = {
-  "generatedAt": "2026-06-22T06:24:02.842Z",
+  "generatedAt": "2026-06-25T10:46:24.480Z",
   "source": "tools/sync-chat-first-state.js",
-  "latestEventId": "event-20260622T061109Z",
+  "latestEventId": "event-20260625T104558Z",
   "recentReceipts": [
+    {
+      "path": "receipts/20260625T104558Z-chatverse-public-identity.md",
+      "filename": "20260625T104558Z-chatverse-public-identity.md",
+      "timestamp": "20260625T104558Z",
+      "label": "Chatverse Public Identity",
+      "slug": "chatverse-public-identity"
+    },
     {
       "path": "receipts/20260622T061109Z-real-editable-spreadsheet-artifacts.md",
       "filename": "20260622T061109Z-real-editable-spreadsheet-artifacts.md",
@@ -51,16 +58,16 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T035108Z",
       "label": "Canonical artifact law",
       "slug": "chat-first-canonical-artifact-law"
-    },
-    {
-      "path": "receipts/20260622T033650Z-chat-first-artifact-unified-open-path.md",
-      "filename": "20260622T033650Z-chat-first-artifact-unified-open-path.md",
-      "timestamp": "20260622T033650Z",
-      "label": "Unified artifact open path",
-      "slug": "chat-first-artifact-unified-open-path"
     }
   ],
   "recentLogs": [
+    {
+      "path": "logs/20260625T104558Z-chatverse-public-identity.log",
+      "filename": "20260625T104558Z-chatverse-public-identity.log",
+      "timestamp": "20260625T104558Z",
+      "label": "Chatverse Public Identity",
+      "slug": "chatverse-public-identity"
+    },
     {
       "path": "logs/20260622T061109Z-real-editable-spreadsheet-artifacts.log",
       "filename": "20260622T061109Z-real-editable-spreadsheet-artifacts.log",
@@ -95,13 +102,6 @@ window.CHAT_FIRST_PROJECT_STATE = {
       "timestamp": "20260622T043643Z",
       "label": "Spreadsheet stage live evaluation",
       "slug": "spreadsheet-stage-live-evaluation"
-    },
-    {
-      "path": "logs/20260622T040651Z-live-artifact-evaluation-protocol.log",
-      "filename": "20260622T040651Z-live-artifact-evaluation-protocol.log",
-      "timestamp": "20260622T040651Z",
-      "label": "Live artifact evaluation protocol",
-      "slug": "live-artifact-evaluation-protocol"
     }
   ],
   "recentChecksums": [

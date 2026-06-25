@@ -1,0 +1,21 @@
+20260625T104558Z chatverse-public-identity
+
+Objective:
+- Promote Chatverse Surface Assistant as the public-facing GitHub identity.
+
+Implementation:
+- README title changed from Chat-First Surface Shell to Chatverse Surface Assistant.
+- README now states the public/internal naming split.
+- README now explains the project as a browser-native bounded assistant surface.
+- Existing package name, source paths, validators, deployment slug, and internal implementation remain unchanged.
+
+Validation:
+- npm run sync:chat-first-state
+- npm run compile:chat-first-answer-pack
+- npm run validate
+
+Deployment:
+- No deployment performed.
+
+Git:
+- Commit/push follows after validation if requested/authorized for GitHub publication.

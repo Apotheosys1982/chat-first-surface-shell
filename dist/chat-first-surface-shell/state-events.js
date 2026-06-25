@@ -1,5 +1,35 @@
 window.CHAT_FIRST_STATE_EVENTS = [
   {
+    "eventId": "event-20260625T104558Z",
+    "timestamp": "20260625T104558Z",
+    "eventType": "codex_update",
+    "title": "Chatverse Public Identity",
+    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
+    "filesChanged": [],
+    "artifactsAffected": [
+      "Project state dashboard",
+      "Recent activity",
+      "Receipt stream"
+    ],
+    "routesAffected": [
+      "project_state",
+      "receipts",
+      "source_status"
+    ],
+    "validationCommands": [
+      "npm run validate:chat-first-shell",
+      "node tools/validate-chat-first-ingestion.js",
+      "npm run validate:chrome-collapse",
+      "npm run validate:live-artifact-eval",
+      "npm run validate:checksum"
+    ],
+    "receiptPath": "receipts/20260625T104558Z-chatverse-public-identity.md",
+    "logPath": "logs/20260625T104558Z-chatverse-public-identity.log",
+    "checksumPath": "",
+    "status": "Pending review",
+    "nextRecommendedAction": "Generate and validate the checksum for this event."
+  },
+  {
     "eventId": "event-20260622T061109Z",
     "timestamp": "20260622T061109Z",
     "eventType": "codex_update",
@@ -174,7 +204,7 @@ window.CHAT_FIRST_STATE_EVENTS = [
       "npm run validate:checksum"
     ],
     "receiptPath": "receipts/20260622T040651Z-live-artifact-evaluation-protocol.md",
-    "logPath": "logs/20260622T040651Z-live-artifact-evaluation-protocol.log",
+    "logPath": "",
     "checksumPath": "checksums/20260622T040651Z-live-artifact-evaluation-protocol.sha256",
     "status": "Compiled",
     "nextRecommendedAction": "Inspect the receipt or render the current project dashboard."
@@ -204,36 +234,6 @@ window.CHAT_FIRST_STATE_EVENTS = [
       "npm run validate:checksum"
     ],
     "receiptPath": "receipts/20260622T035108Z-chat-first-canonical-artifact-law.md",
-    "logPath": "",
-    "checksumPath": "",
-    "status": "Pending review",
-    "nextRecommendedAction": "Generate and validate the checksum for this event."
-  },
-  {
-    "eventId": "event-20260622T033650Z",
-    "timestamp": "20260622T033650Z",
-    "eventType": "codex_update",
-    "title": "Unified artifact open path",
-    "summary": "Codex recorded a meaningful shell update with receipt-backed validation posture.",
-    "filesChanged": [],
-    "artifactsAffected": [
-      "Project state dashboard",
-      "Recent activity",
-      "Receipt stream"
-    ],
-    "routesAffected": [
-      "project_state",
-      "receipts",
-      "source_status"
-    ],
-    "validationCommands": [
-      "npm run validate:chat-first-shell",
-      "node tools/validate-chat-first-ingestion.js",
-      "npm run validate:chrome-collapse",
-      "npm run validate:live-artifact-eval",
-      "npm run validate:checksum"
-    ],
-    "receiptPath": "receipts/20260622T033650Z-chat-first-artifact-unified-open-path.md",
     "logPath": "",
     "checksumPath": "",
     "status": "Pending review",

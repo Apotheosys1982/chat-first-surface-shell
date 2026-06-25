@@ -1,14 +1,27 @@
-# Chat-First Surface Shell
+# Chatverse Surface Assistant
 
-Standalone static prototype for the chat-first Surface Assistant Shell.
+Public-facing name: **Chatverse Surface Assistant**.
 
-This repo is intentionally separate from the SV2 Biosphere Kids work. The shell is a browser-hosted assistant surface where the composer acts as the command line, direct artifact commands open full-viewport views, and uploaded files stay quarantined until reviewed and compiled.
+Internal implementation name: `chat-first-surface-shell`.
+
+Chatverse Surface Assistant is a browser-native bounded assistant surface where the composer acts as the command line, direct artifact commands open full-viewport views, and uploaded files stay quarantined until reviewed and compiled.
+
+This repo is intentionally separate from the SV2 Biosphere Kids work. The public brand can be Chatverse while the internal package, validation scripts, paths, and deployment slug remain `chat-first-surface-shell` to preserve the working runtime and avoid breaking existing links.
 
 ## Live Site
 
 - Netlify project: `chat-first-surface-shell`
 - Production URL: `https://chat-first-surface-shell.netlify.app`
 - Netlify admin: `https://app.netlify.com/projects/chat-first-surface-shell`
+
+## What It Demonstrates
+
+- A chat-first Surface Assistant runtime with a native composer as the primary control.
+- Source-bound answer behavior instead of generic chatbot improvisation.
+- Artifact routing into full-viewport views for source maps, SOPs, checklists, dashboards, and other structured outputs.
+- Mobile/desktop viewport ownership, chrome collapse, and scroll-stability validation.
+- Static-runtime assistant architecture that can ship as a proof surface without requiring a live model call for every interaction.
+- Validation gates, checksum receipts, and synchronization between source and deploy mirrors.
 
 ## App Entry Point
 
